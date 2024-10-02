@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rewards | Kariton</title>
+  <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.png" />
+  <link rel="stylesheet" href="../assets/css/styles.min.css" />
+  <style>
+    .img-preview {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      display: none;
+    }
+    .img-upload {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Body Wrapper -->
+  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+    data-sidebar-position="fixed" data-header-position="fixed">
+    <!-- Sidebar Start -->
+    <aside class="left-sidebar">
+      <!-- Sidebar scroll-->
+      <div>
+        <div class="brand-logo d-flex align-items-center justify-content-between">
+          <a href="./index.html" class="text-nowrap logo-img">
+            <img src="../img/image-removebg-preview (1) (2).png" width="180" style="opacity: 0.7;" alt="" />
+          </a>
+          <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
+            <i class="ti ti-x fs-8"></i>
+          </div>
+        </div>
+        <!-- Sidebar navigation-->
+        <div><%- include('./partials/side-barangay'); -%></div>
+        <!-- End Sidebar navigation -->
+      </div>
+      <!-- End Sidebar scroll-->
+    </aside>
+    <!-- Sidebar End -->
+    <!-- Main wrapper -->
+    <div class="body-wrapper">
+      <!-- Header Start -->
+      <div><%- include('./partials/head'); -%></div>
+      <!-- Header End -->
+      <div class="container-fluid">
+        <!-- Scrap Material Points Table -->
+        <div class="col-lg d-flex align-items-stretch">
+          <div class="card w-100 mb-4">
+            <div class="card-body p-4">
+              <h5 class="card-title fw-semibold mb-4">Scrap Material Points</h5>
+              <button class="btn btn-success mb-3" id="add-scrap-btn">Add Scrap Material</button>
+              <div class="table-responsive">
+                <table class="table text-nowrap mb-0 align-middle">
+                  <thead class="text-dark fs-4">
+                    <tr>
+                      <th class="border-bottom-0">
+                        <h6 class="fw-semibold mb-0">Scrap Material</h6>
+                      </th>
+                      <th class="border-bottom-0">
+                        <h6 class="fw-semibold mb-0">Points per Kg</h6>
+                      </th>
+                      <th class="border-bottom-0">
+                        <h6 class="fw-semibold mb-0">Action</h6>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody id="scrap-table-body">
+                    <% const scrapMaterials = [
+                      { name: "Plastic", points: 10 },
+                      { name: "Metal", points: 20 },
+                      { name: "Paper", points: 5 }
+                    ]; %>
+                    <% for (let i = 0; i < scrapMaterials.length; i++) { %>
+                    <tr>
+                      <td class="border-bottom-0">
+                        <p class="mb-0 fw-normal scrap-name"><%= scrapMaterials[i].name %></p>
+                      </td>
+                      <td class="border-bottom-0">
+                        <p class="mb-0 fw-normal scrap-points"><%= scrapMaterials[i].points %></p>
+                      </td>
+                      <td class="border-bottom-0">
+                        <button class="btn btn-primary edit-scrap-btn">Edit</button>
+                      </td>
+                    </tr>
+                    <% } %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Redeemable Goods Table -->
+        <div class="col-lg d-flex align-items-stretch">
+          <div class="card w-100">
+            <div class="card-body p-4">
+              <h5 class="card-title fw-semibold mb-4">Redeemable Goods</h5>
+              <button class="btn btn-success mb-3" id="add-good-btn">Add Good</button>
+              <div class="table-responsive">
+                <table class="table text-nowrap mb-0 align-middle">
+                  <thead class="text-dark fs-4">
+                    <tr>
+                      <th class="border-bottom-0">
+                        <h6 class="fw-semibold mb-0">Image</h6>
+                      </th>
+                      <th class="border-bottom-0">
+                        <h6 class="fw-semibold mb-0">Good</h6>
+                      </th>
+                      <th class="border-bottom-0">
+                        <h6 class="fw-semibold mb-0">Points Required</h6>
+                      </th>
+                      <th class="border-bottom-0">
+                        <h6 class="fw-semibold mb-0">Action</h6>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody id="goods-table-body">
+                    <% const redeemableGoods = [
+                      { name: "Notebook", points: 50, image: "" },
+                      { name: "Pen", points: 10, image: "" }
+                    ]; %>
+                    <% for (let i = 0; i < redeemableGoods.length; i++) { %>
+                    <tr>
+                      <td class="border-bottom-0">
+                        <img src="<%= redeemableGoods[i].image %>" alt="Image" class="img-preview">
+                      </td>
+                      <td class="border-bottom-0">
+                        <p class="mb-0 fw-normal good-name"><%= redeemableGoods[i].name %></p>
+                      </td>
+                      <td class="border-bottom-0">
+                        <p class="mb-0 fw-normal good-points"><%= redeemableGoods[i].points %></p>
+                      </td>
+                      <td class="border-bottom-0">
+                        <button class="btn btn-primary edit-good-btn">Edit</button>
+                      </td>
+                    </tr>
+                    <% } %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <!-- Scrap Material Modal -->
+  <div class="modal fade" id="scrapModal" tabindex="-1" aria-labelledby="scrapModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="scrapModalLabel">Add/Edit Scrap Material</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="scrap-form">
+            <div class="mb-3">
+              <label for="scrap-name" class="form-label">Scrap Material Name</label>
+              <input type="text" class="form-control" id="scrap-name" required>
+            </div>
+            <div class="mb-3">
+              <label for="scrap-points" class="form-label">Points per Kg</label>
+              <input type="number" class="form-control" id="scrap-points" required>
+            </div>
+            <input type="hidden" id="scrap-index">
+            <button type="submit" class="btn btn-primary">Save</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Redeemable Goods Modal -->
+  <div class="modal fade" id="goodModal" tabindex="-1" aria-labelledby="goodModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="goodModalLabel">Add/Edit Redeemable Good</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="good-form">
+            <div class="mb-3">
+              <label for="good-name" class="form-label">Good Name</label>
+              <input type="text" class="form-control" id="good-name" required>
+            </div>
+            <div class="mb-3">
+              <label for="good-points" class="form-label">Points Required</label>
+              <input type="number" class="form-control" id="good-points" required>
+            </div>
+            <div class="mb-3">
+              <label for="good-image" class="form-label">Image URL</label>
+              <input type="text" class="form-control" id="good-image">
+              <input type="file" class="form-control img-upload" id="good-image-upload">
+              <img id="good-image-preview" class="img-preview">
+            </div>
+            <input type="hidden" id="good-index">
+            <button type="submit" class="btn btn-primary">Save</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
+  <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/js/sidebarmenu.js"></script>
+  <script src="../assets/js/app.min.js"></script>
+  <script src="../assets/libs/simplebar/dist/simplebar.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const scrapTableBody = document.getElementById('scrap-table-body');
+      const goodsTableBody = document.getElementById('goods-table-body');
+
+      // Handle adding and editing scrap materials
+      document.getElementById('add-scrap-btn').addEventListener('click', function () {
+        document.getElementById('scrap-form').reset();
+        document.getElementById('scrap-index').value = '';
+        new bootstrap.Modal(document.getElementById('scrapModal')).show();
+      });
+
+      document.querySelectorAll('.edit-scrap-btn').forEach(button => {
+        button.addEventListener('click', function () {
+          const row = button.closest('tr');
+          const nameCell = row.querySelector('.scrap-name');
+          const pointsCell = row.querySelector('.scrap-points');
+
+          document.getElementById('scrap-name').value = nameCell.textContent;
+          document.getElementById('scrap-points').value = pointsCell.textContent;
+          document.getElementById('scrap-index').value = Array.from(scrapTableBody.children).indexOf(row);
+          new bootstrap.Modal(document.getElementById('scrapModal')).show();
+        });
+      });
+
+      document.getElementById('scrap-form').addEventListener('submit', function (event) {
+        event.preventDefault();
+        const name = document.getElementById('scrap-name').value;
+        const points = document.getElementById('scrap-points').value;
+        const index = document.getElementById('scrap-index').value;
+
+        if (index !== '') {
+          // Edit existing
+          const row = scrapTableBody.children[index];
+          row.querySelector('.scrap-name').textContent = name;
+          row.querySelector('.scrap-points').textContent = points;
+        } else {
+          // Add new
+          const newRow = document.createElement('tr');
+          newRow.innerHTML = `
+            <td class="border-bottom-0"><p class="mb-0 fw-normal scrap-name">${name}</p></td>
+            <td class="border-bottom-0"><p class="mb-0 fw-normal scrap-points">${points}</p></td>
+            <td class="border-bottom-0"><button class="btn btn-primary edit-scrap-btn">Edit</button></td>
+          `;
+          scrapTableBody.appendChild(newRow);
+          attachScrapEditListener(newRow.querySelector('.edit-scrap-btn'));
+        }
+
+        bootstrap.Modal.getInstance(document.getElementById('scrapModal')).hide();
+      });
+
+      function attachScrapEditListener(button) {
+        button.addEventListener('click', function () {
+          const row = button.closest('tr');
+          const nameCell = row.querySelector('.scrap-name');
+          const pointsCell = row.querySelector('.scrap-points');
+
+          document.getElementById('scrap-name').value = nameCell.textContent;
+          document.getElementById('scrap-points').value = pointsCell.textContent;
+          document.getElementById('scrap-index').value = Array.from(scrapTableBody.children).indexOf(row);
+          new bootstrap.Modal(document.getElementById('scrapModal')).show();
+        });
+      }
+
+      // Handle adding and editing redeemable goods
+      document.getElementById('add-good-btn').addEventListener('click', function () {
+        document.getElementById('good-form').reset();
+        document.getElementById('good-image-preview').style.display = 'none';
+        document.getElementById('good-index').value = '';
+        new bootstrap.Modal(document.getElementById('goodModal')).show();
+      });
+
+      document.querySelectorAll('.edit-good-btn').forEach(button => {
+        button.addEventListener('click', function () {
+          const row = button.closest('tr');
+          const nameCell = row.querySelector('.good-name');
+          const pointsCell = row.querySelector('.good-points');
+          const img = row.querySelector('.img-preview');
+
+          document.getElementById('good-name').value = nameCell.textContent;
+          document.getElementById('good-points').value = pointsCell.textContent;
+          document.getElementById('good-image').value = img.src;
+          document.getElementById('good-image-preview').src = img.src;
+          document.getElementById('good-image-preview').style.display = 'block';
+          document.getElementById('good-index').value = Array.from(goodsTableBody.children).indexOf(row);
+          new bootstrap.Modal(document.getElementById('goodModal')).show();
+        });
+      });
+
+      document.getElementById('good-form').addEventListener('submit', function (event) {
+        event.preventDefault();
+        const name = document.getElementById('good-name').value;
+        const points = document.getElementById('good-points').value;
+        const image = document.getElementById('good-image').value;
+        const index = document.getElementById('good-index').value;
+
+        if (index !== '') {
+          // Edit existing
+          const row = goodsTableBody.children[index];
+          row.querySelector('.good-name').textContent = name;
+          row.querySelector('.good-points').textContent = points;
+          const img = row.querySelector('.img-preview');
+          img.src = image;
+          img.style.display = 'block'; // Ensure image is displayed
+        } else {
+          // Add new
+          const newRow = document.createElement('tr');
+          newRow.innerHTML = `
+            <td class="border-bottom-0"><img src="${image}" alt="Image" class="img-preview"></td>
+            <td class="border-bottom-0"><p class="mb-0 fw-normal good-name">${name}</p></td>
+            <td class="border-bottom-0"><p class="mb-0 fw-normal good-points">${points}</p></td>
+            <td class="border-bottom-0"><button class="btn btn-primary edit-good-btn">Edit</button></td>
+          `;
+          goodsTableBody.appendChild(newRow);
+          attachGoodEditListener(newRow.querySelector('.edit-good-btn'));
+        }
+
+        bootstrap.Modal.getInstance(document.getElementById('goodModal')).hide();
+      });
+
+      function attachGoodEditListener(button) {
+        button.addEventListener('click', function () {
+          const row = button.closest('tr');
+          const nameCell = row.querySelector('.good-name');
+          const pointsCell = row.querySelector('.good-points');
+          const img = row.querySelector('.img-preview');
+
+          document.getElementById('good-name').value = nameCell.textContent;
+          document.getElementById('good-points').value = pointsCell.textContent;
+          document.getElementById('good-image').value = img.src;
+          document.getElementById('good-image-preview').src = img.src;
+          document.getElementById('good-image-preview').style.display = 'block';
+          document.getElementById('good-index').value = Array.from(goodsTableBody.children).indexOf(row);
+          new bootstrap.Modal(document.getElementById('goodModal')).show();
+        });
+      }
+
+      // Handle image preview
+      document.getElementById('good-image-upload').addEventListener('change', function () {
+        const file = this.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            document.getElementById('good-image-preview').src = e.target.result;
+            document.getElementById('good-image-preview').style.display = 'block';
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>

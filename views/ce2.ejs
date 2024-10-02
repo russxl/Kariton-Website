@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parallax Scrolling Website | Jungle Theme</title>
+
+    <link rel="stylesheet" type="text/css" href="../css/styles.css">
+</head>
+<body>
+
+    <header id="header">
+        <img width="150px" src="../img/image-removebg-preview (1) (2).png" alt="">
+     
+    </header>
+    
+    <section>
+        <h2 id="text"><span>Enhancing Animal Life</span><br>Circular Economy</h2>
+        <img src="../img/bird1.png" id="bird1" alt="">
+        <img src="../img/bird2.png" id="bird2" alt="">
+        <img src="../img/forest.png" id="forest" alt="">
+        <img src="../img/rocks.png" id="rocks" alt="">
+        <img src="../img/water.png" id="water" alt="">
+    </section>
+    <div class="sec">
+        <h2>The Role of Circular Economy in Enhancing Animal Life: A Comprehensive Overview</h2>
+        <p>The circular economy, an innovative model focused on sustainability and resource efficiency, holds significant promise for improving the lives of animals, both on land and in aquatic environments. By transforming how we produce, consume, and manage waste, this economic system reduces environmental degradation and promotes biodiversity, creating a healthier planet for all living creatures. 
+            Here’s an in-depth look at how a circular economy benefits animal life.
+             <br> <br>
+             <h4>Reduction in Habitat Destruction</h4>
+             One of the most profound impacts of the circular economy is the reduction in habitat destruction. Traditional linear economic models often involve extracting natural resources at an unsustainable rate, leading to deforestation, mining, and other activities that destroy animal habitats. In contrast, a circular economy emphasizes the reuse of materials and products, significantly decreasing the need for new raw materials. 
+             This shift helps preserve forests, wetlands, and other critical habitats, providing secure living spaces for land animals. <br> <br>
+            <h4>Minimizing Pollution</h4>
+            Pollution, a byproduct of industrial activities and improper waste management, poses a severe threat to wildlife. Land animals suffer from contaminated soil and water,
+             while marine creatures face the hazards of plastic and chemical pollution. <br> <br>
+             1. Reducing Chemical Use: Encouraging the use of non-toxic, biodegradable materials in production processes leads to less harmful waste entering ecosystems. <br><br>
+             2.Improving Waste Management: Efficient waste management systems prevent litter and hazardous substances from polluting the environment. By promoting recycling and proper disposal, the circular economy ensures that waste is managed sustainably, protecting animals from exposure to dangerous pollutants. <br> <br>
+             <h4>Reduction in Plastic Pollution</h4>
+             Plastic pollution is one of the most critical environmental issues affecting marine life. Millions of tons of plastic waste enter the oceans annually, causing severe harm to marine animals through ingestion and entanglement. The circular economy addresses this crisis by: <br> <br>
+              1. Promoting Recycling and Reuse: By emphasizing the importance of recycling and reusing materials, the circular economy reduces the amount of plastic waste generated. <br><br>
+              2.The use of biodegradable materials ensures that, even if waste reaches the oceans, it breaks down more safely and quickly, reducing the threat to marine life.By promoting recycling and proper disposal, the circular economy ensures that waste is managed sustainably, protecting animals from exposure to dangerous pollutants. <br> <br>
+              <h4>Biodiversity Preservation</h4>
+              Biodiversity is crucial for ecosystem health and resilience. The circular economy supports biodiversity by reducing the impact of human activities on natural habitats. Conservation efforts, sustainable resource use, and pollution reduction all contribute to preserving a wide range of species, ensuring that ecosystems remain balanced and functional.
+        </p>
+    </div>
+    <script>
+        let text = document.getElementById('text')
+        let bird1 = document.getElementById('bird1')
+        let bird2 = document.getElementById('bird2')
+        let btn = document.getElementById('btn')
+        let rocks = document.getElementById('rocks')
+        let forest = document.getElementById('forest')
+        let water = document.getElementById('water')
+        let header = document.getElementById('header')
+
+        window.addEventListener('scroll', function(){
+            let value = window.scrollY;
+
+            text.style.top = 50 + value * -0.5 + '%';
+            bird1.style.top = value * -1.5 + 'px';
+            bird1.style.left = value * 2 + 'px';
+            bird2.style.top = value * -1.5 + 'px';
+            bird2.style.left = value * -5 + 'px';
+            btn.style.marginTop = value * 1.5 + 'px';
+            rocks.style.top = value * -0.12 + 'px';
+            forest.style.top = value * 0.25 + 'px';
+            header.style.top = value * 0.5 + 'px';
+        })
+    </script>
+</body>
+</html>

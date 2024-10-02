@@ -1,0 +1,141 @@
+<%- include('./partials/header'); -%>
+
+<!-- Page Header Start -->
+<div class="container-fluid page-header py-5 mb-5 wow fadeIn" data-wow-delay="0.1s">
+    <div class="container text-center py-5">
+        <h1 class="display-3 text-white mb-4 animated slideInDown">Contact</h1>
+        <nav aria-label="breadcrumb animated slideInDown">
+            <ol class="breadcrumb justify-content-center mb-0">
+                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                <li class="breadcrumb-item"><a href="#">Pages</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Contact</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- Page Header End -->
+
+<!-- Contact Start -->
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="text-center mx-auto wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
+            <p class="section-title bg-white text-center text-primary px-3">Contact Us</p>
+            <h1 class="mb-5">If You Have Any Query, Please Contact Us</h1>
+        </div>
+        <div class="row g-5">
+            <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.1s">
+                <h3 class="mb-4">Any concern?</h3>
+                <p class="mb-4">The contact form is provided below. if you have any concerns or inquiries. Please do not hesitate to fill out this form to contact us. <a href="https://htmlcodex.com/contact-form">Download Now</a>.</p>
+                <form action="/dashboard/sendmessage" method="post">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="name" name="name" placeholder="Your Name" required>
+                                <label for="name">Your Name</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="email" class="form-control" id="email" name="email" placeholder="Your Email" required>
+                                <label for="email">Your Email</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="subject" name="subject" placeholder="Subject" required>
+                                <label for="subject">Subject</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-floating">
+                                <textarea class="form-control" placeholder="Leave a message here" id="message" name="message" style="height: 250px" required></textarea>
+                                <label for="message">Message</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <button class="btn btn-success rounded-pill py-3 px-5" type="submit">Send Message</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.5s">
+                <h3 class="mb-4">Contact Details</h3>
+                <div class="d-flex border-bottom pb-3 mb-3">
+                    <div class="flex-shrink-0 btn-square bg-success rounded-circle">
+                        <i class="fa fa-map-marker-alt text-light"></i>
+                    </div>
+                    <div class="ms-3">
+                        <h6>Our Office</h6>
+                        <span>1856 Dapitan St. Sampaloc, Manila, 1008 Metro Manila</span>
+                    </div>
+                </div>
+                <div class="d-flex border-bottom pb-3 mb-3">
+                    <div class="flex-shrink-0 btn-square bg-success rounded-circle">
+                        <i class="fa fa-phone-alt text-light"></i>
+                    </div>
+                    <div class="ms-3">
+                        <h6>Call Us</h6>
+                        <span>+63 9276628981</span>
+                    </div>
+                </div>
+                <div class="d-flex border-bottom-0 pb-3 mb-3">
+                    <div class="flex-shrink-0 btn-square bg-success rounded-circle">
+                        <i class="fa fa-envelope text-light"></i>
+                    </div>
+                    <div class="ms-3">
+                        <h6>Mail Us</h6>
+                        <span>kariton@gmail.com</span>
+                    </div>
+                </div>
+
+                <iframe class="w-100 rounded"
+                    src="https://www.google.com/maps/embed/v1/place?q=National+University+Manila&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8"
+                    frameborder="0" style="min-height: 300px; border:0;" allowfullscreen="" aria-hidden="false"
+                    tabindex="0"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Contact End -->
+
+<!-- Footer Start -->
+<%- include('./partials/footer'); -%>
+<!-- Footer End -->
+
+<!-- Copyright Start -->
+<%- include('./partials/copyright'); -%>
+<!-- Copyright End -->
+
+<!-- Back to Top -->
+<a href="#" class="btn btn-lg btn-primary btn-lg-square rounded-circle back-to-top"><i class="bi bi-arrow-up"></i></a>
+
+<!-- JavaScript Libraries -->
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="lib/wow/wow.min.js"></script>
+<script src="lib/easing/easing.min.js"></script>
+<script src="lib/waypoints/waypoints.min.js"></script>
+<script src="lib/owlcarousel/owl.carousel.min.js"></script>
+<script src="lib/counterup/counterup.min.js"></script>
+<script src="lib/parallax/parallax.min.js"></script>
+<script src="lib/lightbox/js/lightbox.min.js"></script>
+
+<!-- Template Javascript -->
+<script>
+    const form = document.querySelector('form');
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      fetch('/dashboard/sendmessage', {
+        method: 'POST',
+        body: formData,
+      })
+     .then((response) => response.json())
+     .then((data) => console.log(data))
+     .catch((error) => console.error(error));
+    });
+</script>
+<script src="js/main.js"></script>
+</body>
+
+</html>

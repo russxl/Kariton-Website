@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Junkshop View | Kariton</title>
+  <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.png" />
+  <link rel="stylesheet" href="../assets/css/styles.min.css" />
+  <meta name="description" content="View detailed information about a junkshop in Kariton.">
+</head>
+
+<body>
+  <!-- Body Wrapper -->
+  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+    data-sidebar-position="fixed" data-header-position="fixed">
+
+    <!-- Sidebar Start -->
+    <aside class="left-sidebar">
+      <!-- Sidebar scroll-->
+      <div>
+        <div class="brand-logo d-flex align-items-center justify-content-between">
+          <a href="./index.html" class="text-nowrap logo-img">
+            <img src="../img/image-removebg-preview (1) (2).png" width="180" style="opacity: 0.7;" alt="Kariton Logo" />
+          </a>
+          <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
+            <span class="ti ti-x fs-8"></span>
+          </div>
+        </div>
+        <!-- Sidebar navigation-->
+        <nav>
+          <%- include('./partials/sidebar'); -%>
+        </nav>
+        <!-- End Sidebar navigation -->
+      </div>
+      <!-- End Sidebar scroll-->
+    </aside>
+    <!-- Sidebar End -->
+
+    <!-- Main wrapper -->
+    <div class="body-wrapper">
+      <!-- Header Start -->
+      <header>
+        <%- include('./partials/head'); -%>
+      </header>
+      <!-- Header End -->
+      
+      <!-- Content Start -->
+      <div class="container-fluid">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title fw-semibold mb-4">Junkshop Information</h5>
+            <p><strong>Junkshop Name:</strong> <%= junkshop.jShop %></p>
+            <p><strong>Owner:</strong> <%= junkshop.name %></p>
+            <p><strong>Contact Number:</strong> <%= junkshop.phone %></p>
+            <p><strong>Address:</strong> <%= junkshop.location %></p>
+            <p><strong>Scrap Type:</strong> <%= junkshop.scrapType %></p>
+            <p><strong>Weight:</strong> <%= junkshop.weight %> kg</p>
+            <p><strong>Status:</strong>
+              <% if (junkshop.status === "pending") { %>
+                <span><span class="ti ti-clock text-secondary"></span> Pending</span>
+              <% } %>
+              <% if (junkshop.isApproved === "approved") { %>
+                <span><span class="ti ti-check text-success"></span> Approved</span>
+              <% } %>
+              <% if (junkshop.isApproved === "declined") { %>
+                <span><span class="ti ti-close text-danger"></span> Rejected</span>
+              <% } %>
+            </p>
+            <!-- Navigate button -->
+            <div class="mt-4">
+              <a href="https://www.google.com/maps/dir/Adp+Junkshop/Quezon+City" target="_blank" class="btn btn-primary">
+                Navigate
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Content End -->
+    </div>
+  </div>
+  <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
+  <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/js/sidebarmenu.js"></script>
+  <script src="../assets/js/app.min.js"></script>
+  <script src="../assets/libs/simplebar/dist/simplebar.js"></script>
+</body>
+
+</html>

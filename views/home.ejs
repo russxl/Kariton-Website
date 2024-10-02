@@ -1,0 +1,554 @@
+<head>
+    <%- include('./partials/header'); -%>
+
+<!-- Video Background -->
+<!-- Video Background -->
+<!-- Video Background -->
+<div id="video-background" style="height:1000px ;">
+    <video autoplay muted loop>
+        <source src="img/202405111826.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <div class="video-overlay">
+        <div class="container">
+            <div class="row justify-content-start align-items-center">
+                <div class="row col-lg-6 text-start">
+                    <p class="fs-4 text-white">Welcome to Kariton</p>
+                    <h1 class="display-1 text-white mb-5 animated slideInRight">Scrap Collection Platform</h1>
+                    <div class="row">
+                        <a href="#" class="btn btn-success rounded-pill  animated slideInRight btn-black col-lg-6 mb-2" >Download <i class="fab fa-google-play"></i></a>
+                        <a href="#" class="btn btn-light rounded-pill  animated slideInRight btn-white col-lg-6 mb-2" >Download <i class="fab fa-apple"></i></a>
+                    </div>
+
+                </div>
+                
+                
+                <div class="col-lg-6 p-0">
+                    <div class=" align-items-center mb-4 ">
+                        <img src="img/remove.png" alt="Phone Image" class="" style="max-width: 550px;">
+
+                    </div>
+                    
+                  
+                </div>
+               
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Video Background */
+    #video-background {
+        position: relative;
+        width: 100%;
+        height: 100vh;
+        overflow: hidden;
+    }
+    
+    #video-background video {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        min-width: 100%;
+        min-height: 100%;
+        width: auto;
+        height: auto;
+        z-index: -1;
+    }
+
+    .video-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5); /* Adjust opacity as needed */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+
+    .video-overlay .container {
+        max-width: 800px;
+    }
+
+    .video-overlay h1 {
+        font-size: 3em;
+        margin-bottom: 20px;
+    }
+
+    .video-overlay p {
+        font-size: 1.5em;
+        margin-bottom: 30px;
+    }
+        .section-title {  
+            padding: 10px;
+            border-radius: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .card-item {
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .card-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .map-container {
+            margin-top: 40px;
+        }
+        .map-container iframe {
+            width: 100%;
+            height: 400px;
+            border: none;
+            border-radius: 10px;
+        }
+        .card-body h5 {
+            color: #333;
+        }
+        .card-body p {
+            color: #555;
+        }
+        .card-img-top {
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .fixed-size-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+}
+
+        .text-center-content th, .text-center-content td {
+            text-align: center;
+            vertical-align: middle;
+    }
+
+        
+    </style>
+
+
+</style>
+
+    <!-- About End -->
+
+
+    <!-- Schedule Start -->
+    <div class="container-xxl py-5 text-center">
+        <div class="container">
+            <div class="row g-5 align-items-center justify-content-center">
+                <div class="col-lg-12 wow fadeInUp" data-wow-delay="0.1s">
+                    <p class="section-title bg-white text-primary px-3">Schedules</p>
+                    <h1 class="mb-4">Collection Schedule for Scrap Pickup</h1>
+                    <p class="mb-4">Look up for any available schedule.</p>
+                    <br>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h5>Barangay 507</h5>
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Day</th>
+                                            <th>Time</th>
+                                            <th>Scrap Type</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Monday</td>
+                                            <td>8:00 AM - 12:00 PM</td>
+                                            <td>Metal</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Tuesday</td>
+                                            <td>8:00 AM - 3:00 PM</td>
+                                            <td>Paper</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Wednesday</td>
+                                            <td>10:00 AM - 1:00 PM</td>
+                                            <td>Plastic</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Thursday</td>
+                                            <td>9:00 AM - 5:00 PM</td>
+                                            <td>Card Board</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Friday</td>
+                                            <td>11:00 AM - 1:00 PM</td>
+                                            <td>Copper</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <h5>Barangay 509</h5>
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Day</th>
+                                            <th>Time</th>
+                                            <th>Scrap Type</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Monday</td>
+                                            <td>8:00 AM - 12:00 PM</td>
+                                            <td>Metal</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Tuesday</td>
+                                            <td>8:00 AM - 3:00 PM</td>
+                                            <td>Paper</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Wednesday</td>
+                                            <td>10:00 AM - 1:00 PM</td>
+                                            <td>Plastic</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Thursday</td>
+                                            <td>9:00 AM - 5:00 PM</td>
+                                            <td>Card Board</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Friday</td>
+                                            <td>11:00 AM - 1:00 PM</td>
+                                            <td>Copper</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <h5>Barangay 474</h5>
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Day</th>
+                                            <th>Time</th>
+                                            <th>Scrap Type</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Monday</td>
+                                            <td>8:00 AM - 12:00 PM</td>
+                                            <td>Metal</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Tuesday</td>
+                                            <td>8:00 AM - 3:00 PM</td>
+                                            <td>Paper</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Wednesday</td>
+                                            <td>10:00 AM - 1:00 PM</td>
+                                            <td>Plastic</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Thursday</td>
+                                            <td>9:00 AM - 5:00 PM</td>
+                                            <td>Card Board</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Friday</td>
+                                            <td>11:00 AM - 1:00 PM</td>
+                                            <td>Copper</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <a class="py-3 px-5 mt-5" style="color:#333;">Please note that the available schedule above is subject to change based on the barangay's provided schedule.</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+    <!-- Schedule End -->
+     <!-- Features Start -->
+    <div class="container-xxl py-5 text-center">
+        <div class="container">
+            <div class="row g-5 align-items-center justify-content-center">
+                <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.1s">
+                    <p class="section-title bg-white text-primary px-3">Why Us?</p>
+                    <h1 class="mb-4">Experience the Benefits of Efficient Scrap Collection</h1>
+                    <p class="mb-4">"We're not just a scrap collection platform; we’re invested in making recycling easier and more impactful. Here’s why people choose us:"</p>
+                    <div class="accordion" id="accordionExample">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingOne">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    <i class="fa fa-check text-primary me-3"></i> Efficient Scheduling
+                                </button>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    It ensures prompt and reliable pickups, making the process seamless and hassle-free for you. We prioritize timely arrangements to fit your needs and maximize convenience.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingTwo">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                    <i class="fa fa-check text-primary me-3"></i> Best Scrap Rates
+                                </button>
+                            </h2>
+                            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    It offers competitive pricing for all type of scraps that will get best prices depending on the scrap materials.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingThree">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                    <i class="fa fa-check text-primary me-3"></i> Environment-Friendly Exercise
+                                </button>
+                            </h2>
+                            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    Being committed to environment-friendly practices, ensuring that scrap materials are processed in an environmentally responsible manner. 
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingFour">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                    <i class="fa fa-check text-primary me-3"></i> Engage Community
+                                </button>
+                            </h2>
+                            <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    An online platform and mobile app want to engage with different community to promote collect, sort, sell, and recycle in which it will be a great impact to the community and environment.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <a class="btn btn-success rounded-pill py-3 px-5 mt-3" href="">Explore More</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Features End -->
+     
+
+
+    <!-- Banner Start -->
+    <div class="container-fluid banner my-5 py-5 bg-dark text-center" data-parallax="scroll" data-image-src="img/banner.jpg">
+        <div class="container py-5">
+            <div class="row g-5">
+                <div class="col-lg-6 wow fadeIn" data-wow-delay="0.3s">
+                    <div class="table-responsive mb-4">
+                        <h4 class="text-white pb-3">Scrap Materials Points</h4>
+                        <table class="table table-bordered table-striped table-dark text-center-content">
+                            <thead>
+                                <tr>
+                                    <th>Scrap Material</th>
+                                    <th>Points per kilo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Aluminum Can</td>
+                                    <td>5 points</td>
+                                </tr>
+                                <tr>
+                                    <td>Plastic Bottle</td>
+                                    <td>3 points</td>
+                                </tr>
+                                <tr>
+                                    <td>Newspaper</td>
+                                    <td>2 points</td>
+                                </tr>
+                                <!-- Add more rows as needed -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="table-responsive">
+                        <h4 class="text-white pb-3">Redeemable Goods</h4>
+                        <table class="table table-bordered table-striped table-dark text-center-content">
+                            <thead>
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Goods</th>
+                                    <th>Required Points</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><img src="img/cup-noodles.jpg" alt="good1" width="50"></td>
+                                    <td>Cup Noodles</td>
+                                    <td>10 points</td>
+                                </tr>
+                                <tr>
+                                    <td><img src="img/canned-goods.jpg" alt="good2" width="50"></td>
+                                    <td>Canned Goods</td>
+                                    <td>20 points</td>
+                                </tr>
+                                <tr>
+                                    <td><img src="img/rice-goods.jpg" alt="good3" width="50"></td>
+                                    <td>2 Kilo of Rice</td>
+                                    <td>30 points</td>
+                                </tr>
+                                <!-- Add more rows as needed -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-lg-6 d-flex align-items-center wow fadeIn" data-wow-delay="0.3s">
+                    <div class="row g-4 align-items-center">
+                        <div class="col-sm-4">
+                            <img class="img-fluid rounded" src="img/available-schedule.jpg" alt="schedule">
+                        </div>
+                        <div class="col-sm-8">
+                            <h2 class="text-white mb-3">Earn Points</h2>
+                            <p class="text-white mb-4">Awarding points to people will encourage them to be more accountable for their trash, as they have the opportunity to collect cash and points just by picking it up. Additionally, points can be acquired through every transaction with the barangay.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Banner End -->
+
+    <!-- Service Start -->
+   <!-- Services Section -->
+   <section class="services-section py-3">
+    <div class="container">
+      <div class="text-center mx-auto pb-4">
+        <h2 class="section-title">Sorting Procedures</h2>
+        <p class="section-subtitle">A guide that provides instructions for the correct disposal of recyclable scraps and encourages the recycling of scraps.</p>
+      </div>
+      <div class="services-container d-flex flex-wrap justify-content-center">
+        <div class="service-item col-md-4 col-sm-6 col-12 mb-4">
+          <div class="service-icon text-center mt-2">
+            <i class="fas fa-truck-pickup"></i>
+          </div>
+          <div class="service-content">
+            <div class="box">
+              <h5>Collect</h5>
+              <p>Scrap materials are gathered and stored in a specific area, such as a sack or another appropriate container. Furthermore, collecting scraps helps reduce the quantity of waste sent to landfills, which contributes to the large volume of scraps accumulated there.</p>
+              <button class="btn btn-success learn-more-btn">Learn More</button>
+            </div>
+          </div>
+        </div>
+        <div class="service-item col-md-4 col-sm-6 col-12 mb-4">
+          <div class="service-icon text-center mt-2">
+            <i class="fas fa-sitemap"></i>
+          </div>
+          <div class="service-content">
+            <div class="box">
+              <h5>Sort</h5>
+              <p>Sorting each type of scrap into its correct category will make the process efficient. Separating the scraps at the time of purchase and placing them into the appropriate storage for each type will save time and make it easier for the barangay and junkshop to manage.</p>
+              <button class="btn btn-success learn-more-btn">Learn More</button>
+            </div>
+          </div>
+        </div>
+        <div class="service-item col-md-4 col-sm-6 col-12 mb-4">
+          <div class="service-icon text-center mt-2">
+            <i class="fas fa-money-bill-wave"></i>
+          </div>
+          <div class="service-content">
+            <div class="box">
+              <h5>Sell</h5>
+              <p>When it comes to selling your scrap materials, the barangay will come to collect all your scraps on a daily basis, but the type of scrap collected varies each day, so you need to check the pick-up schedule. Following that, they will buy the scraps at a specified rate for each type.</p>
+              <button class="btn btn-success learn-more-btn">Learn More</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+    <!-- Service End -->
+    <!-- Content Start -->
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="text-center mx-auto wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
+                <p class="section-title bg-white text-primary px-3">Find Your Local Junkshop</p>
+                <h1 class="mb-5">Locate Nearby Partners</h1>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card-item card">
+                        <img src="img/junkshop-1.jpg" class="card-img-top fixed-size-img" alt="Junkshop Image">
+                        <div class="card-body">
+                            <h5 class="card-title">Villa Fe Junkshop</h5>
+                            <p class="card-text">1234 Cayco Street. Sampaloc, Manila, Philippines. Open daily from 9 AM to 6 PM. Contact: (+639) 997 456 7890.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card-item card">
+                        <img src="img/junkshop-2.jpg" class="card-img-top fixed-size-img" alt="Junkshop Image">
+                        <div class="card-body">
+                            <h5 class="card-title">Leny Junkshop</h5>
+                            <p class="card-text">5678 Dapitan St. Sampaloc, Manila, Philippines. Open daily from 10 AM to 5 PM. Contact: (+639) 783 654-3210.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card-item card">
+                        <img src="img/junkshop-3.jpg" class="card-img-top fixed-size-img" alt="Junkshop Image">
+                        <div class="card-body">
+                            <h5 class="card-title">Jimmy Junkshop</h5>
+                            <p class="card-text">9101 Cayco St. Sampaloc, Manila, Philippines. Open daily from 8 AM to 7 PM. Contact: (+639) 262 789-0123.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="map-container">
+                <h2 class="text-center mb-4">Find Local Junkshops on the Map</h2>
+                <iframe src="https://www.google.com/maps/embed/v1/place?q=National+University+Manila&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+    <!-- Content End -->
+
+    <!-- Footer Start -->
+    <%- include('./partials/footer'); -%>
+    <!-- Footer End -->
+
+
+    <!-- Copyright Start -->
+    <%- include('./partials/copyright'); -%>
+    <!-- Copyright End -->
+
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-lg btn-success btn-lg-square rounded-circle back-to-top"><i class="bi bi-arrow-up"></i></a>
+
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="lib/counterup/counterup.min.js"></script>
+    <script src="lib/parallax/parallax.min.js"></script>
+    <script src="lib/lightbox/js/lightbox.min.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="js/main.js"></script>
+</body>
+
+</html>

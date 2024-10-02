@@ -1,0 +1,115 @@
+body,html{
+    height:100%;
+    margin:0;
+    font-size:16px;
+    font-family:'Times New Roman', Times, serif;
+    font-weight:400;
+    line-height:1.8em;
+    color:#666;
+    overflow-x: hidden;
+}
+
+#pg1, #pg2, #pg3, #pg4{
+    position:relative;
+    opacity:0.90;
+    background-position:center;
+    background-size:cover;
+    background-repeat:no-repeat;
+  
+   
+    background-attachment:fixed;
+}
+
+#pg1{
+    background-image: url("https://cdn.create.vista.com/api/media/medium/658268950/stock-photo-cropped-view-female-sorter-protective-gloves-holding-colorful-plastic-caps?token=");
+    
+    min-height: 100%;
+}
+#pg2{
+    background-image: url("https://media.licdn.com/dms/image/D4E12AQF6izkdhIebdQ/article-cover_image-shrink_720_1280/0/1700454866570?e=2147483647&v=beta&t=B_2XiiKMLj6dOITtRi9lAkoy2z6AFpWIzL3m33Snplg");
+    min-height: 100%;
+}
+#pg3{
+    background-image: url("https://neo-eco.com.ua/wp-content/uploads/2023/10/circular-economy.jpeg");
+    min-height: 100%;
+}
+
+#pg4{
+    background-image: url("https://tontoton.com/wp-content/uploads/2021/05/Circular-Economy-Article-Photo-Cover-TONTOTON.png");
+    min-height: 100%;
+}
+
+section{
+    text-align:center;
+  padding:50px 80px;
+  
+  background-color:#220f2f;
+  
+}
+
+
+#dark_section{
+    
+    background-color:#000000;
+    background-blend-mode: lighten;
+    color:rgb(255, 255, 255);
+
+    opacity: 1;
+    
+      
+}
+
+#text{
+  position:absolute;
+  top:50%;
+  width:100%;
+  text-align:center;
+  color:#000;
+  font-size:27px;
+  letter-spacing:12px;
+  text-transform:uppercase;
+  font-weight:bolder;
+}
+#text{
+    background-color:#111;
+  color:#fff;
+  padding:20px;
+  
+    background-color:transparent;
+}
+
+#text:hover{
+    font-size: 28px;
+    cursor: pointer;
+}
+
+
+img{
+    width: 30%;
+    height: 30%;
+    padding: 120px;
+}
+
+#main{
+    position:absolute;
+   top:60%;
+   width:100%;
+   right: 24%;
+  text-align:center;
+  color: white;
+  font-size:25px;
+  letter-spacing:10px;
+  text-transform:uppercase;
+  font-weight:bolder;
+  text-shadow: 5px 5px 3px #003e00;
+}
+
+
+
+
+#main:hover{
+    cursor:pointer;
+    font-size: 125px;
+}
+  
+
