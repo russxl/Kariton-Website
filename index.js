@@ -53,13 +53,15 @@ const junkShopSchema = {
   dateOfReg: String,
   phone:String,
   isRejected: Boolean,
+  approvalDate:String,
   jShopImg:String,
   description:String,
   jShopLocation: String,
+  validID:String,
   token:String,
   products:{},
+  permit:String,
   customerType:String,
- 
 };
 
 const barangaySchema = {
@@ -80,7 +82,11 @@ const barangaySchema = {
   isRejected: Boolean,
   bImg:String,
   description:String,
+  permit:String,
+  validID:String,
+  approvalDate:String,
   bLocation: String,
+  approval:String,
   token:String,
   products:{},
   customerType:String,
@@ -91,6 +97,7 @@ const barangaySchema = {
   moneyRewards:{},
   goodsRewards:{},
   redeemIsActive:Boolean
+  
 };
 
 const logSchema = {
@@ -99,12 +106,15 @@ const logSchema = {
   userName:String,
   date: String,
   type: String,
+  name:String
 };
 
 const adminCred = {
   uName: String,
   password: String,
-  isLogged: Boolean
+  isLogged: Boolean,
+  email:String,
+  otp:String
 };
 
 const bookingSchema = {
@@ -177,9 +187,7 @@ const Scrap = mongoose.model("Scrap",scrapMaterialPoints);
 
 let log = ''
 const admin = [{
-    uName:'admin',
-    password:'secret',
-    isLogged:false
+    email:'karitonscraps.ph@gmail.com',
 }]
 const junk = [{
     jShopName: 'Jastine Jshop',
@@ -196,13 +204,119 @@ app.use(bodyParser.json());
 
 app.set('view engine', 'ejs');
 app.use(express.static("public"));
+const nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'karitonscraps.ph@gmail.com',
+    pass: 'fegx cchl nsyk zwaq'
+  }
+});
+
+const sendOTPEmail = (email, otp) => {
+  const mailOptions = {
+    from: 'karitonscraps.ph@gmail.com',
+    to: 'karitonscraps.ph@gmail.com',
+    subject: 'Your OTP for Password Reset',
+    text: `Your OTP is: ${otp}`
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
+};
+
+// Send the reset password page
+app.get('/reset-password', (req, res) => {
+  res.render('reset-password.ejs');
+});
+
+// Reset password route
+app.post('/reset-password', async (req, res) => {
+  const { username, newPassword } = req.body;
+
+  try {
+    const admin = await Admin.findOne({ email: username });
+
+    if (!admin) {
+      return res.status(400).json({ message: "Admin not found" });
+    }
+
+    admin.password = newPassword; // Update the password
+    await admin.save();
+
+    res.json({ message: "Password successfully reset" });
+  } catch (error) {
+    console.error("Error in reset-password:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+// Verify OTP route
+app.post('/verify-otp', async (req, res) => {
+  const { username, otp } = req.body;
+
+  try {
+    const admin = await Admin.findOne({ email: username });
+
+    
+    if (!admin || admin.otp !== otp) {  // Corrected to check `token` instead of `otp`
+      return res.status(400).json({ message: "Invalid OTP" });
+    }
+
+    // OTP is correct, clear it and allow password reset
+    admin.token = null; // Clear OTP after verification
+    await admin.save();
+
+    res.json({ message: "OTP verified. Redirecting to reset password" });
+  } catch (error) {
+    console.error("Error in OTP verification:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+// Forgot password route to generate OTP
+app.post('/forgot-password', async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const admin = await Admin.findOne({ email: email });
+
+    if (!admin) {
+      return res.status(400).json({ message: "Admin not found" });
+    }
+
+    // Generate a 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000);
+    admin.otp = otp; // Save OTP in admin's document
+    await admin.save();
+
+    // Send the OTP via email
+    sendOTPEmail(admin.email, otp); // Send email to admin's email
+
+    res.json({ message: "OTP sent to your email" });
+  } catch (error) {
+    console.error("Error in forgot-password:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
 
 
 app.get("/dashboard", async (req, res) => {
   try {
     // Fetch all barangays that are approved
     const barangays = await Barangay.find({ isApproved: true });
-
+    
+    // Remove users without a userID field
+    await User.deleteMany({
+      'userID': { '$exists': false }
+    });
+    
     // Array to hold the collected data for each barangay
     let collectedData = [];
 
@@ -216,6 +330,9 @@ app.get("/dashboard", async (req, res) => {
         collected: collected,
       });
     }
+
+    // Fetch logs
+    const log = await Logs.find();
 
     // Group logs by the string "date" and count transactions per day
     const logsPerDay = await Logs.aggregate([
@@ -233,11 +350,12 @@ app.get("/dashboard", async (req, res) => {
       date: log._id,
       count: log.count
     }));
-    console.log(transactionsPerDay);
-    
 
-    // Render the index.ejs and pass the collected data and transactions per day
-    res.render('index.ejs', { collectedData, transactionsPerDay });
+    // Calculate the total number of transactions
+    const totalTransactions = transactionsPerDay.reduce((acc, log) => acc + log.count, 0);
+
+    // Render the index.ejs and pass the collected data, transactions per day, and total number of transactions
+    res.render('index.ejs', { collectedData, transactionsPerDay, totalTransactions, log });
 
   } catch (error) {
     console.error('Error fetching dashboard data:', error);
@@ -247,8 +365,31 @@ app.get("/dashboard", async (req, res) => {
 
 
 
-app.get('/',(req,res)=>{
-    res.render('home.ejs')
+app.get('/',async (req,res)=>{
+  try {
+    const junkshop = await JunkShop.find({isApproved:true});
+    const barangays = await Barangay.find({isApproved:true});
+    let collectedData = [];
+
+    // Loop through each barangay and find the collected entries for each one
+    for (let barangay of barangays) {
+      const sched =  await Collection.find({barangayID:barangay._id})
+
+      // Push the barangay and its collected data to the array
+      collectedData.push({
+        barangay: barangay,
+        sched: sched,
+      });
+    }
+
+   
+  
+    res.render('home.ejs', { collectedData,junkshop});
+  } catch (error) {
+    
+  }
+
+   
     })
 app.get('/contact',(req,res)=>{
     res.render('contact.ejs')
@@ -273,11 +414,10 @@ app.get("/login", async(req,res)=>{
     try {
  
         const admin =await Admin.findOne({uName:"admin"});
-        console.log(admin.isLogged);
         if(admin.isLogged===true){
             res.redirect('/dashboard')
         }else{
-            res.render('authentication-login.ejs')
+            res.render('authentication-login.ejs',{admin})
         }
     } catch (error) {
         console.log(error);
@@ -299,7 +439,8 @@ app.post('/logout', async (req, res) => {
       logs: log,
       userName:'Admin',
       time: new Date().toLocaleTimeString(),
-      date: new Date().toLocaleDateString()
+      date: new Date().toLocaleDateString(),
+      type:"Logins"
   });
 
   await newContent.save(); // Save login log
@@ -312,7 +453,6 @@ res.redirect('/login')
   
     try {
         const admin = await Admin.findOne({ uName: username });
-        console.log(admin);
         if (admin && admin.password === password) {
             admin.isLogged = true; // Update isLogged status
   
@@ -323,7 +463,8 @@ res.redirect('/login')
                 logs: log,
                 userName:"Admin",
                 time: new Date().toLocaleTimeString(),
-                date: new Date().toLocaleDateString()
+                date: new Date().toLocaleDateString(),
+                type:"Logins"
             });
   
             await newContent.save(); // Save login log
@@ -344,10 +485,8 @@ res.redirect('/login')
 app.get("/dashboard/users",async(req,res)=>{
 try {
     const admin = await Admin.findOne({uName:'admin'})
-   // console.log(admin.isLogged);
    const user =  await User.find();
    const string = user.toString()
-console.log(user);
     if(admin.isLogged===true){
        res.render('users.ejs',{user})
     }
@@ -368,7 +507,7 @@ app.get("/dashboard/junkshops", async(req,res)=>{
         res.render('junkshops.ejs', {
           junk:cont
         });
-        console.log(cont);}
+     }
         else{
             res.redirect('/404')
         }
@@ -415,14 +554,16 @@ app.post('/dashboard/pending', async (req, res) => {
       const newLog = new Logs({
           logs: logMessage,
           time: time,
-          date: date
+          date: date,
+          type:"Approval",
+          id:applicantId
       });
 
       // Save the log
       await newLog.save();
 
       // After saving, reload/redirect the page to refresh the status
-      res.redirect('dashboard/junkshops');
+      res.redirect('/dashboard/pending');
 
   } catch (error) {
       console.error('Error:', error);
@@ -518,7 +659,6 @@ app.get("/dashboard/logs", async (req, res) => {
       res.render('logs.ejs', {
         transactions: transactions
       });
-      console.log(transactions);
     } catch (err) {
       console.error(err);
       res.status(500).render('error');
@@ -528,7 +668,6 @@ app.get("/dashboard/logs", async (req, res) => {
 app.get('/:_id/junkshop-view', async (req, res) => {
     const _id = req.params._id;
     const junkshop = await JunkShop.findOne({ _id });
-    console.log(junkshop);
     res.render('junkshop-view.ejs', { junkshop });
   });
   app.get('/:_id/pickup-view', async (req, res) => {
@@ -540,14 +679,13 @@ app.get('/:_id/junkshop-view', async (req, res) => {
   app.get('/:_id/barangay-view', async (req, res) => {
     const _id = req.params._id;
     const junkshop = await Barangay.findOne({ _id:_id });
-    console.log(junkshop);
     res.render('barangay-view.ejs', { junkshop });
   });
 
 
 app.get('/dashboard/sessionlogs', async (req, res) => {
     try {
-      const sessionLogs = await Logs.find().sort({ createdAt: -1 });
+      const sessionLogs = await Logs.find({type:"Logins"}).sort({ createdAt: -1 });
       res.render('sessionlogs', { sessionLogs });
     } catch (err) {
       console.error(err);
@@ -557,13 +695,13 @@ app.get('/dashboard/sessionlogs', async (req, res) => {
   app.get('/dashboard/barangay', async (req, res) => {
 
     try {
-      const cont = await Barangay.find();
+      const cont = await Barangay.find({isApproved:true});
       const admin =  await Admin.findOne({uName:'admin'});
       if(admin.isLogged === true){
       res.render('barangay-1.ejs', {
         junk:cont
       });
-      console.log(cont);}
+    }
       else{
           res.redirect('/404')
       }
@@ -586,10 +724,8 @@ app.get('/dashboard/sessionlogs', async (req, res) => {
   
     try {
       const admin = await Admin.findOne({uName:'admin'})
-     // console.log(admin.isLogged);
      const user =  await User.find();
      const string = user.toString()
-  console.log(user);
       if(admin.isLogged===true){
          res.render('user1.ejs',{user})
       }
@@ -627,7 +763,7 @@ app.get('/dashboard/sessionlogs', async (req, res) => {
       res.render('barangay-list.ejs', {
         junk:cont
       });
-      console.log(cont);}
+}
       else{
           res.redirect('/404')
       }
@@ -678,7 +814,6 @@ app.post('/junkshop/scraps', async (req, res) => {
       if (!scrapType || !price) {
         return res.status(400).send('scrapType and price are required for adding/updating scrap');
       }
-      console.log(scrapType);
       // Check if the scrap exists for updating
       const admin = await AdminScrap.findOne({ scrapType: scrapType });
       if (admin) {
@@ -723,7 +858,6 @@ app.post('/junkshop/scraps', async (req, res) => {
         res.render('approval-1.ejs', {
           junk:cont
         });
-     //   console.log(cont);
     }else{
         res.redirect('/404')
     }
@@ -747,10 +881,59 @@ app.get('/dashboard/pickup',async (req,res)=>{
   }
  
 });
+app.post("/updateJunkshopStatus", async (req, res) => {
+  try {
+    const { status, id } = req.body;  // Extract status and id from request body
+
+    // Find the booking by id and update the status
+    const updatedJunkshop = await Book.findByIdAndUpdate(
+      id,                         // The ID to search for
+      { status: status },          // Set the status from request
+      { new: true }                // Return the updated document
+    );
+
+    if (!updatedJunkshop) {
+      return res.status(404).send({ message: "Junkshop not found" });
+    }
+
+    // Create a log message for the Logs schema
+    const logMessage = `Junkshop status updated to ${status} for junkshop with ID: ${id}`;
+
+    // Add the new log entry
+    const newLog = new Logs({
+      logs: logMessage,
+      time: new Date().toLocaleTimeString(),
+      date: new Date().toLocaleDateString(),
+      id: id,
+      type: "Junkshop Status Update" // You can add a 'type' field if you want to categorize logs
+    });
+
+    // Save the log entry
+    await newLog.save();
+
+    // Send success response
+    res.status(200).send({
+      status_code: 200,
+      message: "Junkshop status updated successfully",
+      junkshop: updatedJunkshop
+    });
+
+  } catch (error) {
+    console.error("Error updating junkshop status:", error);
+
+    // Send error response
+    res.status(500).send({
+      status_code: 500,
+      message: "Internal server error"
+    });
+  }
+});
+
+
 app.post('/dashboard/pickup', async (req, res) => {
   try {
-      const { requestId, approved } = req.body;
-      console.log(approved);
+      const { requestId, status } = req.body;
+
       
     //  console.log('Applicant ID:', applicantId);
      // console.log('Approval status:', approved);
@@ -758,14 +941,13 @@ app.post('/dashboard/pickup', async (req, res) => {
       var date =  new Date().toLocaleDateString();
      
       // Update the applicant status in the database
-      const updatedApplicant = await Book.findByIdAndUpdate(requestId, { status: approved }, { new: true });
-      console.log(updatedApplicant);
+      const updatedApplicant = await Book.findByIdAndUpdate(requestId, { status: status }, { new: true });
       
-      if(updatedApplicant && approved==="approved"){
+      if(updatedApplicant && status==="approved"){
           log = 'The  pick up request of   '+requestId+' has been approved.'
           await Book.findByIdAndUpdate(requestId, { requestId: date + " at " + time })
       }
-      if(updatedApplicant && approved==="declined"){
+      if(updatedApplicant && status==="declined"){
           log = 'The pick up request of  '+requestId+' has been declined.'
           await Book.findByIdAndUpdate(requestId, {requestId:  date + " at " + time })
       }
@@ -775,7 +957,9 @@ app.post('/dashboard/pickup', async (req, res) => {
       const newContent = new Logs( {
          logs:log,
          time:new Date().toLocaleTimeString(),
-         date:new Date().toLocaleDateString()
+         date:new Date().toLocaleDateString(),
+         id:requestId,
+         type:"Pick-up Schedule"
         });
 
 
@@ -812,7 +996,9 @@ app.post('/dashboard/barangayapproval', async (req, res) => {
       const newContent = new Logs( {
          logs:log,
          time:new Date().toLocaleTimeString(),
-         date:new Date().toLocaleDateString()
+         date:new Date().toLocaleDateString(),
+         id:applicantId,
+         type:"Approval"
         });
 
 
@@ -852,9 +1038,7 @@ app.use((req, res, next) => {
   });
 });
 
-app.listen(3001, function() {
-    console.log("Server started on port 3001");
-//JunkShop.insertMany(junk);
- // Admin.insertMany(admin);
-  });
-  
+app.listen(3001, async function() {
+  console.log("Server started on port 3001");
+
+});

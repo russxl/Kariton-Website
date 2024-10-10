@@ -18,7 +18,7 @@
       <!-- Sidebar scroll-->
       <div>
         <div class="brand-logo d-flex align-items-center justify-content-between">
-          <a href="./index.html" class="text-nowrap logo-img">
+          <a href="/" class="text-nowrap logo-img">
             <img src="../img/image-removebg-preview (1) (2).png" width="180" style="opacity: 0.7;" alt="" />
           </a>
           <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
@@ -53,14 +53,15 @@
               </thead>
               <tbody>
                 <% sessionLogs.forEach(log => { %>
-                <tr>
-                  <td><%= log.userName %></td>
-                  <td><%= log.date %></td>
-                  <td><%= log.time %></td>
-                  <td><%= log.date %></td>
-                  <td><%= log.time %></td>
-                </tr>
+                  <tr>
+                    <td><%= log.name || log.userName %></td> <!-- Will display log.name if it exists, otherwise log.userName -->
+                    <td><%= log.date %></td>
+                    <td><%= log.time %></td>
+                    <td><%= log.date %></td>
+                    <td><%= log.time %></td>
+                  </tr>
                 <% }); %>
+                
               </tbody>
             </table>
           </div>

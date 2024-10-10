@@ -64,7 +64,7 @@
       <!-- Sidebar scroll-->
       <div>
         <div class="brand-logo d-flex align-items-center justify-content-between">
-          <a href="./index.html" class="text-nowrap logo-img">
+          <a href="/" class="text-nowrap logo-img">
             <img src="../img/image-removebg-preview (1) (2).png" width="180" style="opacity: 0.7;" alt="" />
           </a>
           <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
@@ -136,45 +136,63 @@
     <script src="../assets/js/app.min.js"></script>
     <script src="../assets/libs/simplebar/dist/simplebar.js"></script>
     <script>
-     document.querySelectorAll(".btn-success").forEach(button => {
-    button.addEventListener("click", function() {
-        sendApproval(this.getAttribute("data-id"), true);
-    });
-});
+      // Wait until the DOM is fully loaded
+      document.getElementById('filter-status').addEventListener('change', function() {
+    const filterValue = this.value;
+    const cards = document.querySelectorAll('.card[data-status]');
 
-document.querySelectorAll(".btn-danger").forEach(button => {
-    button.addEventListener("click", function() {
-        sendApproval(this.getAttribute("data-id"), false);
-    });
-});
+    cards.forEach(card => {
+      const status = card.getAttribute('data-status');
+      let display = 'none';
 
-function sendApproval(applicantId, approved) {
-    fetch('/dashboard/pending', {
-        method: 'POST',
-        headers: {
+      // Check the selected filter value and match with the data-status
+      if (filterValue === '' ||  // If no filter is selected, show all
+        (filterValue === 'approved' && status === 'true') ||  // Filter approved
+        (filterValue === 'rejected' && status === 'false') || // Filter rejected
+        (filterValue === 'pending' && status === "")) {  // Filter pending (null)
+        display = 'block';  // Show matching items
+      }
+
+      card.style.display = display;  // Apply the display style
+    });
+  });
+      document.querySelectorAll(".btn-success").forEach(button => {
+        button.addEventListener("click", function() {
+          sendApproval(this.getAttribute("data-id"), true);
+        });
+      });
+    
+      document.querySelectorAll(".btn-danger").forEach(button => {
+        button.addEventListener("click", function() {
+          sendApproval(this.getAttribute("data-id"), false);
+        });
+      });
+    
+      function sendApproval(applicantId, approved) {
+        fetch('/dashboard/pending', {
+          method: 'POST',
+          headers: {
             'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
+          },
+          body: JSON.stringify({
             applicantId: applicantId,
             approved: approved
+          })
         })
-    })
-    .then(response => {
-        if (response.ok) {
-            // Redirect to the page after successful approval/rejection
-            window.location.href = '/dashboard/pending';  // Update the URL as needed
-        } else {
-            return response.json().then(err => {
-                console.error('Error:', err);
-            });
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-}
-
+        .then(response => {
+          if (response.ok) {
+            // Reload the page after successful approval/rejection
+            window.location.reload('/dashboard/pending'); // This ensures the page reloads
+          } else {
+            console.error('Error:', response);
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+      }
     </script>
+    
 </body>
 
 </html>

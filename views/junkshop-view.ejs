@@ -20,7 +20,7 @@
       <!-- Sidebar scroll-->
       <div>
         <div class="brand-logo d-flex align-items-center justify-content-between">
-          <a href="./index.html" class="text-nowrap logo-img">
+          <a href="/" class="text-nowrap logo-img">
             <img src="../img/image-removebg-preview (1) (2).png" width="180" style="opacity: 0.7;" alt="Kariton Logo" />
           </a>
           <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
@@ -53,6 +53,26 @@
             <p><strong>Address:</strong> <%= junkshop.address %></p>
             <p><strong>Contact Number:</strong> <%= junkshop.phone %></p>
             <p><strong>Email:</strong> <%= junkshop.email %></p>
+            <p><strong>Junkshop Images:</strong></p>
+<div class="image-gallery">
+  <% if (junkshop.jShopImg) { %>
+    <img src="data:image/png;base64,<%= junkshop.jShopImg %>" alt="Junkshop Image 1" width="150" style="cursor: pointer;" onclick="openModal('<%= junkshop.jShopImg %>')" />
+  <% } else { %>
+    <p>No image available for Image 1.</p>
+  <% } %>
+  <p><strong>Junkshop Images:</strong></p>
+  <% if (junkshop.validID) { %>
+    <img src="data:image/png;base64,<%= junkshop.validID %>" alt="Junkshop Image 2" width="150" style="cursor: pointer;" onclick="openModal('<%= junkshop.validID %>')" />
+  <% } else { %>
+    <p>No image available for Image 2.</p>
+  <% } %>
+  <p><strong>Junkshop Images:</strong></p>
+  <% if (junkshop.permit) { %>
+    <img src="data:image/png;base64,<%= junkshop.permit %>" alt="Junkshop Image 3" width="150" style="cursor: pointer;" onclick="openModal('<%= junkshop.permit %>')" />
+  <% } else { %>
+    <p>No image available for Image 3.</p>
+  <% } %>
+</div>
             <p><strong>Status:</strong>
               <% if (junkshop.isApproved === null) { %>
                 <span><span class="ti ti-clock text-secondary"></span> Pending</span>
@@ -64,16 +84,34 @@
                 <span><span class="ti ti-close text-danger"></span> Rejected</span>
               <% } %>
             </p>
-          </div>
-        </div>
+            
+        <!-- Junkshop Image Display -->
+
+
+<!-- Modal Structure -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="imageModalLabel">Junkshop Image</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <img id="modalImage" src="" alt="Junkshop Image" class="img-fluid" />
       </div>
     </div>
   </div>
-  <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
-  <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="../assets/js/sidebarmenu.js"></script>
-  <script src="../assets/js/app.min.js"></script>
-  <script src="../assets/libs/simplebar/dist/simplebar.js"></script>
-</body>
+</div>
 
-</html>
+<script src="../assets/libs/jquery/dist/jquery.min.js"></script>
+<script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../assets/js/sidebarmenu.js"></script>
+<script src="../assets/js/app.min.js"></script>
+<script src="../assets/libs/simplebar/dist/simplebar.js"></script>
+
+<script>
+function openModal(imageBase64) {
+  document.getElementById('modalImage').src = 'data:image/png;base64,' + imageBase64;
+  $('#imageModal').modal('show'); // Use jQuery to show the modal
+}
+</script>

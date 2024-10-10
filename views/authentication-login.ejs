@@ -7,11 +7,13 @@
   <title>Kariton</title>
 
   <link rel="stylesheet" href="../assets/css/styles.min.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-t7PIv6dZSGnzqZjyEXnKZoVz4Uaw/zJoP9S3nWN3ulPTJU06TxvzVVVHpKjTgu4/8zgFvl3yEiSpJkAil9SGBg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    integrity="sha512-t7PIv6dZSGnzqZjyEXnKZoVz4Uaw/zJoP9S3nWN3ulPTJU06TxvzVVVHpKjTgu4/8zgFvl3yEiSpJkAil9SGBg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 
 <body>
-  <!--  Body Wrapper -->
+  <!-- Body Wrapper -->
   <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
     data-sidebar-position="fixed" data-header-position="fixed">
     <div
@@ -21,30 +23,26 @@
           <div class="col-md-8 col-lg-6 col-xxl-3">
             <div class="card mb-0">
               <div class="card-body">
-                <a href="./index.html" class="text-nowrap logo-img text-center d-block py-3 w-100">
-                  <img src="img/image-removebg-preview (1) (2).png"  width="180" style="opacity: 0.7;" alt="">
+                <a href="/" class="text-nowrap logo-img text-center d-block py-3 w-100">
+                  <img src="img/image-removebg-preview (1) (2).png" width="180" style="opacity: 0.7;" alt="">
                 </a>
                 <p class="text-center" style="font-weight: 300;">Admin Login</p>
                 <form action="/login" method="post">
                   <div class="mb-3">
                     <label for="exampleInputEmail1" class="form-label">Admin Username</label>
-                    <input class="form-control" name='username' id="exampleInputEmail1">
+                    <input class="form-control" name="username" id="exampleInputEmail1" required>
                   </div>
                   <div class="mb-4">
                     <label for="exampleInputPassword1" class="form-label">Password</label>
                     <div class="input-group">
-                      <input type="password" class="form-control" name='password' id="exampleInputPassword1">
+                      <input type="password" class="form-control" name="password" id="exampleInputPassword1" required>
                       <button class="btn btn-outline-secondary" style="background-color: green;" type="button" id="togglePassword">
                         <i class="ti ti-eye"></i>
                       </button>
                     </div>
                   </div>
-                  <div class="d-flex align-items-center justify-content-between mb-4">
-
-
-                  </div>
                   <button type="submit" class="btn btn-success w-100 py-8 fs-4 mb-4" style="color: white; background-color: green;">Sign In</button>
-
+                  <button type="button" class="btn btn-link w-100 py-8 fs-4 mb-4" style="color: green;" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">Forgot Password?</button>
                 </form>
               </div>
             </div>
@@ -53,20 +51,232 @@
       </div>
     </div>
   </div>
+
+  <!-- Forgot Password Modal -->
+  <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="forgotPasswordModalLabel">Forgot Password</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="forgotPasswordForm">
+            <div class="mb-3">
+              <label for="emailInput" class="form-label">Enter Your Email</label>
+              <input type="email" class="form-control" id="emailInput" name="email" required>
+            </div>
+            <button type="submit" class="btn btn-success w-100 py-8 fs-4 mb-4" style="color: white; background-color: green;">Send OTP</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OTP Verification Modal -->
+  <div class="modal fade" id="otpModal" tabindex="-1" aria-labelledby="otpModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="otpModalLabel">Verify OTP</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="verifyOtpForm">
+            <div class="mb-3">
+              <label for="otpInput" class="form-label">Enter OTP</label>
+              <input type="text" class="form-control" id="otpInput" name="otp" maxlength="6" required>
+            </div>
+            <input type="hidden" name="username" id="usernameInput">
+            <button type="submit" class="btn btn-success w-100 py-8 fs-4 mb-4" style="color: white; background-color: green;">Verify OTP</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-labelledby="resetPasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="resetPasswordModalLabel">Reset Password</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="resetPasswordForm" action="/reset-password" method="post">
+            <div class="mb-3 position-relative">
+              <label for="newPassword" class="form-label">Enter New Password</label>
+              <div class="input-group">
+                <input type="password" class="form-control" id="newPassword" name="newPassword" required>
+                <button class="btn btn-outline-secondary" type="button" id="toggleNewPassword">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+              <span id="newPasswordCheck" class="position-absolute end-0 top-0 mt-3 me-3" style="display:none;">
+                <i class="fas fa-check text-success"></i>
+              </span>
+            </div>
+            
+            <div class="mb-3 position-relative">
+              <label for="confirmPassword" class="form-label">Confirm New Password</label>
+              <div class="input-group">
+                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPassword">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+              <span id="confirmPasswordCheck" class="position-absolute end-0 top-0 mt-3 me-3" style="display:none;">
+                <i class="fas fa-check text-success"></i>
+              </span>
+            </div>
+            
+            <input type="hidden" name="username" id="resetUsernameInput">
+            <button type="submit" class="btn btn-success w-100 py-8 fs-4 mb-4" style="color: white; background-color: green;">Reset Password</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
   <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
   <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    $(document).ready(function () {
-      $("#togglePassword").click(function () {
-        var input = $("#exampleInputPassword1");
-        if (input.attr("type") === "password") {
-          input.attr("type", "text");
-        } else {
-          input.attr("type", "password");
-        }
-      });
+  $(document).ready(function () {
+  // Toggle password visibility
+  $("#togglePassword").click(function () {
+    var input = $("#exampleInputPassword1");
+    if (input.attr("type") === "password") {
+      input.attr("type", "text");
+    } else {
+      input.attr("type", "password");
+    }
+  });
+  // Toggle new password visibility
+  $("#toggleNewPassword").click(function () {
+    var input = $("#newPassword");
+    if (input.attr("type") === "password") {
+      input.attr("type", "text");
+    } else {
+      input.attr("type", "password");
+    }
+  });
+
+  // Toggle confirm password visibility
+  $("#toggleConfirmPassword").click(function () {
+    var input = $("#confirmPassword");
+    if (input.attr("type") === "password") {
+      input.attr("type", "text");
+    } else {
+      input.attr("type", "password");
+    }
+  });
+  // Password validation function
+  function validatePassword(password) {
+    const passwordPattern = /^(?=.*[A-Z])(?=.*[!@#$&*]).{8,}$/; // 8 chars, 1 capital, 1 special character
+    return passwordPattern.test(password);
+  }
+
+  // Show/hide check icon for new password
+  $("#newPassword").on('input', function () {
+    if (validatePassword($(this).val())) {
+      $("#newPasswordCheck").show(); // Show check icon if valid
+    } else {
+      $("#newPasswordCheck").hide(); // Hide check icon if invalid
+    }
+  });
+
+  // Show/hide check icon for confirm password
+  $("#confirmPassword").on('input', function () {
+    if ($(this).val() === $("#newPassword").val() && validatePassword($(this).val())) {
+      $("#confirmPasswordCheck").show(); // Show check icon if passwords match and are valid
+    } else {
+      $("#confirmPasswordCheck").hide(); // Hide check icon if they don't match
+    }
+  });
+
+  // AJAX form submission for Forgot Password
+  $("#forgotPasswordForm").submit(function (event) {
+    event.preventDefault(); // Prevent the form from submitting normally
+    var email = $("#emailInput").val(); // Get email input value
+    $.ajax({
+      type: "POST",
+      url: "/forgot-password",
+      data: { email: email },
+      success: function (response) {
+        $("#usernameInput").val(email); // Store the email in the hidden input for OTP verification
+        $("#forgotPasswordModal").modal('hide'); // Hide the forgot password modal
+        $("#otpModal").modal('show'); // Show the OTP modal
+      },
+      error: function (error) {
+        console.error("Error:", error);
+        alert("Error sending OTP. Please try again.");
+      }
     });
+  });
+
+  // AJAX form submission for OTP verification
+  $("#verifyOtpForm").submit(function (event) {
+    event.preventDefault(); // Prevent the form from submitting normally
+    var otp = $("#otpInput").val(); // Get OTP input value
+    var username = $("#usernameInput").val(); // Get the stored username (email)
+    $.ajax({
+      type: "POST",
+      url: "/verify-otp",
+      data: { otp: otp, username: username },
+      success: function (response) {
+        $("#otpModal").modal('hide'); // Hide the OTP modal
+        $("#resetUsernameInput").val(username); // Pass the username to the reset password form
+        $("#resetPasswordModal").modal('show'); // Show the password reset modal
+      },
+      error: function (error) {
+        console.error("Error:", error);
+        alert("Invalid OTP. Please try again.");
+      }
+    });
+  });
+
+  // Password reset form submission
+  $("#resetPasswordForm").submit(function (event) {
+    event.preventDefault(); // Prevent the form from submitting normally
+    var newPassword = $("#newPassword").val();
+    var confirmPassword = $("#confirmPassword").val();
+
+    // Validate password length, special characters, and capital letter
+    if (!validatePassword(newPassword)) {
+      alert("Password must be at least 8 characters long, contain 1 uppercase letter and 1 special character.");
+      return;
+    }
+
+    // Check if new password matches confirm password
+    if (newPassword !== confirmPassword) {
+      alert("Passwords do not match.");
+      return;
+    }
+
+    // AJAX request for password reset
+    $.ajax({
+      type: "POST",
+      url: "/reset-password",
+      data: { newPassword: newPassword, username: $("#resetUsernameInput").val() },
+      success: function (response) {
+        // Alert user that password reset was successful
+        alert("Password reset successful. Redirecting to login page.");
+        // Reload login page
+        window.location.href = '/login';
+      },
+      error: function (error) {
+        console.error("Error:", error);
+        alert("Error resetting password. Please try again.");
+      }
+    });
+  });
+});
+
   </script>
+
 </body>
 
 </html>

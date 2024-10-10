@@ -66,8 +66,7 @@
       <!-- Sidebar scroll-->
       <div>
         <div class="brand-logo d-flex align-items-center justify-content-between">
-          <a href="./index.html" class="text-nowrap logo-img">
-            <img src="../img/image-removebg-preview (1) (2).png" width="180" style="opacity: 0.7;" alt="" />
+          <a href="/" class="text-nowrap logo-img">            <img src="../img/image-removebg-preview (1) (2).png" width="180" style="opacity: 0.7;" alt="" />
           </a>
           <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
             <i class="ti ti-x fs-8"></i>
@@ -96,7 +95,9 @@
                   <option value="pending">Pending</option>
                   <option value="accepted">Accepted</option>
                   <option value="declined">Declined</option>
+                  <option value="done">Done</option> <!-- Add this line -->
                 </select>
+                
               </div>
               <label for="filter-status" class="col-md-1 col-12 ml-2 mt-2 text-md-right">Filter by Status</label>
             </div>
@@ -104,7 +105,7 @@
             <div class="card mt-3" data-status="<%= requests[i].status %>">
               <div class="card-body">
                 <div class="d-flex justify-content-between">
-                  <h5 class="card-title fw-semibold mb-2"><%= requests[i]._id %></h5>
+                  <h5 class="card-title fw-semibold mb-2"><%= requests[i].jShop %></h5>
                   <div>
                     <% if(requests[i].status === 'pending') { %>
                     <span><i class="ti ti-clock text-secondary"></i> <span class="text-secondary">Pending</span></span>
@@ -115,6 +116,9 @@
                     <% if(requests[i].status === 'declined') { %>
                     <span><i class="ti ti-x text-danger"></i> <span class="text-danger">Declined</span></span>
                     <% } %>
+                    <% if(requests[i].status === 'Done') { %>
+                      <span><i class="ti ti-check text-success"></i> <span class="text-success">Done</span></span>
+                      <% } %>
                   </div>
                 </div>
                 <p class="mb-0"><%= requests[i].pickupLocation %></p>
@@ -149,42 +153,53 @@
       });
 
       function sendApproval(requestId, approved) {
-        fetch('/dashboard/pickup', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              requestId: requestId,
-              status: approved 
-            })
-          })
-          .then(response => {
-            // Handle response
-          })
-          .catch(error => {
-            console.error('Error:', error);
-          });
+  console.log(approved);
+  fetch('/dashboard/pickup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        requestId: requestId,
+        status: approved
+      })
+    })
+    .then(response => {
+      if (response.ok) {
+        // If the response is successful, reload the page
+        window.location.reload();
+      } else {
+        // Handle non-success response
+        console.error('Failed to update status');
       }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+}
 
-      document.getElementById('filter-status').addEventListener('change', function() {
-        const filterValue = this.value;
-        const cards = document.querySelectorAll('.card[data-status]');
 
-        cards.forEach(card => {
-          const status = card.getAttribute('data-status');
-          let display = 'none';
+document.getElementById('filter-status').addEventListener('change', function() {
+  const filterValue = this.value;
+  const cards = document.querySelectorAll('.card[data-status]');
 
-          if (filterValue === '' ||
-            (filterValue === 'accepted' && status === 'approved') ||
-            (filterValue === 'declined' && status === 'declined') ||
-            (filterValue === 'pending' && status === 'pending')) {
-            display = 'block';
-          }
+  cards.forEach(card => {
+    const status = card.getAttribute('data-status');
+    let display = 'none';
 
-          card.style.display = display;
-        });
-      });
+    // Update filter logic to include "done"
+    if (filterValue === '' ||
+      (filterValue === 'accepted' && status === 'approved') ||
+      (filterValue === 'declined' && status === 'declined') ||
+      (filterValue === 'pending' && status === 'pending') ||
+      (filterValue === 'done' && status === 'Done')) { // Add this line
+      display = 'block';
+    }
+
+    card.style.display = display;
+  });
+});
+
     </script>
 </body>
 

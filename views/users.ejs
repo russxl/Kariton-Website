@@ -18,7 +18,7 @@
       <!-- Sidebar scroll-->
       <div>
         <div class="brand-logo d-flex align-items-center justify-content-between">
-          <a href="./index.html" class="text-nowrap logo-img">
+          <a href="/" class="text-nowrap logo-img">
             <img src="../img/image-removebg-preview (1) (2).png" width="180" style="opacity: 0.7;" alt="" />
           </a>
           <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
@@ -47,13 +47,13 @@
                   <thead class="text-dark fs-4">
                     <tr>
                       <th class="border-bottom-0">
+                        <h6 class="fw-semibold mb-0">User Id</h6>
+                      </th>
+                      <th class="border-bottom-0">
                         <h6 class="fw-semibold mb-0">Email</h6>
                       </th>
                       <th class="border-bottom-0">
                         <h6 class="fw-semibold mb-0">Name</h6>
-                      </th>
-                      <th class="border-bottom-0">
-                        <h6 class="fw-semibold mb-0">Date Of Birth</h6>
                       </th>
                       <th class="border-bottom-0">
                         <h6 class="fw-semibold mb-0">Phone No.</h6>
@@ -67,15 +67,15 @@
                     <% for(let i in user) { %>
                     <tr>
                       <td class="border-bottom-0">
-                          <h6 class="fw-semibold mb-1"><%= user[i].email %></h6>
+                          <h6 class="fw-semibold mb-1"><%= user[i].userID %></h6>
                                                  
                       </td>
                       <td class="border-bottom-0">
-                        <p class="mb-0 fw-normal"><%= user[i].fullname %></p>
+                        <p class="mb-0 fw-normal"><%= user[i].email %></p>
                       </td>
                       <td class="border-bottom-0">
                         <div class="d-flex align-items-center gap-2">
-                          <span class="badge bg-primary rounded-3 fw-semibold"><%= user[i].dateOfBirth %></span>
+                          <span class="rounded-3 fw-semibold"><%= user[i].fullname %></span>
                         </div>
                       </td>
                       <td class="border-bottom-0">

@@ -17,33 +17,25 @@
 
     <!-- Sidebar Start -->
     <aside class="left-sidebar">
-      <!-- Sidebar scroll-->
       <div>
         <div class="brand-logo d-flex align-items-center justify-content-between">
-          <a href="./index.html" class="text-nowrap logo-img">
-            <img src="../img/image-removebg-preview (1) (2).png" width="180" style="opacity: 0.7;" alt="Kariton Logo" />
+          <a href="/" class="text-nowrap logo-img">            <img src="../img/image-removebg-preview (1) (2).png" width="180" style="opacity: 0.7;" alt="Kariton Logo" />
           </a>
           <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
             <span class="ti ti-x fs-8"></span>
           </div>
         </div>
-        <!-- Sidebar navigation-->
         <nav>
           <%- include('./partials/sidebar'); -%>
         </nav>
-        <!-- End Sidebar navigation -->
       </div>
-      <!-- End Sidebar scroll-->
     </aside>
-    <!-- Sidebar End -->
 
     <!-- Main wrapper -->
     <div class="body-wrapper">
-      <!-- Header Start -->
       <header>
         <%- include('./partials/head'); -%>
       </header>
-      <!-- Header End -->
       
       <!-- Content Start -->
       <div class="container-fluid">
@@ -60,16 +52,22 @@
               <% if (junkshop.status === "pending") { %>
                 <span><span class="ti ti-clock text-secondary"></span> Pending</span>
               <% } %>
-              <% if (junkshop.isApproved === "approved") { %>
+              <% if (junkshop.status === "approved") { %>
                 <span><span class="ti ti-check text-success"></span> Approved</span>
               <% } %>
-              <% if (junkshop.isApproved === "declined") { %>
+              <% if (junkshop.status === "declined") { %>
                 <span><span class="ti ti-close text-danger"></span> Rejected</span>
               <% } %>
+              <% if (junkshop.status === "Done") { %>
+                <span><span class="ti ti-close text-danger"></span> Done</span>
+              <% } %>
             </p>
-            <!-- Navigate button -->
-            <div class="mt-4">
-              <a href="https://www.google.com/maps/dir/Adp+Junkshop/Quezon+City" target="_blank" class="btn btn-primary">
+            <div class=" justify-content-between mt-4">
+              <% if (junkshop.status === "approved") { %>
+                <a href="#" class="btn btn-success me-2" id="doneBtn">Done</a>
+              <% } %>
+              
+              <a href="https://www.google.com/maps/dir/Adp+Junkshop/<%= junkshop.location %>" target="_blank" class="btn btn-primary">
                 Navigate
               </a>
             </div>
@@ -79,11 +77,59 @@
       <!-- Content End -->
     </div>
   </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Confirm Transaction</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Is the transaction done?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="confirmDoneBtn">Proceed</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
   <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../assets/js/sidebarmenu.js"></script>
   <script src="../assets/js/app.min.js"></script>
   <script src="../assets/libs/simplebar/dist/simplebar.js"></script>
+
+  <script>
+    // When the "Done" button is clicked, show the modal
+    document.getElementById('doneBtn').addEventListener('click', function(event) {
+      event.preventDefault();
+      var modal = new bootstrap.Modal(document.getElementById('confirmationModal'), {});
+      modal.show();
+    });
+
+    // When "Proceed" is clicked in the modal, make a request to update the status
+    document.getElementById('confirmDoneBtn').addEventListener('click', function() {
+      // Example of sending a request to update junkshop status
+      $.ajax({
+        url: '/updateJunkshopStatus',  // Adjust this to your API endpoint
+        type: 'POST',
+        data: { status: 'Done', id: '<%= junkshop._id %>' },
+        success: function(response) {
+          // Handle success (e.g., reload the page or update the UI)
+          alert('Transaction marked as Done');
+          location.reload();  // Reload the page to reflect the updated status
+        },
+        error: function(xhr, status, error) {
+          // Handle error
+          alert('Error updating status');
+        }
+      });
+    });
+  </script>
 </body>
 
 </html>

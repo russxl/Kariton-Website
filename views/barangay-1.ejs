@@ -18,7 +18,7 @@
       <!-- Sidebar scroll-->
       <div>
         <div class="brand-logo d-flex align-items-center justify-content-between">
-          <a href="./index.html" class="text-nowrap logo-img">
+          <a href="/" class="text-nowrap logo-img">
             <img src="../img/image-removebg-preview (1) (2).png" width="180" style="opacity: 0.7;" alt="" />
           </a>
           <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
@@ -68,15 +68,15 @@
                       <% if(junk[i].isApproved==true) { %>
                     <tr>
                       <td class="border-bottom-0">
-                          <h6 class="fw-semibold mb-1"><%= junk[i].jShopName %></h6>
+                          <h6 class="fw-semibold mb-1"><%= junk[i].bName %></h6>
                           <span class="fw-normal"></span>                          
                       </td>
                       <td class="border-bottom-0">
-                        <p class="mb-0 fw-normal"><%= junk[i].ownerName %></p>
+                        <p class="mb-0 fw-normal"><%= junk[i].capName %></p>
                       </td>
                       <td class="border-bottom-0">
                         <div class="d-flex align-items-center gap-2">
-                           <span class="fw-semibold"><%= junk[i].jShopLocation %></span>
+                           <span class="fw-semibold"><%= junk[i].bLocation %></span>
                         </div>
                       </td>
                       <td class="border-bottom-0">
