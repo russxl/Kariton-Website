@@ -161,7 +161,7 @@ document.querySelectorAll(".btn-danger").forEach(button => {
 });
 
 function sendApproval(applicantId, approved) {
-    fetch('/dashboard/pending', {
+    fetch('/dashboard/barangayapproval', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
