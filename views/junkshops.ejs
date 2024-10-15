@@ -42,8 +42,10 @@
           <div class="card w-100">
             <div class="card-body p-4">
               <h5 class="card-title fw-semibold mb-4">List of Approved Junkshops</h5>
+              <!-- Download PDF Button -->
+              <button id="download-pdf" class="btn btn-primary mb-4">Download PDF</button>
               <div class="table-responsive">
-                <table class="table text-nowrap mb-0 align-middle">
+                <table class="table text-nowrap mb-0 align-middle" id="junkshop-table">
                   <thead class="text-dark fs-4">
                     <tr>
                       <th class="border-bottom-0">
@@ -76,7 +78,7 @@
                       </td>
                       <td class="border-bottom-0">
                         <div class="d-flex align-items-center gap-2">
-                           <span class="fw-semibold"><%= junk[i].jShopLocation %></span>
+                           <span class="fw-semibold"><%= junk[i].address %></span>
                         </div>
                       </td>
                       <td class="border-bottom-0">
@@ -107,7 +109,23 @@
   <script src="../assets/js/sidebarmenu.js"></script>
   <script src="../assets/js/app.min.js"></script>
   <script src="../assets/libs/simplebar/dist/simplebar.js"></script>
-  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+
+  <script>
+    document.getElementById('download-pdf').addEventListener('click', function () {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation: 'landscape' });
+      doc.text('List of Approved Junkshops', 14, 16);
+      doc.autoTable({
+        html: '#junkshop-table',
+        startY: 20,
+        headStyles: { fillColor: [52, 58, 64] }, // Dark header style
+        styles: { cellPadding: 3, fontSize: 10, valign: 'middle', halign: 'left' },
+      });
+      doc.save('approved-junkshops.pdf');
+    });
+  </script>
 </body>
 
 </html>

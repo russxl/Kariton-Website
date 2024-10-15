@@ -179,6 +179,30 @@
     return passwordPattern.test(password);
   }
 
+ // AJAX form submission for Admin Login
+ $("form").submit(function (event) {
+      event.preventDefault(); // Prevent the form from submitting normally
+
+      var username = $("input[name='username']").val();
+      var password = $("input[name='password']").val();
+
+      $.ajax({
+        type: "POST",
+        url: "/login", // Your server-side login URL
+        data: { username: username, password: password },
+        success: function (response) {
+          console.log('hi');
+          
+          // Assuming a successful login response redirects the user
+          window.location.reload('/dashboard'); // Adjust to your actual redirect page
+        },
+        error: function (error) {
+          console.error("Error:", error);
+          // Show error alert if login fails
+          alert("Please check your username or password is incorrect.");
+        }
+      });
+    });
   // Show/hide check icon for new password
   $("#newPassword").on('input', function () {
     if (validatePassword($(this).val())) {
@@ -276,7 +300,7 @@
 });
 
   </script>
-
+  
 </body>
 
 </html>

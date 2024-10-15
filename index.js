@@ -2,13 +2,17 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const _ = require('lodash');
+const session = require('express-session');
+const bcrypt = require('bcrypt'); // Import bcrypt for password hashing
+
+// Set up session middleware
 
 
 
 const mongoose = require('mongoose')
 mongoose.connect('mongodb+srv://ads:YGWygUxHRZAxd1NT@cluster0.zchxmu8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0/JunkShopDB', {
     useNewUrlParser: true
-});
+}) ;
 
 
 const userSchema = {
@@ -205,6 +209,15 @@ app.use(bodyParser.json());
 app.set('view engine', 'ejs');
 app.use(express.static("public"));
 const nodemailer = require('nodemailer');
+app.use(session({
+  secret: 'your-secret-key',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    maxAge: 1000 * 60 * 5, // 5 minutes
+    secure: false // Set to true if you're using HTTPS
+  }
+}));
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -230,13 +243,21 @@ const sendOTPEmail = (email, otp) => {
     }
   });
 };
+const checkAdminSession = (req, res, next) => {
+  console.log(req.session.isLogged);
+  
+  if (req.session.isLogged == true) {
+      return next(); // Admin is logged in, proceed to the next middleware/route
+  } else {
+      res.redirect('/404'); // Redirect to login if not authenticated
+  }
+};
 
 // Send the reset password page
 app.get('/reset-password', (req, res) => {
   res.render('reset-password.ejs');
 });
 
-// Reset password route
 app.post('/reset-password', async (req, res) => {
   const { username, newPassword } = req.body;
 
@@ -247,7 +268,10 @@ app.post('/reset-password', async (req, res) => {
       return res.status(400).json({ message: "Admin not found" });
     }
 
-    admin.password = newPassword; // Update the password
+    // Hash the new password before saving
+    const hashedPassword = await bcrypt.hash(newPassword ,10);
+
+    admin.password = hashedPassword; // Update the password with hashed version
     await admin.save();
 
     res.json({ message: "Password successfully reset" });
@@ -256,6 +280,35 @@ app.post('/reset-password', async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
+app.post("/logout", (req, res) => {
+  console.log('click');
+ 
+  
+  // If session exists, destroy it
+  if (req.session) {
+    
+    req.session.destroy((err) => {
+      if (err) {
+        // Handle error while destroying session
+        console.log('hello');
+        
+        console.error("Error while logging out:", err);
+        res.status(500).send('Failed to log out.');
+      } else {
+        // Redirect to login page or homepage after successful logout
+        res.redirect('/login');
+        console.log('hihi');
+        
+      }
+    });
+  } else {
+    // If session does not exist, just redirect to login
+    res.redirect('/login');
+    console.log('hillo');
+  }
+});
+
 
 // Verify OTP route
 app.post('/verify-otp', async (req, res) => {
@@ -307,16 +360,21 @@ app.post('/forgot-password', async (req, res) => {
 });
 
 
-app.get("/dashboard", async (req, res) => {
+app.get("/dashboard", checkAdminSession, async (req, res) => {
+
+  console.log(req.session.isLogged);
+  
   try {
     // Fetch all barangays that are approved
     const barangays = await Barangay.find({ isApproved: true });
-    
-    // Remove users without a userID field
-    await User.deleteMany({
-      'userID': { '$exists': false }
-    });
-    
+    const residents = await User.find();
+    const junkshops =  await JunkShop.find({ isApproved: true });
+
+    // Calculate totals
+    const totalBarangays = barangays.length;
+    const totalResidents = residents.length;
+    const totalJunkshops = junkshops.length;
+
     // Array to hold the collected data for each barangay
     let collectedData = [];
 
@@ -353,15 +411,24 @@ app.get("/dashboard", async (req, res) => {
 
     // Calculate the total number of transactions
     const totalTransactions = transactionsPerDay.reduce((acc, log) => acc + log.count, 0);
-
-    // Render the index.ejs and pass the collected data, transactions per day, and total number of transactions
-    res.render('index.ejs', { collectedData, transactionsPerDay, totalTransactions, log });
+    const total = totalBarangays + totalResidents + totalJunkshops;
+    console.log(total);
+    
+    // Render the index.ejs and pass the collected data, totals, transactions per day, and total number of transactions
+    res.render('index.ejs', { 
+      collectedData, 
+      transactionsPerDay, 
+      totalTransactions, 
+      log, 
+     total
+    });
 
   } catch (error) {
     console.error('Error fetching dashboard data:', error);
     res.status(500).send('Internal Server Error');
   }
 });
+
 
 
 
@@ -399,9 +466,7 @@ app.get('/contact',(req,res)=>{
 app.get("/about",(req,res)=>{
     res.render('about.ejs')
 })
-app.get('/home',(req,res)=>{
-    res.render('home.ejs')
-    })
+
 
 app.get("/feature",(req,res)=>{
     res.render('feature.ejs')
@@ -410,79 +475,163 @@ app.get("/service",(req,res)=>{
     res.render('service.ejs')
 })
 
-app.get("/login", async(req,res)=>{
-    try {
- 
-        const admin =await Admin.findOne({uName:"admin"});
-        if(admin.isLogged===true){
-            res.redirect('/dashboard')
-        }else{
-            res.render('authentication-login.ejs',{admin})
-        }
-    } catch (error) {
-        console.log(error);
+app.get("/login", async (req, res) => {
+  try {
+    // Check if session exists and if the user is logged in
+    if (req.session && req.session.adminId) {
+      // If session exists, redirect to dashboard
+      return res.redirect('/dashboard');
     }
-  
 
-})
+    // If no session, check if admin exists in the database
+    const admin = await Admin.findOne({ uName: "admin" });
+
+    if (!admin) {
+      // If no admin exists, render setup page
+      return res.render('set-admin.ejs');
+    }
+
+    // If admin exists but not logged in, render login page
+    res.render('authentication-login.ejs', { admin });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 app.get('/learn', (req,res)=>{
     res.render('team.ejs')
 })
 
-app.post('/logout', async (req, res) => {
-  const admin = await Admin.findOne({uName:'admin'});
-  admin.isLogged = false; // Update isLogged status
-  await admin.save();
+app.post("/login", async (req, res) => {
+  const { username, password } = req.body;
+  console.log(username);
+
+  try {
+    // Find the admin by username
+    const admin = await Admin.findOne({ uName: username });
+    const isMatch = await bcrypt.compare(password, admin.password);
+    if (!admin||!isMatch) {
+      return res.status(400).send("Please check your username or password is incorrect.");
+    }
+    
+    // If the admin is found, compare the entered password with the stored hashed password
+   
+    if (isMatch) {
+      // Set session for the logged-in admin
+      req.session.adminId = admin._id; // Store admin ID in session
+      req.session.isLogged = true;     // Set login status
   
-  const log = 'Admin Logged out.';
-  const newContent = new Logs({
-      logs: log,
-      userName:'Admin',
-      time: new Date().toLocaleTimeString(),
-      date: new Date().toLocaleDateString(),
-      type:"Logins"
-  });
-
-  await newContent.save(); // Save login log
-res.redirect('/login')
-  });
-
-
-  app.post("/login", async (req, res) => {
-    const { username, password } = req.body;
+      // Update isLogged status in the database
+      admin.isLogged = true;
+      await admin.save(); // Save the updated admin
   
+      // Create a log for the login event
+      const log = 'Admin Logged in.';
+      const newContent = new Logs({
+        logs: log,
+        userName: "Admin",
+        time: new Date().toLocaleTimeString(),
+        date: new Date().toLocaleDateString(),
+        type: "Logins"
+      });
+  
+      await newContent.save(); // Save login log
+  
+      res.redirect('/dashboard'); // Redirect to the admin dashboard or home page
+    } else {
+      // If the password is incorrect, redirect back to login
+      res.redirect('/login');
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Internal Server Error');
+  }
+  
+});
+
+
+// Route to set up a new admin
+app.post("/setup-admin", async (req, res) => {
+    const { username, password,email } = req.body;
+  console.log(password);
+  
+    // Validate input
+    if (!username || !password) {
+        return res.status(400).send('Username and password are required.');
+    }
+
+    // Check if the admin already exists
     try {
-        const admin = await Admin.findOne({ uName: username });
-        if (admin && admin.password === password) {
-            admin.isLogged = true; // Update isLogged status
-  
-            await admin.save(); // Save the updated admin
-  
-            const log = 'Admin Logged in.';
-            const newContent = new Logs({
-                logs: log,
-                userName:"Admin",
-                time: new Date().toLocaleTimeString(),
-                date: new Date().toLocaleDateString(),
-                type:"Logins"
-            });
-  
-            await newContent.save(); // Save login log
-  
-            res.redirect('/login');
-        } 
-        
-        else {
-            res.redirect('/login')
-     
+        const existingAdmin = await Admin.findOne({ uName: username });
+        if (existingAdmin) {
+            return res.status(400).send('Admin already exists.');
         }
+
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Create a new admin
+        const newAdmin = new Admin({
+            uName: username,
+            password: hashedPassword,
+            email:email,
+            isLogged: false // Default value
+        });
+
+        await newAdmin.save(); // Save the new admin
+
+       console.log('success');
+       
+        res.redirect('/login')
     } catch (err) {
         console.error(err);
         res.status(500).send('Internal Server Error');
     }
-  });
+});
 
-app.get("/dashboard/users",async(req,res)=>{
+
+
+app.post("/login", async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+      const admin = await Admin.findOne({ uName: username });
+      
+      if (admin && admin.password === password) {
+          // Set session for the logged-in admin
+          req.session.adminId = admin._id; // Store admin ID in session
+          req.session.isLogged = true; // Set login status
+
+          // Update isLogged status in the database
+          admin.isLogged = true;
+          await admin.save(); // Save the updated admin
+
+          // Create a log for the login event
+          const log = 'Admin Logged in.';
+          const newContent = new Logs({
+              logs: log,
+              userName: "Admin",
+              time: new Date().toLocaleTimeString(),
+              date: new Date().toLocaleDateString(),
+              type: "Logins"
+          });
+
+          await newContent.save(); // Save login log
+
+          res.redirect('/dashboard'); // Redirect to the admin dashboard or home page
+      } else {
+          // Redirect back to login on failure
+          res.redirect('/login');
+      }
+  } catch (err) {
+      console.error(err);
+      res.status(500).send('Internal Server Error');
+  }
+});
+
+
+app.get("/dashboard/users",checkAdminSession,async(req,res)=>{
 try {
     const admin = await Admin.findOne({uName:'admin'})
    const user =  await User.find();
@@ -498,7 +647,7 @@ try {
 }
     
 })
-app.get("/dashboard/junkshops", async(req,res)=>{
+app.get("/dashboard/junkshops",checkAdminSession, async(req,res)=>{
 
     try {
         const cont = await JunkShop.find();
@@ -525,7 +674,7 @@ app.get("/buttons",(req,res)=>{
 })
 
 
-app.post('/dashboard/pending', async (req, res) => {
+app.post('/dashboard/pending',checkAdminSession ,async (req, res) => {
   try {
       const { applicantId, approved } = req.body;
       const time = new Date().toLocaleTimeString();
@@ -556,7 +705,8 @@ app.post('/dashboard/pending', async (req, res) => {
           time: time,
           date: date,
           type:"Approval",
-          id:applicantId
+          id:applicantId,
+          userName:"Junkshop"
       });
 
       // Save the log
@@ -619,7 +769,7 @@ app.post('/dashboard/account/add-admin', async (req, res) => {
 });
 */
 
-app.get('/dashboard/account', async (req, res) => {
+app.get('/dashboard/account', checkAdminSession,async (req, res) => {
     try {
       const admins = await Admin.find();
       res.render('account.ejs', { admins: admins });
@@ -631,7 +781,7 @@ app.get('/dashboard/account', async (req, res) => {
 
 
 
-app.get("/dashboard/pending",async(req,res)=>{
+app.get("/dashboard/pending",checkAdminSession,async(req,res)=>{
 
     try {
         const cont = await JunkShop.find();
@@ -653,7 +803,7 @@ app.get("/dashboard/pending",async(req,res)=>{
 })
 
 
-app.get("/dashboard/logs", async (req, res) => {
+app.get("/dashboard/logs",checkAdminSession, async (req, res) => {
     try {
       const transactions = await Logs.find();
       res.render('logs.ejs', {
@@ -665,25 +815,27 @@ app.get("/dashboard/logs", async (req, res) => {
     }
   });
 
-app.get('/:_id/junkshop-view', async (req, res) => {
+app.get('/:_id/junkshop-view',checkAdminSession, async (req, res) => {
     const _id = req.params._id;
     const junkshop = await JunkShop.findOne({ _id });
     res.render('junkshop-view.ejs', { junkshop });
   });
-  app.get('/:_id/pickup-view', async (req, res) => {
+  app.get('/:_id/pickup-view',checkAdminSession, async (req, res) => {
     const _id = req.params._id;
     const pickup = await Book.findOne({ _id });
     res.render('pickup-view.ejs', { junkshop:pickup });
   });
 
-  app.get('/:_id/barangay-view', async (req, res) => {
+  app.get('/:_id/barangay-view', checkAdminSession,async (req, res) => {
+    console.log('hi');
+    
     const _id = req.params._id;
     const junkshop = await Barangay.findOne({ _id:_id });
     res.render('barangay-view.ejs', { junkshop });
   });
 
 
-app.get('/dashboard/sessionlogs', async (req, res) => {
+app.get('/dashboard/sessionlogs',checkAdminSession, async (req, res) => {
     try {
       const sessionLogs = await Logs.find({type:"Logins"}).sort({ createdAt: -1 });
       res.render('sessionlogs', { sessionLogs });
@@ -692,7 +844,7 @@ app.get('/dashboard/sessionlogs', async (req, res) => {
       res.status(500).render('error');
     }
   });
-  app.get('/dashboard/barangay', async (req, res) => {
+  app.get('/dashboard/barangay',checkAdminSession, async (req, res) => {
 
     try {
       const cont = await Barangay.find({isApproved:true});
@@ -776,7 +928,7 @@ app.get('/dashboard/sessionlogs', async (req, res) => {
 
   
   });
-app.get('/dashboard/manage', async (req, res) => {
+app.get('/dashboard/manage',checkAdminSession, async (req, res) => {
   try {
     // Assuming you are using a database model called Scrap to fetch all scraps
     const scraps = await AdminScrap.find(); // Fetch all scraps from the database
@@ -794,36 +946,33 @@ app.post('/junkshop/scraps', async (req, res) => {
     const { scrapType, price, type, scrapId } = req.body;
 
     if (type === 'delete') {
-      // Ensure scrapId is provided for deletion
       if (!scrapId) {
         return res.status(400).send('scrapId is required for deletion');
       }
 
-      // Check if the scrap exists
       const scrap = await AdminScrap.findById(scrapId);
       if (!scrap) {
         return res.status(404).send('Scrap not found');
       }
 
-      // Delete the scrap
       await AdminScrap.findByIdAndDelete(scrapId);
       return res.status(200).send('Scrap deleted successfully');
-
     } else {
-      // Ensure scrapType and price are provided for creation/updating
       if (!scrapType || !price) {
         return res.status(400).send('scrapType and price are required for adding/updating scrap');
       }
-      // Check if the scrap exists for updating
       const admin = await AdminScrap.findOne({ scrapType: scrapType });
       if (admin) {
-        
-        
         // Update existing scrap
+        const scrap = await AdminScrap.findById(scrapId);
+        if (!scrap) {
+          return res.status(404).send('Scrap not found');
+        }
+
         admin.scrapType = scrapType;
         admin.pointsEquivalent = price;
-        const savedScrap =  await admin.save();
-        return res.status(201).json({ scrapId: savedScrap._id, message: 'Scrap created successfully' });
+        const updatedScrap = await scrap.save();
+        return res.status(200).json({ scrapId: updatedScrap._id, message: 'Scrap updated successfully' });
       } else {
         // Create new scrap
         const newScrap = new AdminScrap({
@@ -868,7 +1017,7 @@ app.post('/junkshop/scraps', async (req, res) => {
       }
   
 })
-app.get('/dashboard/pickup',async (req,res)=>{
+app.get('/dashboard/pickup',checkAdminSession,async (req,res)=>{
   try {
     const sched =  await Book.find();
     res.render('pickup.ejs',{
@@ -881,7 +1030,7 @@ app.get('/dashboard/pickup',async (req,res)=>{
   }
  
 });
-app.post("/updateJunkshopStatus", async (req, res) => {
+app.post("/updateJunkshopStatus",checkAdminSession, async (req, res) => {
   try {
     const { status, id } = req.body;  // Extract status and id from request body
 
@@ -905,6 +1054,7 @@ app.post("/updateJunkshopStatus", async (req, res) => {
       time: new Date().toLocaleTimeString(),
       date: new Date().toLocaleDateString(),
       id: id,
+      userName:"Junkshop",
       type: "Junkshop Status Update" // You can add a 'type' field if you want to categorize logs
     });
 
@@ -930,23 +1080,29 @@ app.post("/updateJunkshopStatus", async (req, res) => {
 });
 
 
-app.post('/dashboard/pickup', async (req, res) => {
+app.post('/dashboard/pickup',checkAdminSession, async (req, res) => {
   try {
-      const { requestId, status } = req.body;
+      const { requestId, status,jID } = req.body;
 
       
     //  console.log('Applicant ID:', applicantId);
      // console.log('Approval status:', approved);
       var time =   new Date().toLocaleTimeString();
       var date =  new Date().toLocaleDateString();
+     console.log(jID);
      
       // Update the applicant status in the database
       const updatedApplicant = await Book.findByIdAndUpdate(requestId, { status: status }, { new: true });
+      
       
       if(updatedApplicant && status==="approved"){
           log = 'The  pick up request of   '+requestId+' has been approved.'
           await Book.findByIdAndUpdate(requestId, { requestId: date + " at " + time })
       }
+      if(updatedApplicant && status==="Done"){
+        log = 'The  pick up request of   '+requestId+' has been approved.'
+        await Book.findByIdAndUpdate(requestId, { requestId: date + " at " + time })
+    }
       if(updatedApplicant && status==="declined"){
           log = 'The pick up request of  '+requestId+' has been declined.'
           await Book.findByIdAndUpdate(requestId, {requestId:  date + " at " + time })
@@ -958,8 +1114,9 @@ app.post('/dashboard/pickup', async (req, res) => {
          logs:log,
          time:new Date().toLocaleTimeString(),
          date:new Date().toLocaleDateString(),
-         id:requestId,
-         type:"Pick-up Schedule"
+         id:jID,
+         type:"Pick-up Schedule",
+         userName:"Junkshop"
         });
 
 
@@ -971,10 +1128,11 @@ app.post('/dashboard/pickup', async (req, res) => {
       res.status(500).json({ error: "Internal server error" });
   }
 });
-app.post('/dashboard/barangayapproval', async (req, res) => {
+app.post('/dashboard/barangayapproval',checkAdminSession, async (req, res) => {
   try {
       const { applicantId, approved } = req.body;
-      log
+ 
+      
     //  console.log('Applicant ID:', applicantId);
      // console.log('Approval status:', approved);
       var time =   new Date().toLocaleTimeString();
@@ -998,7 +1156,8 @@ app.post('/dashboard/barangayapproval', async (req, res) => {
          time:new Date().toLocaleTimeString(),
          date:new Date().toLocaleDateString(),
          id:applicantId,
-         type:"Approval"
+         type:"Approval",
+         userName:"Barangay"
         });
 
 
@@ -1040,5 +1199,4 @@ app.use((req, res, next) => {
 
 app.listen(3001, async function() {
   console.log("Server started on port 3001");
-
 });

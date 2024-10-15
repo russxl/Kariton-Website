@@ -1,4 +1,3 @@
-<!-- sessionlogs.ejs -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -7,6 +6,8 @@
   <title>Session Logs | Kariton</title>
   <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.png" />
   <link rel="stylesheet" href="../assets/css/styles.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.22/jspdf.plugin.autotable.min.js"></script>
 </head>
 
 <body>
@@ -41,28 +42,26 @@
         <div class="card">
           <div class="card-body">
             <h5 class="card-title fw-semibold mb-4">Session Logs</h5>
-            <table class="table table-striped">
+            <!-- PDF Download Button -->
+            <button class="btn btn-primary mb-4" onclick="downloadPDF()">Download PDF</button>
+            <table class="table table-striped" id="sessionLogsTable">
               <thead>
                 <tr>
                   <th>User</th>
                   <th>Login Date</th>
                   <th>Login Time</th>
-                  <th>Logout Date</th>
-                  <th>Logout Time</th>
                 </tr>
               </thead>
               <tbody>
-                <% sessionLogs.forEach(log => { %>
+                <% sessionLogs.reverse().forEach(log => { %> <!-- Apply reverse() to display latest logs first -->
                   <tr>
                     <td><%= log.name || log.userName %></td> <!-- Will display log.name if it exists, otherwise log.userName -->
                     <td><%= log.date %></td>
                     <td><%= log.time %></td>
-                    <td><%= log.date %></td>
-                    <td><%= log.time %></td>
                   </tr>
                 <% }); %>
-                
               </tbody>
+              
             </table>
           </div>
         </div>
@@ -75,6 +74,28 @@
   <script src="../assets/js/sidebarmenu.js"></script>
   <script src="../assets/js/app.min.js"></script>
   <script src="../assets/libs/simplebar/dist/simplebar.js"></script>
-</body>
 
+  <script>
+    function downloadPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF('landscape');
+
+      doc.text("Session Logs", 14, 16);
+      doc.autoTable({
+        html: '#sessionLogsTable',
+        startY: 20,
+        headStyles: { fillColor: [52, 152, 219] },
+        theme: 'grid',
+        styles: {
+          fontSize: 10,
+          cellPadding: 2,
+        },
+        margin: { top: 20 },
+      });
+
+      doc.save('Session_Logs.pdf');
+    }
+  </script>
+
+</body>
 </html>

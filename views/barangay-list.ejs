@@ -7,15 +7,16 @@
   <title>Junkshop | Kariton</title>
   <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.png" />
   <link rel="stylesheet" href="../assets/css/styles.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.22/jspdf.plugin.autotable.min.js"></script>
 </head>
 
 <body>
-  <!--  Body Wrapper -->
+  <!-- Body Wrapper -->
   <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
     data-sidebar-position="fixed" data-header-position="fixed">
     <!-- Sidebar Start -->
     <aside class="left-sidebar">
-      <!-- Sidebar scroll-->
       <div>
         <div class="brand-logo d-flex align-items-center justify-content-between">
           <a href="/" class="text-nowrap logo-img">
@@ -25,25 +26,28 @@
             <i class="ti ti-x fs-8"></i>
           </div>
         </div>
-        <!-- Sidebar navigation-->
-        <div>   <%- include('./partials/partial-junkshop'); -%></div>
-        <!-- End Sidebar navigation -->
+        <div><%- include('./partials/partial-junkshop'); -%></div>
       </div>
-      <!-- End Sidebar scroll-->
     </aside>
-    <!--  Sidebar End -->
-    <!--  Main wrapper -->
+    <!-- Sidebar End -->
+
     <div class="body-wrapper">
-      <!--  Header Start -->
-      <div>   <%- include('./partials/head'); -%></div>
-      <!--  Header End -->
+      <div><%- include('./partials/head'); -%></div>
+
       <div class="container-fluid">
         <div class="col-lg d-flex align-items-stretch">
           <div class="card w-100">
             <div class="card-body p-4">
               <h5 class="card-title fw-semibold mb-4">List of Approved Barangay</h5>
+
+              <!-- PDF Download Button -->
+              <button class="btn btn-primary mb-4" onclick="downloadPDF()">Download PDF</button>
+              
+              <!-- Print Button -->
+              <button class="btn btn-secondary mb-4" onclick="printTable()">Print</button>
+
               <div class="table-responsive">
-                <table class="table text-nowrap mb-0 align-middle">
+                <table id="barangayTable" class="table text-nowrap mb-0 align-middle">
                   <thead class="text-dark fs-4">
                     <tr>
                       <th class="border-bottom-0">
@@ -68,8 +72,7 @@
                       <% if(junk[i].isApproved==true) { %>
                     <tr>
                       <td class="border-bottom-0">
-                          <h6 class="fw-semibold mb-1"><%= junk[i].bName %></h6>
-                          <span class="fw-normal"></span>                          
+                        <h6 class="fw-semibold mb-1"><%= junk[i].bName %></h6>
                       </td>
                       <td class="border-bottom-0">
                         <p class="mb-0 fw-normal"><%= junk[i].capName %></p>
@@ -99,15 +102,42 @@
           </div>
         </div>
       </div>
-      </div>
     </div>
   </div>
+
+  <!-- Scripts -->
   <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
   <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../assets/js/sidebarmenu.js"></script>
   <script src="../assets/js/app.min.js"></script>
   <script src="../assets/libs/simplebar/dist/simplebar.js"></script>
+
+  <script>
+    function downloadPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF('landscape');
+
+      doc.text("List of Approved Barangay", 14, 16);
+      doc.autoTable({
+        html: '#barangayTable',
+        startY: 20,
+        headStyles: { fillColor: [52, 152, 219] },
+        theme: 'grid',
+        styles: {
+          fontSize: 10,
+          cellPadding: 2,
+        },
+        margin: { top: 20 },
+      });
+
+      doc.save('Approved_Barangay_List.pdf');
+    }
+
+    function printTable() {
+      // This will print the entire page including the table
+      window.print();
+    }
+  </script>
   
 </body>
-
 </html>

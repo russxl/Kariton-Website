@@ -86,8 +86,8 @@
                   <div class="card-body">
                     <div class="row align-items-start">
                       <div class="col-8">
-                        <h5 class="card-title mb-9 fw-semibold">Junkshops Registration</h5>
-                        <h4 class="fw-semibold mb-3">15</h4>
+                        <h5 class="card-title mb-9 fw-semibold">Total Number of Users</h5>
+                        <h4 class="fw-semibold mb-3"><%=total %></h4>
                       </div>
                       <div class="col-4">
                         <div class="d-flex justify-content-end">
@@ -113,8 +113,7 @@
                 </div>
                 <ul class="timeline-widget mb-0 position-relative mb-n5">
                   <!-- Timeline items for recent transactions -->
-                  <!-- Sample Timeline Items -->
-                  <% log.slice(-5).forEach((data, index) => { %>                
+                  <% log.slice(-5).reverse().forEach((data, index) => { %> <!-- Apply reverse() here -->
                     <li class="timeline-item d-flex position-relative overflow-hidden">
                       <div class="timeline-time text-dark flex-shrink-0 text-end">
                         <%= data.time || '09:30' %> <!-- Replace '09:30' with dynamic time -->
@@ -124,12 +123,12 @@
                         <span class="timeline-badge-border d-block flex-shrink-0"></span>
                       </div>
                       <div class="timeline-desc fs-3 text-dark mt-n1">
-                        <%=data.logs %>
+                        <%= data.logs %>
                       </div>
                     </li>
                   <% }); %>
-                  
                 </ul>
+                
               </div>
             </div>
           </div>

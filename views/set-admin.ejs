@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kariton</title>
+
+  <link rel="stylesheet" href="../assets/css/styles.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    integrity="sha512-t7PIv6dZSGnzqZjyEXnKZoVz4Uaw/zJoP9S3nWN3ulPTJU06TxvzVVVHpKjTgu4/8zgFvl3yEiSpJkAil9SGBg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+  <!-- Body Wrapper -->
+  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+    data-sidebar-position="fixed" data-header-position="fixed">
+    <div
+      class="position-relative overflow-hidden radial-gradient min-vh-100 d-flex align-items-center justify-content-center">
+      <div class="d-flex align-items-center justify-content-center w-100">
+        <div class="row justify-content-center w-100">
+          <div class="col-md-8 col-lg-6 col-xxl-3">
+            <div class="card mb-0">
+              <div class="card-body">
+                <a href="/" class="text-nowrap logo-img text-center d-block py-3 w-100">
+                  <img src="img/image-removebg-preview (1) (2).png" width="180" style="opacity: 0.7;" alt="">
+                </a>
+                <p class="text-center" style="font-weight: 300;">Welcome to Kariton! Please set up admin credentials to continue.</p>
+                <form id="adminSetupForm" action="/setup-admin" method="post">
+                  <div class="mb-3">
+                    <label for="adminUsername" class="form-label">Admin Username</label>
+                    <input type="text" class="form-control" name="username" id="adminUsername" required>
+                  </div>
+                  <div class="mb-3">
+                    <label for="adminEmail" class="form-label">Admin Email</label>
+                    <input type="email" class="form-control" name="email" id="adminEmail" required>
+                  </div>
+                  <div class="mb-4 position-relative">
+                    <label for="adminPassword" class="form-label">Password</label>
+                    <div class="input-group">
+                      <input type="password" class="form-control" name="password" id="adminPassword" required>
+                      <button class="btn btn-outline-secondary" type="button" id="toggleAdminPassword">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="mb-4 position-relative">
+                    <label for="confirmAdminPassword" class="form-label">Confirm Password</label>
+                    <div class="input-group">
+                      <input type="password" class="form-control" name="confirmPassword" id="confirmAdminPassword" required>
+                      <button class="btn btn-outline-secondary" type="button" id="toggleConfirmAdminPassword">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <button type="submit" class="btn btn-success w-100 py-8 fs-4 mb-4" style="color: white; background-color: green;">Set Up Admin</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
+  <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      // Toggle password visibility
+      $("#toggleAdminPassword").click(function () {
+        var input = $("#adminPassword");
+        if (input.attr("type") === "password") {
+          input.attr("type", "text");
+        } else {
+          input.attr("type", "password");
+        }
+      });
+
+      // Toggle confirm password visibility
+      $("#toggleConfirmAdminPassword").click(function () {
+        var input = $("#confirmAdminPassword");
+        if (input.attr("type") === "password") {
+          input.attr("type", "text");
+        } else {
+          input.attr("type", "password");
+        }
+      });
+
+      // Form submission for admin setup
+      $("#adminSetupForm").submit(function (event) {
+        event.preventDefault(); // Prevent normal form submission
+        var username = $("#adminUsername").val();
+        var email = $("#adminEmail").val();
+        var password = $("#adminPassword").val();
+        var confirmPassword = $("#confirmAdminPassword").val();
+
+        // Validate email and password requirements
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Basic email regex
+        const passwordPattern = /^(?=.*[A-Z])(?=.*[!@#$&*]).{8,}$/; // 8 chars, 1 capital, 1 special character
+
+        if (!emailPattern.test(email)) {
+          alert("Please enter a valid email address.");
+          return;
+        }
+
+        if (!passwordPattern.test(password)) {
+          alert("Password must be at least 8 characters long, contain 1 uppercase letter, and 1 special character.");
+          return;
+        }
+
+        if (password !== confirmPassword) {
+          alert("Passwords do not match.");
+          return;
+        }
+
+        // If validation passes, submit the form via AJAX
+        $.ajax({
+          url: '/setup-admin',  // Form action URL
+          method: 'POST',
+          data: {
+            username: username,
+            email: email,
+            password: password,
+            confirmPassword: confirmPassword
+          },
+          success: function(response) {
+            alert("Admin setup successful!");
+            location.reload();  // Reload the page after success
+          },
+          error: function() {
+            alert("There was an error processing your request. Please try again.");
+          }
+        });
+      });
+    });
+  </script>
+
+</body>
+
+</html>

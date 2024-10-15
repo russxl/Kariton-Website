@@ -108,108 +108,114 @@
   <script src="../assets/libs/simplebar/dist/simplebar.js"></script>
 
   <script>
-   document.addEventListener("DOMContentLoaded", function () {
-  const scrapTableBody = document.getElementById('scrap-table-body');
-
-  document.getElementById('add-scrap-btn').addEventListener('click', function () {
-    document.getElementById('scrap-form').reset();
-    document.getElementById('scrap-index').value = '';
-    new bootstrap.Modal(document.getElementById('scrapModal')).show();
-  });
-  
-  document.getElementById('edit-scrap-btn').addEventListener('click', function () {
-    document.getElementById('scrap-form').reset();
-    document.getElementById('scrap-index').value = '';
-    new bootstrap.Modal(document.getElementById('scrapModal')).show();
-  });
-
-  // Event delegation for edit and delete buttons
-  scrapTableBody.addEventListener('click', async function (event) {
-
-
-    if (event.target.classList.contains('delete-scrap-btn')) {
-      const scrapId = event.target.getAttribute('data-scrap-id');
-      try {
-        const response = await fetch(`/junkshop/scraps`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ type: "delete", scrapId: scrapId })  // Send data as JSON
-        });
-
-        if (response.ok) {
-          // Remove the row from the table
-          const row = event.target.closest('tr');
-          scrapTableBody.removeChild(row);
-          console.log("Scrap deleted successfully");
-        } else {
-          console.error("Failed to delete scrap");
-        }
-      } catch (error) {
-        console.error("Error deleting scrap:", error);
-      }
-    }
-  });
-
-  document.getElementById('scrap-form').addEventListener('submit', async function (event) {
-  event.preventDefault();
-  const scrapType = document.getElementById('scrap-type').value;
-  const price = document.getElementById('scrap-price').value;
-  const index = document.getElementById('scrap-index').value;
-
-  const scrapData = {
-    scrapType: scrapType,
-    price: price,
-  };
-
-  try {
-    if (index !== '') {
-      const row = scrapTableBody.children[index];
-      row.querySelector('.scrap-type').textContent = scrapType;
-      row.querySelector('.scrap-price').textContent = price;
-    } else {
-      const response = await fetch('/junkshop/scraps', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(scrapData),
+    document.addEventListener("DOMContentLoaded", function () {
+      const scrapTableBody = document.getElementById('scrap-table-body');
+      const scrapModal = new bootstrap.Modal(document.getElementById('scrapModal'));
+      const scrapForm = document.getElementById('scrap-form');
+      const scrapTypeInput = document.getElementById('scrap-type');
+      const scrapPriceInput = document.getElementById('scrap-price');
+      const scrapIndexInput = document.getElementById('scrap-index');
+      
+      let editingScrapId = null;
+    
+      // Open the modal for adding a new scrap
+      document.getElementById('add-scrap-btn').addEventListener('click', function () {
+        scrapForm.reset();
+        editingScrapId = null;
+        scrapModal.show();
       });
-
-      if (response.ok) {
-        const responseData = await response.json(); // Get the scrapId from the server
-        const scrapId = responseData.scrapId; // Extract the scrapId from the response
-
-        const newRow = document.createElement('tr');
-        newRow.innerHTML = `
-          <td class="border-bottom-0"><p class="mb-0 fw-normal scrap-type">${scrapType}</p></td>
-          <td class="border-bottom-0"><p class="mb-0 fw-normal scrap-price">${price}</p></td>
-          <td class="border-bottom-0">
-            <button class="btn btn-primary edit-scrap-btn">Edit</button>
-            <button class="btn btn-danger delete-scrap-btn" data-scrap-id="${scrapId}">Delete</button>
-          </td>
-        `;
-        scrapTableBody.appendChild(newRow);
-
-        // Refresh the page after a successful save
-        window.location.reload();
-      } else {
-        console.log("Failed to save scrap to the backend");
-      }
-    }
-
-    // Close the modal after processing the form
-    bootstrap.Modal.getInstance(document.getElementById('scrapModal')).hide();
-  } catch (error) {
-    console.error("Error saving scrap:", error);
-  }
-});
-
-});
-
-  </script>
-
+    
+      // Event delegation for edit and delete buttons
+      scrapTableBody.addEventListener('click', async function (event) {
+        if (event.target.classList.contains('delete-scrap-btn')) {
+          const scrapId = event.target.getAttribute('data-scrap-id');
+          try {
+            const response = await fetch(`/junkshop/scraps`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ type: 'delete', scrapId: scrapId })
+            });
+    
+            if (response.ok) {
+              // Remove the row from the table
+              const row = event.target.closest('tr');
+              scrapTableBody.removeChild(row);
+              console.log("Scrap deleted successfully");
+            } else {
+              console.error("Failed to delete scrap");
+            }
+          } catch (error) {
+            console.error("Error deleting scrap:", error);
+          }
+        }
+    
+        if (event.target.classList.contains('edit-scrap-btn')) {
+          const row = event.target.closest('tr');
+          scrapTypeInput.value = row.querySelector('.scrap-type').textContent;
+          scrapPriceInput.value = row.querySelector('.scrap-price').textContent;
+          editingScrapId = event.target.getAttribute('data-scrap-id'); // Store scrapId for editing
+          scrapModal.show();
+        }
+      });
+    
+      // Handle form submission for adding or updating scrap
+      scrapForm.addEventListener('submit', async function (event) {
+        event.preventDefault();
+        const scrapType = scrapTypeInput.value;
+        const price = scrapPriceInput.value;
+    
+        const scrapData = {
+          scrapType: scrapType,
+          price: price,
+        };
+    
+        try {
+          const requestBody = { ...scrapData, scrapId: editingScrapId };
+    
+          const response = await fetch('/junkshop/scraps', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody),
+          });
+    
+          if (response.ok) {
+            const responseData = await response.json();
+            if (editingScrapId) {
+              // Update row in the table
+              const row = scrapTableBody.querySelector(`[data-scrap-id="${editingScrapId}"]`).closest('tr');
+              row.querySelector('.scrap-type').textContent = scrapType;
+              row.querySelector('.scrap-price').textContent = price;
+              editingScrapId = null; // Reset scrapId after update
+            } else {
+              // Add new row to the table
+              const newRow = document.createElement('tr');
+              newRow.innerHTML = `
+                <td class="border-bottom-0"><p class="mb-0 fw-normal scrap-type">${scrapType}</p></td>
+                <td class="border-bottom-0"><p class="mb-0 fw-normal scrap-price">${price}</p></td>
+                <td class="border-bottom-0">
+                  <button class="btn btn-primary edit-scrap-btn" data-scrap-id="${responseData.scrapId}">Edit</button>
+                  <button class="btn btn-danger delete-scrap-btn" data-scrap-id="${responseData.scrapId}">Delete</button>
+                </td>
+              `;
+              scrapTableBody.appendChild(newRow);
+            }
+    
+            // Close the modal
+            scrapModal.hide();
+          } else {
+            console.error("Failed to save scrap");
+          }
+        } catch (error) {
+          console.error("Error saving scrap:", error);
+        }
+      });
+    });
+    </script>
+    
 </body>
 
 </html>
