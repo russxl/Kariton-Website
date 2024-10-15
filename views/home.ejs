@@ -348,10 +348,42 @@
         </div>
       </div>
       
-            <div class="map-container">
-                <h2 class="text-center mb-4">Find Local Junkshops on the Map</h2>
-                <iframe src="https://www.google.com/maps/embed/v1/place?q=National+University+Manila&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" allowfullscreen></iframe>
-            </div>
+            <div class="container-xxl py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Find Local Junkshops on the Map</h2>
+        <div class="map-container">
+            <iframe src="https://www.google.com/maps/embed/v1/place?q=National+University+Manila&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" 
+                width="100%" 
+                height="500" 
+                style="border:0;" 
+                allowfullscreen="" 
+                loading="lazy"></iframe>
+        </div>
+    </div>
+</div>
+<!-- Map Container End -->
+
+<style>
+    .map-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 auto;
+        width: 100%;
+        max-width: 100%;
+    }
+    .map-container iframe {
+        border: none;
+        width: 100%;
+        height: 500px; /* Increase height to make it larger */
+    }
+
+    @media (max-width: 768px) {
+        .map-container iframe {
+            height: 350px; /* Adjust height for smaller screens */
+        }
+    }
+</style>
         </div>
     </div>
     <!-- Content End -->
