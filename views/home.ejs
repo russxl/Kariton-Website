@@ -283,7 +283,7 @@
    <section class="services-section py-3">
     <div class="container">
       <div class="text-center mx-auto pb-4">
-        <h2 class="section-title">Sorting Procedures</h2>
+        <h1 class="section-title">Sorting Procedures</h1>
         <p class="section-subtitle">A guide that provides instructions for the correct disposal of recyclable scraps and encourages the recycling of scraps.</p>
       </div>
       <div class="services-container d-flex flex-wrap justify-content-center">
@@ -348,10 +348,44 @@
         </div>
       </div>
       
-            <div class="map-container">
-                <h2 class="text-center mb-4">Find Local Junkshops on the Map</h2>
-                <iframe src="https://www.google.com/maps/embed/v1/place?q=National+University+Manila&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" allowfullscreen></iframe>
-            </div>
+            <!-- Map Container Start -->
+<div class="container-xxl py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Find Local Junkshops on the Map</h2>
+        <div class="map-container">
+            <iframe src="https://www.google.com/maps/embed/v1/place?q=National+University+Manila&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" 
+                width="100%" 
+                height="500" 
+                style="border:0;" 
+                allowfullscreen="" 
+                loading="lazy"></iframe>
+        </div>
+    </div>
+</div>
+<!-- Map Container End -->
+
+<style>
+    .map-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 auto;
+        width: 100%;
+        max-width: 100%;
+    }
+    .map-container iframe {
+        border: none;
+        width: 100%;
+        height: 500px; /* Increase height to make it larger */
+    }
+
+    @media (max-width: 768px) {
+        .map-container iframe {
+            height: 350px; /* Adjust height for smaller screens */
+        }
+    }
+</style>
+
         </div>
     </div>
     <!-- Content End -->

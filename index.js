@@ -514,7 +514,9 @@ app.post("/login", async (req, res) => {
     if (!admin||!isMatch) {
       return res.status(400).send("Please check your username or password is incorrect.");
     }
-    
+    const options = { timeZone: 'Asia/Manila', hour12: true, year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
+    const currentDate = new Intl.DateTimeFormat('en-PH', options).format(new Date());
+    const [date, time] = currentDate.split(', ');
     // If the admin is found, compare the entered password with the stored hashed password
    
     if (isMatch) {
@@ -531,8 +533,8 @@ app.post("/login", async (req, res) => {
       const newContent = new Logs({
         logs: log,
         userName: "Admin",
-        time: new Date().toLocaleTimeString(),
-        date: new Date().toLocaleDateString(),
+        time: time,
+        date: date,
         type: "Logins"
       });
   
@@ -592,43 +594,6 @@ app.post("/setup-admin", async (req, res) => {
 
 
 
-app.post("/login", async (req, res) => {
-  const { username, password } = req.body;
-
-  try {
-      const admin = await Admin.findOne({ uName: username });
-      
-      if (admin && admin.password === password) {
-          // Set session for the logged-in admin
-          req.session.adminId = admin._id; // Store admin ID in session
-          req.session.isLogged = true; // Set login status
-
-          // Update isLogged status in the database
-          admin.isLogged = true;
-          await admin.save(); // Save the updated admin
-
-          // Create a log for the login event
-          const log = 'Admin Logged in.';
-          const newContent = new Logs({
-              logs: log,
-              userName: "Admin",
-              time: new Date().toLocaleTimeString(),
-              date: new Date().toLocaleDateString(),
-              type: "Logins"
-          });
-
-          await newContent.save(); // Save login log
-
-          res.redirect('/dashboard'); // Redirect to the admin dashboard or home page
-      } else {
-          // Redirect back to login on failure
-          res.redirect('/login');
-      }
-  } catch (err) {
-      console.error(err);
-      res.status(500).send('Internal Server Error');
-  }
-});
 
 
 app.get("/dashboard/users",checkAdminSession,async(req,res)=>{
@@ -677,8 +642,9 @@ app.get("/buttons",(req,res)=>{
 app.post('/dashboard/pending',checkAdminSession ,async (req, res) => {
   try {
       const { applicantId, approved } = req.body;
-      const time = new Date().toLocaleTimeString();
-      const date = new Date().toLocaleDateString();
+      const options = { timeZone: 'Asia/Manila', hour12: true, year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
+      const currentDate = new Intl.DateTimeFormat('en-PH', options).format(new Date());
+      const [date, time] = currentDate.split(', ');
 
       // Update the applicant status in the database
       const updatedApplicant = await JunkShop.findByIdAndUpdate(applicantId, { isApproved: approved }, { new: true });
@@ -1033,7 +999,9 @@ app.get('/dashboard/pickup',checkAdminSession,async (req,res)=>{
 app.post("/updateJunkshopStatus",checkAdminSession, async (req, res) => {
   try {
     const { status, id } = req.body;  // Extract status and id from request body
-
+    const options = { timeZone: 'Asia/Manila', hour12: true, year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
+    const currentDate = new Intl.DateTimeFormat('en-PH', options).format(new Date());
+    const [date, time] = currentDate.split(', ');
     // Find the booking by id and update the status
     const updatedJunkshop = await Book.findByIdAndUpdate(
       id,                         // The ID to search for
@@ -1051,8 +1019,8 @@ app.post("/updateJunkshopStatus",checkAdminSession, async (req, res) => {
     // Add the new log entry
     const newLog = new Logs({
       logs: logMessage,
-      time: new Date().toLocaleTimeString(),
-      date: new Date().toLocaleDateString(),
+      time:time,
+      date:date,
       id: id,
       userName:"Junkshop",
       type: "Junkshop Status Update" // You can add a 'type' field if you want to categorize logs
@@ -1086,14 +1054,13 @@ app.post('/dashboard/pickup',checkAdminSession, async (req, res) => {
 
       
     //  console.log('Applicant ID:', applicantId);
-     // console.log('Approval status:', approved);
-      var time =   new Date().toLocaleTimeString();
-      var date =  new Date().toLocaleDateString();
-     console.log(jID);
+    
      
       // Update the applicant status in the database
       const updatedApplicant = await Book.findByIdAndUpdate(requestId, { status: status }, { new: true });
-      
+      const options = { timeZone: 'Asia/Manila', hour12: true, year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
+      const currentDate = new Intl.DateTimeFormat('en-PH', options).format(new Date());
+      const [date, time] = currentDate.split(', ');
       
       if(updatedApplicant && status==="approved"){
           log = 'The  pick up request of   '+requestId+' has been approved.'
@@ -1112,8 +1079,8 @@ app.post('/dashboard/pickup',checkAdminSession, async (req, res) => {
       }
       const newContent = new Logs( {
          logs:log,
-         time:new Date().toLocaleTimeString(),
-         date:new Date().toLocaleDateString(),
+         time:time,
+         date:date,
          id:jID,
          type:"Pick-up Schedule",
          userName:"Junkshop"
@@ -1128,53 +1095,50 @@ app.post('/dashboard/pickup',checkAdminSession, async (req, res) => {
       res.status(500).json({ error: "Internal server error" });
   }
 });
-app.post('/dashboard/barangayapproval',checkAdminSession, async (req, res) => {
+app.post('/dashboard/barangayapproval', checkAdminSession, async (req, res) => {
   try {
-      const { applicantId, approved } = req.body;
- 
-      
-    //  console.log('Applicant ID:', applicantId);
-     // console.log('Approval status:', approved);
-      var time =   new Date().toLocaleTimeString();
-      var date =  new Date().toLocaleDateString();
-     
-      // Update the applicant status in the database
-      const updatedApplicant = await Barangay.findByIdAndUpdate(applicantId, { isApproved: approved }, { new: true });
-      if(updatedApplicant && approved===true){
-          log = 'The applicant '+applicantId+' has been approved.'
-          await Barangay.findByIdAndUpdate(applicantId, { approvalDate: date + " at " + time })
-      }
-      if(updatedApplicant && approved===false){
-          log = 'The applicant '+applicantId+' has been declined.'
-          await Barangay.findByIdAndUpdate(applicantId, {declineDate:  date + " at " + time })
-      }
-      if (!updatedApplicant) {
-          return res.status(404).json({ error: "Applicant not found" });
-      }
-      const newContent = new Logs( {
-         logs:log,
-         time:new Date().toLocaleTimeString(),
-         date:new Date().toLocaleDateString(),
-         id:applicantId,
-         type:"Approval",
-         userName:"Barangay"
-        });
+    const { applicantId, approved } = req.body;
 
+    // Get current date and time in PHT
+    const options = { timeZone: 'Asia/Manila', hour12: true, year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
+    const currentDate = new Intl.DateTimeFormat('en-PH', options).format(new Date());
+    const [date, time] = currentDate.split(', ');
 
-       
-        await  newContent.save();
-        res.redirect('/dashboard/barangayapproval');
-        
-      
-          
-      
-      // Send response back to the client
+    // Update the applicant status in the database
+    const updatedApplicant = await Barangay.findByIdAndUpdate(applicantId, { isApproved: approved }, { new: true });
+    
+    let log;
+    if (updatedApplicant && approved === true) {
+      log = `The applicant ${applicantId} has been approved.`;
+      await Barangay.findByIdAndUpdate(applicantId, { approvalDate: date + " at " + time });
+    }
+    if (updatedApplicant && approved === false) {
+      log = `The applicant ${applicantId} has been declined.`;
+      await Barangay.findByIdAndUpdate(applicantId, { declineDate: date + " at " + time });
+    }
+    
+    if (!updatedApplicant) {
+      return res.status(404).json({ error: "Applicant not found" });
+    }
 
+    // Log the action
+    const newContent = new Logs({
+      logs: log,
+      time: time,
+      date: date,
+      id: applicantId,
+      type: "Approval",
+      userName: "Barangay"
+    });
+
+    await newContent.save();
+    res.redirect('/dashboard/barangayapproval');
   } catch (error) {
-      console.error('Error:', error);
-      res.status(500).json({ error: "Internal server error" });
+    console.error('Error:', error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
+
 app.get('/learn/trashtalk',(req,res)=>{
     res.render('trashtalk.ejs')
 });

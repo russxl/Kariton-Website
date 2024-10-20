@@ -27,7 +27,7 @@
                   <img src="img/image-removebg-preview (1) (2).png" width="180" style="opacity: 0.7;" alt="">
                 </a>
                 <p class="text-center" style="font-weight: 300;">Admin Login</p>
-                <form action="/login" method="post">
+                <form action="/login" id="login" method="post">
                   <div class="mb-3">
                     <label for="exampleInputEmail1" class="form-label">Admin Username</label>
                     <input class="form-control" name="username" id="exampleInputEmail1" required>
@@ -83,6 +83,7 @@
         </div>
         <div class="modal-body">
           <form id="verifyOtpForm">
+            <p>OTP has been sent to your email.</p>
             <div class="mb-3">
               <label for="otpInput" class="form-label">Enter OTP</label>
               <input type="text" class="form-control" id="otpInput" name="otp" maxlength="6" required>
@@ -180,7 +181,7 @@
   }
 
  // AJAX form submission for Admin Login
- $("form").submit(function (event) {
+ $("#login").submit(function (event) {
       event.preventDefault(); // Prevent the form from submitting normally
 
       var username = $("input[name='username']").val();
