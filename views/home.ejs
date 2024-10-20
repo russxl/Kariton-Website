@@ -14,7 +14,7 @@
                     <p class="fs-4 text-white">Welcome to Kariton</p>
                     <h1 class="display-4 text-white mb-4 animated slideInRight">Scrap Collection Platform</h1>
                     <div class="d-flex flex-column flex-md-row gap-2">
-                        <a href="https://drive.google.com/file/d/1U8ntIFbzcIyqtXOfoQe9vf8XLVznby7y/view?usp=sharing" class="btn btn-success rounded-pill animated slideInRight btn-black">Download APK <i class="fab fa-android"></i></a>
+                        <a href="https://drive.google.com/file/d/1AhRH3NOLiVtB7-Ww70lrtkCVihkHrcbl/view?usp=sharing" class="btn btn-success rounded-pill animated slideInRight btn-black">Download APK <i class="fab fa-android"></i></a>
                         
                     </div>
                 </div>
@@ -80,7 +80,6 @@
     }
 </style>
 
-<!-- Schedule Section -->
 <div class="container-xxl py-5 text-center">
     <div class="container">
         <div class="row g-5 align-items-center justify-content-center">
@@ -121,11 +120,50 @@
                     </div>
                     <% }) %>
                 </div>
+
+                <!-- Download button -->
+                <button id="downloadPDF" class="btn btn-primary mt-4">Download Schedule as PDF</button>
+
                 <p class="py-3 mt-5" style="color:#333;">Please note that the available schedule above is subject to change based on the barangay's provided schedule.</p>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Include jsPDF library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- JavaScript to handle PDF download -->
+<script>
+    document.getElementById("downloadPDF").addEventListener("click", function() {
+        const { jsPDF } = window.jspdf;
+
+        const doc = new jsPDF();
+        const tables = document.querySelectorAll('.table');
+
+        tables.forEach((table, index) => {
+            doc.text(`Collection Schedule for Scrap Pickup - Barangay ${table.querySelector('h5').innerText}`, 10, 10 + (index * 100));
+
+            const rows = table.querySelectorAll('tr');
+            const tableData = Array.from(rows).map(row => {
+                return Array.from(row.querySelectorAll('td, th')).map(cell => cell.innerText);
+            });
+
+            doc.autoTable({
+                startY: 20 + (index * 100),
+                head: [[...tableData[0]]], // Table Header
+                body: tableData.slice(1),  // Table Content
+            });
+
+            if (index < tables.length - 1) {
+                doc.addPage();
+            }
+        });
+
+        doc.save('collection_schedule.pdf');
+    });
+</script>
+
 
 <!-- Add responsive handling to the rest of the sections similarly -->
 
@@ -348,12 +386,8 @@
         </div>
       </div>
       
-<<<<<<< HEAD
             <!-- Map Container Start -->
 <div class="container-xxl py-5">
-=======
-            <div class="container-xxl py-5">
->>>>>>> 55f864b7fdc5eacaa3fc9a5b053dd1f17627169e
     <div class="container">
         <h2 class="text-center mb-4">Find Local Junkshops on the Map</h2>
         <div class="map-container">
@@ -389,10 +423,6 @@
         }
     }
 </style>
-<<<<<<< HEAD
-
-=======
->>>>>>> 55f864b7fdc5eacaa3fc9a5b053dd1f17627169e
         </div>
     </div>
     <!-- Content End -->
@@ -421,6 +451,50 @@
     <script src="lib/counterup/counterup.min.js"></script>
     <script src="lib/parallax/parallax.min.js"></script>
     <script src="lib/lightbox/js/lightbox.min.js"></script>
+<!-- Include jsPDF library -->
+<!-- Include jsPDF and autoTable plugin -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://unpkg.com/jspdf-autotable/dist/jspdf.plugin.autotable.min.js"></script>
+
+<!-- JavaScript to handle PDF download -->
+<script>
+ document.getElementById("downloadPDF").addEventListener("click", function() {
+    const { jsPDF } = window.jspdf;
+
+    // Create a new PDF document
+    const doc = new jsPDF();
+    const tables = document.querySelectorAll('.col-md-6.col-lg-4'); // Each barangay section
+
+    tables.forEach((table, index) => {
+        const barangayName = table.querySelector('h5').innerText; // Extract Barangay name
+        const rows = table.querySelectorAll('tr');
+
+        const tableData = Array.from(rows).map(row => {
+            return Array.from(row.querySelectorAll('td, th')).map(cell => cell.innerText);
+        });
+
+        // If it's not the first barangay, add a new page
+        if (index > 0) {
+            doc.addPage();
+        }
+
+        // Title for each table in the PDF
+        doc.text(`Collection Schedule for Scrap Pickup - ${barangayName}`, 10, 10);
+
+        // Generate the table in PDF format using autoTable
+        doc.autoTable({
+            startY: 20, // Start position for the table on each new page
+            head: [tableData[0]],  // Table Header
+            body: tableData.slice(1),  // Table Content
+            theme: 'grid',  // Optional, adds a grid for the table
+        });
+    });
+
+    // Save the PDF
+    doc.save('collection_schedule.pdf');
+});
+
+</script>
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
