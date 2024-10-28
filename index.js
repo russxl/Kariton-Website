@@ -10,9 +10,9 @@ const bcrypt = require('bcryptjs'); // Import bcrypt for password hashing
 
 
 const mongoose = require('mongoose')
-mongoose.connect('mongodb+srv://ads:YGWygUxHRZAxd1NT@cluster0.zchxmu8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0/JunkShopDB', {
-    useNewUrlParser: true
-}) ;
+mongoose.connect('mongodb+srv://russ:Mpe38rRSRP36zWW@cluster0.oswowdu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0/JunkShopDB', {
+  useNewUrlParser: true
+})  
 
 
 const userSchema = {
