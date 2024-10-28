@@ -42,6 +42,23 @@
       <div class="container-fluid">
         <div class="card">
           <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <button class="btn btn-secondary" onclick="history.back()">Back</button>
+              <p><strong>Status:</strong>
+                <% if (junkshop.status === "pending") { %>
+                  <span><span class="ti ti-clock text-secondary"></span> Pending</span>
+                <% } %>
+                <% if (junkshop.status === "approved") { %>
+                  <span><span class="ti ti-check text-success"></span> Approved</span>
+                <% } %>
+                <% if (junkshop.status === "declined") { %>
+                  <span><span class="ti ti-close text-danger"></span> Rejected</span>
+                <% } %>
+                <% if (junkshop.status === "Done") { %>
+                  <span><span class="ti ti-close text-danger"></span> Done</span>
+                <% } %>
+              </p>
+            </div>
             <h5 class="card-title fw-semibold mb-4">Junkshop Information</h5>
             <p><strong>Junkshop Name:</strong> <%= junkshop.jShop %></p>
             <p><strong>Owner:</strong> <%= junkshop.name %></p>
@@ -49,20 +66,7 @@
             <p><strong>Address:</strong> <%= junkshop.location %></p>
             <p><strong>Scrap Type:</strong> <%= junkshop.scrapType %></p>
             <p><strong>Weight:</strong> <%= junkshop.weight %> kg</p>
-            <p><strong>Status:</strong>
-              <% if (junkshop.status === "pending") { %>
-                <span><span class="ti ti-clock text-secondary"></span> Pending</span>
-              <% } %>
-              <% if (junkshop.status === "approved") { %>
-                <span><span class="ti ti-check text-success"></span> Approved</span>
-              <% } %>
-              <% if (junkshop.status === "declined") { %>
-                <span><span class="ti ti-close text-danger"></span> Rejected</span>
-              <% } %>
-              <% if (junkshop.status === "Done") { %>
-                <span><span class="ti ti-close text-danger"></span> Done</span>
-              <% } %>
-            </p>
+        
             <div class=" justify-content-between mt-4">
               <% if (junkshop.status === "approved") { %>
                 <a href="#" class="btn btn-success me-2" id="doneBtn">Done</a>

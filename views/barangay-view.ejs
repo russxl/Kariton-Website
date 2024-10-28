@@ -5,7 +5,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Barangay View | Kariton</title>
-  <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.png" />
+  <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.png" />  <link rel="icon" href="img/home-logo.png" type="image/x-icon"/>
+
   <link rel="stylesheet" href="../assets/css/styles.min.css" />
   <meta name="description" content="View detailed information about a junkshop in Kariton.">
 </head>
@@ -47,31 +48,38 @@
       <div class="container-fluid">
         <div class="card">
           <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <button class="btn btn-secondary" onclick="history.back()">Back</button>
+              <p class="mb-0"><strong>Status:</strong>
+                <% if (junkshop.isApproved === null) { %>
+                  <span><span class="ti ti-clock text-secondary"></span> Pending</span>
+                <% } else if (junkshop.isApproved === true) { %>
+                  <span><span class="ti ti-check text-success"></span> Approved</span>
+                <% } else if (junkshop.isApproved === false) { %>
+                  <span><span class="ti ti-close text-danger"></span> Rejected</span>
+                <% } %>
+              </p>
+            </div>
             <h5 class="card-title fw-semibold mb-4">Barangay Information</h5>
             <p><strong>Barangay Name:</strong> <%= junkshop.bName %></p>
-            <p><strong>Captain Name:</strong> <%= junkshop.capName %></p>
+            <p><strong>Barangay Chairman/Representative Name:</strong> <%= junkshop.capName %></p>
             <p><strong>Address:</strong> <%= junkshop.bLocation %></p>
             <p><strong>Contact Number:</strong> <%= junkshop.phone %></p>
             <p><strong>Email:</strong> <%= junkshop.email %></p>
-            <p><strong>Junkshop Images:</strong></p>
+            <p><strong>Barangay Hall Photo:</strong></p>
             <div class="image-gallery">
               <% if (junkshop.bImg) { %>
                 <img src="data:image/png;base64,<%= junkshop.bImg %>" alt="Junkshop Image 1" width="150" style="cursor: pointer;" onclick="openModal('<%= junkshop.bImg %>')" />
               <% } else { %>
                 <p>No image available for Image 1.</p>
               <% } %>
-              <p><strong>Junkshop Images:</strong></p>
+              <p><strong>Valid ID:</strong></p>
               <% if (junkshop.validID) { %>
                 <img src="data:image/png;base64,<%= junkshop.validID %>" alt="Junkshop Image 2" width="150" style="cursor: pointer;" onclick="openModal('<%= junkshop.validID %>')" />
               <% } else { %>
                 <p>No image available for Image 2.</p>
               <% } %>
-              <p><strong>Junkshop Images:</strong></p>
-              <% if (junkshop.permit) { %>
-                <img src="data:image/png;base64,<%= junkshop.permit %>" alt="Junkshop Image 3" width="150" style="cursor: pointer;" onclick="openModal('<%= junkshop.permit %>')" />
-              <% } else { %>
-                <p>No image available for Image 3.</p>
-              <% } %>
+             
             </div>
             <p><strong>Status:</strong>
               <% if (junkshop.isApproved === null) { %>
@@ -85,6 +93,7 @@
               <% } %>
             </p>
           </div>
+          
         </div>
       </div>
     </div>
@@ -93,11 +102,11 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="imageModalLabel">Junkshop Image</h5>
+          <h5 class="modal-title" id="imageModalLabel">Barangay Image</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <img id="modalImage" src="" alt="Junkshop Image" class="img-fluid" />
+          <img id="modalImage" src="" alt="Barangay Image" class="img-fluid" />
         </div>
       </div>
     </div>

@@ -48,6 +48,18 @@
       <div class="container-fluid">
         <div class="card">
           <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <button class="btn btn-secondary" onclick="history.back()">Back</button>
+              <p class="mb-0"><strong>Status:</strong>
+                <% if (junkshop.isApproved === null) { %>
+                  <span><span class="ti ti-clock text-secondary"></span> Pending</span>
+                <% } else if (junkshop.isApproved === true) { %>
+                  <span><span class="ti ti-check text-success"></span> Approved</span>
+                <% } else if (junkshop.isApproved === false) { %>
+                  <span><span class="ti ti-close text-danger"></span> Rejected</span>
+                <% } %>
+              </p>
+            </div>
             <h5 class="card-title fw-semibold mb-4">Junkshop Information</h5>
             <p><strong>Junkshop Name:</strong> <%= junkshop.jShopName %></p>
             <p><strong>Owner Name:</strong> <%= junkshop.ownerName %></p>
@@ -55,36 +67,30 @@
             <p><strong>Contact Number:</strong> <%= junkshop.phone %></p>
             <p><strong>Email:</strong> <%= junkshop.email %></p>
             <p><strong>Junkshop Images:</strong></p>
-<div class="image-gallery">
-  <% if (junkshop.jShopImg) { %>
-    <img src="data:image/png;base64,<%= junkshop.jShopImg %>" alt="Junkshop Image 1" width="150" style="cursor: pointer;" onclick="openModal('<%= junkshop.jShopImg %>')" />
-  <% } else { %>
-    <p>No image available for Image 1.</p>
-  <% } %>
-  <p><strong>Junkshop Images:</strong></p>
-  <% if (junkshop.validID) { %>
-    <img src="data:image/png;base64,<%= junkshop.validID %>" alt="Junkshop Image 2" width="150" style="cursor: pointer;" onclick="openModal('<%= junkshop.validID %>')" />
-  <% } else { %>
-    <p>No image available for Image 2.</p>
-  <% } %>
-  <p><strong>Junkshop Images:</strong></p>
-  <% if (junkshop.permit) { %>
-    <img src="data:image/png;base64,<%= junkshop.permit %>" alt="Junkshop Image 3" width="150" style="cursor: pointer;" onclick="openModal('<%= junkshop.permit %>')" />
-  <% } else { %>
-    <p>No image available for Image 3.</p>
-  <% } %>
-</div>
-            <p><strong>Status:</strong>
-              <% if (junkshop.isApproved === null) { %>
-                <span><span class="ti ti-clock text-secondary"></span> Pending</span>
+            <div class="image-gallery">
+              <% if (junkshop.jShopImg) { %>
+                <img src="data:image/png;base64,<%= junkshop.jShopImg %>" alt="Junkshop Image 1" width="150" style="cursor: pointer;" onclick="openModal('<%= junkshop.jShopImg %>')" />
+              <% } else { %>
+                <p>No image available for Image 1.</p>
               <% } %>
-              <% if (junkshop.isApproved === true) { %>
-                <span><span class="ti ti-check text-success"></span> Approved</span>
+              <p><strong>Valid ID:</strong></p>
+              <% if (junkshop.validID) { %>
+                <img src="data:image/png;base64,<%= junkshop.validID %>" alt="Junkshop Image 2" width="150" style="cursor: pointer;" onclick="openModal('<%= junkshop.validID %>')" />
+              <% } else { %>
+                <p>No image available for Image 2.</p>
               <% } %>
-              <% if (junkshop.isApproved === false) { %>
-                <span><span class="ti ti-close text-danger"></span> Rejected</span>
+              <p><strong>Permit:</strong></p>
+              <% if (junkshop.permit) { %>
+                <img src="data:image/png;base64,<%= junkshop.permit %>" alt="Junkshop Image 3" width="150" style="cursor: pointer;" onclick="openModal('<%= junkshop.permit %>')" />
+              <% } else { %>
+                <p>No image available for Image 3.</p>
               <% } %>
-            </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+          
             
         <!-- Junkshop Image Display -->
 
