@@ -10,53 +10,45 @@
   <link rel="stylesheet" href="../assets/css/styles.min.css" />
 </head>
 <style>
-  /* Custom select style */
   .custom-select {
-    width: 100%;
+    width: 180px;
     height: 45px;
     padding: 10px;
     font-size: 13px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
   }
 
-  .custom-select:focus {
-    border-color: #aaa;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  .pagination-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
   }
 
-  .ml-2 {
-    margin-left: 10px;
+  .pagination-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    color: white;
+    background-color: #6c757d;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
   }
 
-  .mb-4 {
-    margin-bottom: 1.5rem;
+  .pagination-btn:hover {
+    background-color: #5a6268;
   }
 
-  .custom-select::-ms-expand {
-    display: none;
+  .pagination-btn:disabled {
+    background-color: #adb5bd;
+    cursor: not-allowed;
   }
 
-  /* Responsive Adjustments */
-  @media (max-width: 768px) {
-    .custom-select {
-      width: 100%;
-    }
-
-    .ml-2 {
-      margin-left: 0;
-    }
-
-    .card {
-      margin-top: 2rem;
-    }
-    
-    .d-flex {
-      flex-direction: column;
-    }
+  .page-number-display {
+    font-weight: bold;
   }
 </style>
 
@@ -133,6 +125,11 @@
             <% } %>
           </div>
         </div>
+        <div class="pagination-wrapper">
+          <button class="pagination-btn" onclick="prevPage()" id="prevBtn" disabled>Previous</button>
+          <span id="pageNumberDisplay" class="page-number-display">Page 1</span>
+          <button class="pagination-btn" onclick="nextPage()" id="nextBtn">Next</button>
+        </div>
       </div>
     </div>
     <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
@@ -141,6 +138,38 @@
     <script src="../assets/js/app.min.js"></script>
     <script src="../assets/libs/simplebar/dist/simplebar.js"></script>
     <script>
+const cards = Array.from(document.querySelectorAll('#barangayList .card'));
+      const itemsPerPage = 5;
+      let currentPage = 1;
+
+      function showPage(page) {
+        const start = (page - 1) * itemsPerPage;
+        const end = page * itemsPerPage;
+
+        cards.forEach((card, index) => {
+          card.style.display = index >= start && index < end ? 'block' : 'none';
+        });
+
+        document.getElementById('prevBtn').disabled = page === 1;
+        document.getElementById('nextBtn').disabled = end >= cards.length;
+        document.getElementById('pageNumberDisplay').textContent = `Page ${page}`;
+      }
+
+      function nextPage() {
+        if (currentPage * itemsPerPage < cards.length) {
+          currentPage++;
+          showPage(currentPage);
+        }
+      }
+
+      function prevPage() {
+        if (currentPage > 1) {
+          currentPage--;
+          showPage(currentPage);
+        }
+      }
+
+
       document.querySelectorAll(".btn-success").forEach(button => {
         button.addEventListener("click", function() {
           sendApproval(this.getAttribute("data-id"), "approved", this.getAttribute("data-jid"));
@@ -201,6 +230,7 @@
         });
       });
     </script>
+    
 </body>
 
 </html>

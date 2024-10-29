@@ -6,8 +6,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Junkshop | Kariton</title>
   <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.png" />
-  <link rel="stylesheet" href="../assets/css/styles.min.css" />  <link rel="icon" href="img/home-logo.png" type="image/x-icon"/>
+  <link rel="icon" href="img/home-logo.png" type="image/x-icon" />
+  <link rel="stylesheet" href="../assets/css/styles.min.css" />
+  <style>
+    .pagination-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
 
+    .pagination-btn {
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 5px;
+      margin: 0 5px;
+      color: white;
+      background-color: #6c757d;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .pagination-btn:hover {
+      background-color: #5a6268;
+    }
+
+    .pagination-btn:disabled {
+      background-color: #adb5bd;
+      cursor: not-allowed;
+    }
+
+    .page-number-display {
+      font-weight: bold;
+    }
+  </style>
 </head>
 
 <body>
@@ -16,7 +50,6 @@
     data-sidebar-position="fixed" data-header-position="fixed">
     <!-- Sidebar Start -->
     <aside class="left-sidebar">
-      <!-- Sidebar scroll-->
       <div>
         <div class="brand-logo d-flex align-items-center justify-content-between">
           <a href="/" class="text-nowrap logo-img">
@@ -26,25 +59,24 @@
             <i class="ti ti-x fs-8"></i>
           </div>
         </div>
-        <!-- Sidebar navigation-->
-        <div>   <%- include('./partials/sidebar'); -%></div>
-        <!-- End Sidebar navigation -->
+        <div> <%- include('./partials/sidebar'); -%></div>
       </div>
-      <!-- End Sidebar scroll-->
     </aside>
     <!--  Sidebar End -->
     <!--  Main wrapper -->
     <div class="body-wrapper">
-      <!--  Header Start -->
-      <div>   <%- include('./partials/head'); -%></div>
-      <!--  Header End -->
+      <div> <%- include('./partials/head'); -%></div>
       <div class="container-fluid">
         <div class="col-lg d-flex align-items-stretch">
           <div class="card w-100">
             <div class="card-body p-4">
               <h5 class="card-title fw-semibold mb-4">List of Approved Junkshops</h5>
               <!-- Download PDF Button -->
-              <button id="download-pdf" class="btn btn-primary mb-4">Download PDF</button>
+              <button id="download-pdf" class="btn btn-primary mb-4">Generate PDF Report</button>
+              <!-- Search Input -->
+              <div class="mb-3">
+                <input type="text" id="searchInput" class="form-control" placeholder="Search Junkshops...">
+              </div>
               <div class="table-responsive">
                 <table class="table text-nowrap mb-0 align-middle" id="junkshop-table">
                   <thead class="text-dark fs-4">
@@ -66,13 +98,12 @@
                       </th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody id="tableBody">
                     <% for(let i in junk) { %>
                       <% if(junk[i].isApproved==true) { %>
                     <tr>
                       <td class="border-bottom-0">
                           <h6 class="fw-semibold mb-1"><%= junk[i].jShopName %></h6>
-                          <span class="fw-normal"></span>                          
                       </td>
                       <td class="border-bottom-0">
                         <p class="mb-0 fw-normal"><%= junk[i].ownerName %></p>
@@ -98,13 +129,20 @@
                   </tbody>
                 </table>
               </div>
+
+              <!-- Pagination Controls -->
+              <div class="pagination-wrapper">
+                <button class="pagination-btn" onclick="prevPage()" id="prevBtn" disabled>Previous</button>
+                <span id="pageNumberDisplay" class="page-number-display">Page 1</span>
+                <button class="pagination-btn" onclick="nextPage()" id="nextBtn">Next</button>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      </div>
     </div>
   </div>
+
   <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
   <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../assets/js/sidebarmenu.js"></script>
@@ -114,6 +152,57 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
 
   <script>
+    const rows = Array.from(document.querySelectorAll('#tableBody tr'));
+    const itemsPerPage = 10;
+    let currentPage = 1;
+
+    function showPage(page) {
+      const start = (page - 1) * itemsPerPage;
+      const end = page * itemsPerPage;
+
+      rows.forEach((row, index) => {
+        row.style.display = index >= start && index < end ? 'table-row' : 'none';
+      });
+
+      document.getElementById('prevBtn').disabled = page === 1;
+      document.getElementById('nextBtn').disabled = end >= rows.length;
+
+      document.getElementById('pageNumberDisplay').textContent = `Page ${page}`;
+    }
+
+    function nextPage() {
+      if (currentPage * itemsPerPage < rows.length) {
+        currentPage++;
+        showPage(currentPage);
+      }
+    }
+
+    function prevPage() {
+      if (currentPage > 1) {
+        currentPage--;
+        showPage(currentPage);
+      }
+    }
+
+    document.getElementById('searchInput').addEventListener('keyup', function () {
+      const filter = this.value.toLowerCase();
+      const filteredRows = rows.filter(row => {
+        const textContent = Array.from(row.cells).map(cell => cell.innerText.toLowerCase()).join(' ');
+        return textContent.includes(filter);
+      });
+
+      // Update the rows based on search
+      rows.forEach((row, index) => {
+        row.style.display = filteredRows.includes(row) ? 'table-row' : 'none';
+      });
+
+      // Reset currentPage and show the first page of filtered results
+      currentPage = 1;
+      showPage(currentPage);
+    });
+
+    document.addEventListener('DOMContentLoaded', () => showPage(currentPage));
+
     document.getElementById('download-pdf').addEventListener('click', function () {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({ orientation: 'landscape' });
@@ -127,6 +216,47 @@
       doc.save('approved-junkshops.pdf');
     });
   </script>
+  <script>
+  document.getElementById('download-pdf').addEventListener('click', function () {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'landscape' });
+
+    // Title
+    doc.setFontSize(18);
+    doc.text('List of Approved Junkshops', 14, 16);
+    
+    // Define column headers
+    const columns = [
+      { header: 'JunkShop Name', dataKey: 'jShopName' },
+      { header: 'Owner', dataKey: 'ownerName' },
+      { header: 'Location', dataKey: 'address' },
+      { header: 'Approval Date', dataKey: 'approvalDate' },
+      { header: 'Created At', dataKey: 'dateOfReg' },
+    ];
+
+    // Prepare data for the PDF
+    const tableData = rows.map(row => ({
+      jShopName: row.cells[0].innerText,
+      ownerName: row.cells[1].innerText,
+      address: row.cells[2].innerText,
+      approvalDate: row.cells[3].innerText,
+      dateOfReg: row.cells[4].innerText,
+    }));
+
+    // Generate the table
+    doc.autoTable({
+      columns: columns,
+      body: tableData,
+      startY: 30, // Adjust vertical positioning
+      headStyles: { fillColor: [52, 58, 64] }, // Dark header style
+      styles: { cellPadding: 3, fontSize: 10, valign: 'middle', halign: 'left' },
+    });
+
+    // Save the PDF
+    doc.save('approved-junkshops.pdf');
+  });
+</script>
+
 </body>
 
 </html>

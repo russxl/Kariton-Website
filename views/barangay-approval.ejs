@@ -5,61 +5,82 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Approval | Kariton</title>
-  <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.png" />  <link rel="icon" href="img/home-logo.png" type="image/x-icon"/>
-
+  <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.png" />
+  <link rel="icon" href="img/home-logo.png" type="image/x-icon" />
   <link rel="stylesheet" href="../assets/css/styles.min.css" />
+  <style>
+    /* Custom select style */
+    .custom-select {
+      width: 180px;
+      height: 45px;
+      padding: 10px;
+      font-size: 13px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+    }
+
+    .custom-select:focus {
+      border-color: #aaa;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Filter label style */
+    .ml-2 {
+      margin-left: 10px;
+    }
+
+    .mb-4 {
+      margin-bottom: 1.5rem;
+    }
+
+    /* Filter dropdown arrow */
+    .custom-select::-ms-expand {
+      display: none;
+    }
+
+    .custom-select::after {
+      content: "\f0d7";
+      font-family: "Font Awesome 5 Free";
+      font-weight: 900;
+      font-size: 10px;
+      color: #666;
+      padding: 13px;
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    /* Pagination style */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .page-number {
+      margin: 0 5px;
+      cursor: pointer;
+      padding: 5px 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .page-number.active {
+      background-color: #007bff;
+      color: white;
+    }
+  </style>
 </head>
-<style>
-  /* Custom select style */
-.custom-select {
-  width: 180px;
-  height: 45px;
-  padding: 10px;
-  font-size: 13px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-}
-
-.custom-select:focus {
-  border-color: #aaa;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-/* Filter label style */
-.ml-2 {
-  margin-left: 10px;
-}
-
-.mb-4 {
-  margin-bottom: 1.5rem;
-}
-
-/* Filter dropdown arrow */
-.custom-select::-ms-expand {
-  display: none;
-}
-
-.custom-select::after {
-  content: "\f0d7";
-  font-family: "Font Awesome 5 Free";
-  font-weight: 900;
-  font-size: 10px;
-  color: #666;
-  padding: 13px;
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-}
-</style>
 
 <body>
   <!--  Body Wrapper -->
-  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full" data-sidebar-position="fixed" data-header-position="fixed">
+  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+    data-sidebar-position="fixed" data-header-position="fixed">
     <!-- Sidebar Start -->
     <aside class="left-sidebar">
       <!-- Sidebar scroll-->
@@ -92,6 +113,10 @@
         <div class="card">
           <div class="card-body">
             <h5 class="card-title fw-semibold mb-4">Pending Barangay</h5>
+
+            <!-- Hidden div to hold junk items data -->
+            <div id="junk-data" style="display: none;"><%- JSON.stringify(junk) %></div>
+
             <div class="d-flex justify-content-end mb-2">
               <select id="filter-status" class="form-control custom-select">
                 <option value="">All</option>
@@ -101,32 +126,41 @@
               </select>
               <label for="filter-status" class="ml-2 mt-2">Filter by Status</label>
             </div>
-            <% for(let i = junk.length - 1; i >= 0; i--) { %>
-            <div class="card mt-5" data-status="<%= junk[i].isApproved %>">
-              <div class="card-body">
-                <div class="d-flex justify-content-between">
-                  <h5 class="card-title fw-semibold mb-2"><%= junk[i].bName %></h5>
-                  <div>
-                    <% if(junk[i].isApproved === null) { %>
-                    <span><i class="ti ti-clock text-secondary"></i> <span class="text-secondary">Pending</span></span>
+
+            <div id="items-container">
+              <% for (let i = junk.length - 1; i >= 0; i--) { %>
+                <div class="card mt-5" data-status="<%= junk[i].isApproved %>">
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                      <h5 class="card-title fw-semibold mb-2"><%= junk[i].bName %></h5>
+                      <div>
+                        <% if (junk[i].isApproved === null) { %>
+                          <span><i class="ti ti-clock text-secondary"></i> <span class="text-secondary">Pending</span></span>
+                        <% } %>
+                        <% if (junk[i].isApproved === true) { %>
+                          <span><i class="ti ti-check text-success"></i> <span class="text-success">Approved</span></span>
+                        <% } %>
+                        <% if (junk[i].isApproved === false) { %>
+                          <span><i class="ti ti-x text-danger"></i> <span class="text-danger">Rejected</span></span>
+                        <% } %>
+                      </div>
+                    </div>
+                    <p class="mb-0"><%= junk[i].capName %></p>
+                    <% if (junk[i].isApproved === null) { %>
+                      <button type="button" class="btn btn-success m-1" data-id="<%= junk[i]._id %>">Approve</button>
+                      <button type="button" class="btn btn-danger m-1" data-id="<%= junk[i]._id %>">Reject</button>
                     <% } %>
-                    <% if(junk[i].isApproved === true) { %>
-                    <span><i class="ti ti-check text-success"></i> <span class="text-success">Approved</span></span>
-                    <% } %>
-                    <% if(junk[i].isApproved === false) { %>
-                    <span><i class="ti ti-x text-danger"></i> <span class="text-danger">Rejected</span></span>
-                    <% } %>
+                    <a href="/junkshop/<%= junk[i]._id %>/barangay" class="btn btn-primary mt-2">View Details</a>
                   </div>
                 </div>
-                <p class="mb-0"><%= junk[i].capName %></p>
-                <% if(junk[i].isApproved === null) { %>
-                <button type="button" class="btn btn-success m-1" data-id="<%= junk[i]._id %>">Approve</button>
-                <button type="button" class="btn btn-danger m-1" data-id="<%= junk[i]._id %>">Reject</button>
-                <% } %>
-                <a href="/junkshop/<%= junk[i]._id %>/barangay" class="btn btn-primary mt-2">View Details</a>
-              </div>
+              <% } %>
             </div>
-            <% } %>
+
+            <div class="pagination">
+              <button id="prev-btn" class="page-number">Previous</button>
+              <span id="page-numbers"></span>
+              <button id="next-btn" class="page-number">Next</button>
+            </div>
           </div>
         </div>
       </div>
@@ -136,57 +170,106 @@
     <script src="../assets/js/sidebarmenu.js"></script>
     <script src="../assets/js/app.min.js"></script>
     <script src="../assets/libs/simplebar/dist/simplebar.js"></script>
+    
     <script>
-      document.querySelectorAll(".btn-success").forEach(button => {
-        button.addEventListener("click", function() {
-          sendApproval(this.getAttribute("data-id"), true);
-        });
-      });
+      const itemsPerPage = 10;
+      let currentPage = 1;
+      let junkItems = JSON.parse(document.getElementById("junk-data").textContent); // Get junk items from hidden div
 
-      document.querySelectorAll(".btn-danger").forEach(button => {
-        button.addEventListener("click", function() {
-          sendApproval(this.getAttribute("data-id"), false);
-        });
-      });
+      let filteredItems = junkItems; // To store items based on the filter
 
-      function sendApproval(applicantId, approved) {
-        fetch('/dashboard/pending', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              applicantId: applicantId,
-              approved: approved
-            })
-          })
-          .then(response => {
-            // Handle response
-          })
-          .catch(error => {
-            console.error('Error:', error);
-          });
+      function displayItems() {
+        const itemsContainer = document.getElementById("items-container");
+        itemsContainer.innerHTML = ""; // Clear previous items
+
+        const start = (currentPage - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        const paginatedItems = filteredItems.slice(start, end);
+
+        paginatedItems.forEach(item => {
+          const card = `
+            <div class="card mt-5" data-status="${item.isApproved}">
+              <div class="card-body">
+                <div class="d-flex justify-content-between">
+                  <h5 class="card-title fw-semibold mb-2">${item.bName}</h5>
+                  <div>
+                    ${item.isApproved === null ? '<span><i class="ti ti-clock text-secondary"></i> <span class="text-secondary">Pending</span></span>' : ''}
+                    ${item.isApproved === true ? '<span><i class="ti ti-check text-success"></i> <span class="text-success">Approved</span></span>' : ''}
+                    ${item.isApproved === false ? '<span><i class="ti ti-x text-danger"></i> <span class="text-danger">Rejected</span></span>' : ''}
+                  </div>
+                </div>
+                <p class="mb-0">${item.capName}</p>
+                ${item.isApproved === null ? `
+                  <button type="button" class="btn btn-success m-1" data-id="${item._id}">Approve</button>
+                  <button type="button" class="btn btn-danger m-1" data-id="${item._id}">Reject</button>
+                ` : ''}
+                <a href="/junkshop/${item._id}/barangay" class="btn btn-primary mt-2">View Details</a>
+              </div>
+            </div>
+          `;
+          itemsContainer.innerHTML += card;
+        });
+
+        updatePagination();
       }
 
-      document.getElementById('filter-status').addEventListener('change', function() {
-        const filterValue = this.value;
-        const cards = document.querySelectorAll('.card[data-status]');
+      function updatePagination() {
+        const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+        const pageNumbersContainer = document.getElementById("page-numbers");
+        pageNumbersContainer.innerHTML = ""; // Clear previous page numbers
 
-        cards.forEach(card => {
-          const status = card.getAttribute('data-status');
-          let display = 'none';
-
-          if (filterValue === '' ||
-            (filterValue === 'approved' && status === 'true') ||
-            (filterValue === 'rejected' && status === 'false') ||
-            (filterValue === 'pending' && status === 'null')) {
-            display = 'block';
+        for (let i = 1; i <= totalPages; i++) {
+          const pageNumber = document.createElement("span");
+          pageNumber.innerText = i;
+          pageNumber.classList.add("page-number");
+          if (i === currentPage) {
+            pageNumber.classList.add("active");
           }
+          pageNumber.addEventListener("click", () => {
+            currentPage = i;
+            displayItems();
+          });
+          pageNumbersContainer.appendChild(pageNumber);
+        }
 
-          card.style.display = display;
-        });
+        // Disable buttons based on the current page
+        document.getElementById("prev-btn").disabled = currentPage === 1;
+        document.getElementById("next-btn").disabled = currentPage === totalPages;
+      }
+
+      // Event listeners for next/previous buttons
+      document.getElementById("prev-btn").addEventListener("click", () => {
+        if (currentPage > 1) {
+          currentPage--;
+          displayItems();
+        }
       });
+
+      document.getElementById("next-btn").addEventListener("click", () => {
+        const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+        if (currentPage < totalPages) {
+          currentPage++;
+          displayItems();
+        }
+      });
+
+      // Filter functionality
+      document.getElementById("filter-status").addEventListener("change", function () {
+        const selectedStatus = this.value;
+        filteredItems = selectedStatus ? junkItems.filter(item => {
+          return selectedStatus === "pending" ? item.isApproved === null :
+            selectedStatus === "approved" ? item.isApproved === true :
+              item.isApproved === false;
+        }) : junkItems;
+        
+        currentPage = 1; // Reset to first page
+        displayItems();
+      });
+
+      // Initial display
+      displayItems();
     </script>
+  </div>
 </body>
 
 </html>

@@ -8,60 +8,55 @@
   <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.png" />
   <link rel="stylesheet" href="../assets/css/styles.min.css" />
 </head>
+
 <style>
-  /* Custom select style */
-.custom-select {
-  width: 180px;
-  height: 45px;
-  padding: 10px;
-  font-size: 13px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-}
+  .custom-select {
+    width: 180px;
+    height: 45px;
+    padding: 10px;
+    font-size: 13px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
 
-.custom-select:focus {
-  border-color: #aaa;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
+  .pagination-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+  }
 
-/* Filter label style */
-.ml-2 {
-  margin-left: 10px;
-}
+  .pagination-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    color: white;
+    background-color: #6c757d;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
 
-.mb-4 {
-  margin-bottom: 1.5rem;
-}
+  .pagination-btn:hover {
+    background-color: #5a6268;
+  }
 
-/* Filter dropdown arrow */
-.custom-select::-ms-expand {
-  display: none;
-}
+  .pagination-btn:disabled {
+    background-color: #adb5bd;
+    cursor: not-allowed;
+  }
 
-.custom-select::after {
-  content: "\f0d7";
-  font-family: "Font Awesome 5 Free";
-  font-weight: 900;
-  font-size: 10px;
-  color: #666;
-  padding: 13px;
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-}
+  .page-number-display {
+    font-weight: bold;
+  }
 </style>
 
 <body>
-  <!--  Body Wrapper -->
-  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full" data-sidebar-position="fixed" data-header-position="fixed">
-    <!-- Sidebar Start -->
+  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6"
+    data-sidebartype="full" data-sidebar-position="fixed" data-header-position="fixed">
+    
     <aside class="left-sidebar">
-      <!-- Sidebar scroll-->
       <div>
         <div class="brand-logo d-flex align-items-center justify-content-between">
           <a href="/" class="text-nowrap logo-img">
@@ -71,26 +66,18 @@
             <i class="ti ti-x fs-8"></i>
           </div>
         </div>
-        <!-- Sidebar navigation-->
-        <div>
-          <%- include('./partials/sidebar'); -%>
-        </div>
-        <!-- End Sidebar navigation -->
+        <div><%- include('./partials/sidebar'); -%></div>
       </div>
-      <!-- End Sidebar scroll-->
     </aside>
-    <!--  Sidebar End -->
-    <!--  Main wrapper -->
+
     <div class="body-wrapper">
-      <!--  Header Start -->
-      <div>
-        <%- include('./partials/head'); -%>
-      </div>
-      <!--  Header End -->
+      <div><%- include('./partials/head'); -%></div>
+      
       <div class="container-fluid">
         <div class="card">
           <div class="card-body">
             <h5 class="card-title fw-semibold mb-4">Pending Barangay</h5>
+
             <div class="d-flex justify-content-end mb-2">
               <select id="filter-status" class="form-control custom-select">
                 <option value="">All</option>
@@ -100,111 +87,162 @@
               </select>
               <label for="filter-status" class="ml-2 mt-2">Filter by Status</label>
             </div>
-            <% for(let i = junk.length - 1; i >= 0; i--) { %>
-            <div class="card mt-5" data-status="<%= junk[i].isApproved %>">
-              <div class="card-body">
-                <div class="d-flex justify-content-between">
-                  <h5 class="card-title fw-semibold mb-2"><%= junk[i].bName %></h5>
-                  <div>
-                    <% if(junk[i].isApproved === null) { %>
-                    <span><i class="ti ti-clock text-secondary"></i> <span class="text-secondary">Pending</span></span>
-                    <% } %>
-                    <% if(junk[i].isApproved === true) { %>
-                    <span><i class="ti ti-check text-success"></i> <span class="text-success">Approved</span></span>
-                    <% } %>
-                    <% if(junk[i].isApproved === false) { %>
-                    <span><i class="ti ti-x text-danger"></i> <span class="text-danger">Rejected</span></span>
-                    <% } %>
+
+            <div id="barangayList">
+              <% for (let i = junk.length - 1; i >= 0; i--) { %>
+              <div class="card mt-5" data-status="<%= junk[i].isApproved %>">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between">
+                    <h5 class="card-title fw-semibold mb-2"><%= junk[i].bName %></h5>
+                    <div>
+                      <% if (junk[i].isApproved === null) { %>
+                      <span><i class="ti ti-clock text-secondary"></i> <span class="text-secondary">Pending</span></span>
+                      <% } else if (junk[i].isApproved) { %>
+                      <span><i class="ti ti-check text-success"></i> <span class="text-success">Approved</span></span>
+                      <% } else { %>
+                      <span><i class="ti ti-x text-danger"></i> <span class="text-danger">Rejected</span></span>
+                      <% } %>
+                    </div>
                   </div>
+                  <p class="mb-0"><%= junk[i].capName %></p>
+                  <% if (junk[i].isApproved === null) { %>
+                  <button type="button" class="btn btn-success m-1" data-id="<%= junk[i]._id %>">Approve</button>
+                  <button type="button" class="btn btn-danger m-1" data-id="<%= junk[i]._id %>">Reject</button>
+                  <% } %>
+                  <a href="/<%= junk[i]._id %>/barangay-view" class="btn btn-primary mt-2">View Details</a>
                 </div>
-                <p class="mb-0"><%= junk[i].capName %></p>
-                <% if(junk[i].isApproved === null) { %>
-                <button type="button" class="btn btn-success m-1" data-id="<%= junk[i]._id %>">Approve</button>
-                <button type="button" class="btn btn-danger m-1" data-id="<%= junk[i]._id %>">Reject</button>
-                <% } %>
-                <a href="/<%= junk[i]._id %>/barangay-view" class="btn btn-primary mt-2">View Details</a>
               </div>
+              <% } %>
             </div>
-            <% } %>
+
+            <!-- Pagination Controls -->
+            <div class="pagination-wrapper">
+              <button class="pagination-btn" onclick="prevPage()" id="prevBtn" disabled>Previous</button>
+              <span id="pageNumberDisplay" class="page-number-display">Page 1</span>
+              <button class="pagination-btn" onclick="nextPage()" id="nextBtn">Next</button>
+            </div>
           </div>
         </div>
       </div>
     </div>
+
     <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
     <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../assets/js/sidebarmenu.js"></script>
     <script src="../assets/js/app.min.js"></script>
     <script src="../assets/libs/simplebar/dist/simplebar.js"></script>
+
     <script>
-   document.querySelectorAll(".btn-success").forEach(button => {
-  button.addEventListener("click", function() {
-    sendApproval(this.getAttribute("data-id"), true);
-  });
-});
+      const cards = Array.from(document.querySelectorAll('#barangayList .card'));
+      const itemsPerPage = 5;
+      let currentPage = 1;
 
-document.querySelectorAll(".btn-danger").forEach(button => {
-  button.addEventListener("click", function() {
-    sendApproval(this.getAttribute("data-id"), false);
-  });
-});
+      function showPage(page) {
+        const start = (page - 1) * itemsPerPage;
+        const end = page * itemsPerPage;
 
-document.querySelectorAll(".btn-success").forEach(button => {
-    button.addEventListener("click", function() {
-        sendApproval(this.getAttribute("data-id"), true);
-    });
-});
+        cards.forEach((card, index) => {
+          card.style.display = index >= start && index < end ? 'block' : 'none';
+        });
 
-document.querySelectorAll(".btn-danger").forEach(button => {
-    button.addEventListener("click", function() {
-        sendApproval(this.getAttribute("data-id"), false);
-    });
-});
-
-function sendApproval(applicantId, approved) {
-    fetch('/dashboard/barangayapproval', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            applicantId: applicantId,
-            approved: approved
-        })
-    })
-    .then(response => {
-        if (response.ok) {
-            window.location.reload();
-        } else {
-            return response.json().then(err => {
-                console.error('Error:', err);
-            });
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-}
-
-document.getElementById('filter-status').addEventListener('change', function() {
-    const filterValue = this.value;
-    const cards = document.querySelectorAll('.card[data-status]');
-
-    cards.forEach(card => {
-      const status = card.getAttribute('data-status');
-      let display = 'none';
-
-      // Check the selected filter value and match with the data-status
-      if (filterValue === '' ||  // If no filter is selected, show all
-        (filterValue === 'approved' && status === 'true') ||  // Filter approved
-        (filterValue === 'rejected' && status === 'false') || // Filter rejected
-        (filterValue === 'pending' && status === '')) {  // Filter pending (null)
-        display = 'block';  // Show matching items
+        document.getElementById('prevBtn').disabled = page === 1;
+        document.getElementById('nextBtn').disabled = end >= cards.length;
+        document.getElementById('pageNumberDisplay').textContent = `Page ${page}`;
       }
 
-      card.style.display = display;  // Apply the display style
-    });
-  });
+      function nextPage() {
+        if (currentPage * itemsPerPage < cards.length) {
+          currentPage++;
+          showPage(currentPage);
+        }
+      }
+
+      function prevPage() {
+        if (currentPage > 1) {
+          currentPage--;
+          showPage(currentPage);
+        }
+      }
+
+      document.getElementById('filter-status').addEventListener('change', function () {
+        const filterValue = this.value;
+
+        cards.forEach(card => {
+          const status = card.getAttribute('data-status');
+          const display = (
+            filterValue === '' ||
+            (filterValue === 'approved' && status === 'true') ||
+            (filterValue === 'rejected' && status === 'false') ||
+            (filterValue === 'pending' && status === '')
+          ) ? 'block' : 'none';
+
+          card.style.display = display;
+        });
+
+        currentPage = 1;
+        showPage(currentPage);
+      });
+
+      document.addEventListener('DOMContentLoaded', () => showPage(currentPage));
     </script>
+      <script>
+        // Wait until the DOM is fully loaded
+        document.getElementById('filter-status').addEventListener('change', function() {
+      const filterValue = this.value;
+      const cards = document.querySelectorAll('.card[data-status]');
+  
+      cards.forEach(card => {
+        const status = card.getAttribute('data-status');
+        let display = 'none';
+  
+        // Check the selected filter value and match with the data-status
+        if (filterValue === '' ||  // If no filter is selected, show all
+          (filterValue === 'approved' && status === 'true') ||  // Filter approved
+          (filterValue === 'rejected' && status === 'false') || // Filter rejected
+          (filterValue === 'pending' && status === "")) {  // Filter pending (null)
+          display = 'block';  // Show matching items
+        }
+  
+        card.style.display = display;  // Apply the display style
+      });
+    });
+        document.querySelectorAll(".btn-success").forEach(button => {
+          button.addEventListener("click", function() {
+            sendApproval(this.getAttribute("data-id"), true);
+          });
+        });
+      
+        document.querySelectorAll(".btn-danger").forEach(button => {
+          button.addEventListener("click", function() {
+            sendApproval(this.getAttribute("data-id"), false);
+          });
+        });
+      
+        function sendApproval(applicantId, approved) {
+          fetch('/dashboard/pending', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              applicantId: applicantId,
+              approved: approved
+            })
+          })
+          .then(response => {
+            if (response.ok) {
+              // Reload the page after successful approval/rejection
+              window.location.reload('/dashboard/pending'); // This ensures the page reloads
+            } else {
+              console.error('Error:', response);
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+        }
+      </script>
+      
 </body>
 
 </html>

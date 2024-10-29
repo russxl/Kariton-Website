@@ -4,79 +4,118 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Logs | Kariton</title>  <link rel="icon" href="img/home-logo.png" type="image/x-icon"/>
-
+  <title>Logs | Kariton</title>
+  <link rel="icon" href="img/home-logo.png" type="image/x-icon" />
   <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.png" />
   <link rel="stylesheet" href="../assets/css/styles.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.22/jspdf.plugin.autotable.min.js"></script>
+
+  <style>
+    .pagination-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .pagination-btn {
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 5px;
+      margin: 0 5px;
+      color: white;
+      background-color: #6c757d;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .pagination-btn:hover {
+      background-color: #5a6268;
+    }
+
+    .pagination-btn:disabled {
+      background-color: #adb5bd;
+      cursor: not-allowed;
+    }
+
+    .page-number-display {
+      font-weight: bold;
+    }
+  </style>
 </head>
 
 <body>
-<!--  Body Wrapper -->
-<div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
-  data-sidebar-position="fixed" data-header-position="fixed">
-  <!-- Sidebar Start -->
-  <aside class="left-sidebar">
-    <!-- Sidebar scroll-->
-    <div>
-      <div class="brand-logo d-flex align-items-center justify-content-between">
-        <a href="/" class="text-nowrap logo-img">          <img src="../img/image-removebg-preview (1) (2).png" width="180" style="opacity: 0.7;" alt="" />
-        </a>
-        <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
-          <i class="ti ti-x fs-8"></i>
+  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6"
+    data-sidebartype="full" data-sidebar-position="fixed" data-header-position="fixed">
+
+    <aside class="left-sidebar">
+      <div>
+        <div class="brand-logo d-flex align-items-center justify-content-between">
+          <a href="/" class="text-nowrap logo-img">
+            <img src="../img/image-removebg-preview (1) (2).png" width="180" style="opacity: 0.7;" alt="" />
+          </a>
+          <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
+            <i class="ti ti-x fs-8"></i>
+          </div>
         </div>
+        <div><%- include('./partials/sidebar'); -%></div>
       </div>
-      <!-- Sidebar navigation-->
-      <div>   <%- include('./partials/sidebar'); -%></div>
-      <!-- End Sidebar navigation -->
-    </div>
-    <!-- End Sidebar scroll-->
-  </aside>
-  <!--  Sidebar End -->
-<!--  Main wrapper -->
-<div class="body-wrapper">
-  <!--  Header Start -->
-  <div>   <%- include('./partials/head'); -%></div>
-  <!--  Header End -->
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-lg-12">
-        <div class="card">
-          <div class="card-body">
-            <h4 class="card-title" style="margin-bottom: 25px;">Transaction Logs</h4>
-            <!-- PDF Download Button -->
-            <button class="btn btn-primary mb-4" onclick="downloadPDF()">Download PDF</button>
-            <div class="table-responsive">
-              <table id="transactionsTable" class="table table-striped table-bordered">
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Transaction Type</th>
-                    <th>User</th>
-                    <th>Transaction Log</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% for(let i = transactions.length - 1; i >= 0; i--) { %>
-                  <tr>
-                    <td><%= transactions[i].date %></td>
-                    <td><%= transactions[i].time %></td>
-                    <td><%= transactions[i].type %></td>
-                    <td><%= transactions[i].userName || transactions[i].name %></td>
-                    <td><%= transactions[i].logs %></td>
-                  </tr>
-                  <% } %>  
-                </tbody>
-              </table>
+    </aside>
+
+    <div class="body-wrapper">
+      <div><%- include('./partials/head'); -%></div>
+
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title" style="margin-bottom: 25px;">Transaction Logs</h4>
+
+                <!-- PDF Download Button -->
+                <button class="btn btn-primary mb-4" onclick="downloadPDF()">Generate PDF Report</button>
+
+                <div class="table-responsive">
+                  <table id="transactionsTable" class="table table-striped table-bordered">
+                    <thead>
+                      <tr>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Transaction Type</th>
+                        <th>User</th>
+                        <th>Transaction Log</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                      <% for (let i = transactions.length - 1; i >= 0; i--) { %>
+                        <tr>
+                          <td><%= transactions[i].date %></td>
+                          <td><%= transactions[i].time %></td>
+                          <td><%= transactions[i].type %></td>
+                          <td><%= transactions[i].userName || transactions[i].name %></td>
+                          <td><%= transactions[i].logs %></td>
+                        </tr>
+                      <% } %>
+                    </tbody>
+                  </table>
+                </div>
+
+                <!-- Pagination Controls -->
+                <div class="pagination-wrapper">
+                  <button class="pagination-btn" onclick="prevPage()" id="prevBtn" disabled>Previous</button>
+                  <span id="pageNumberDisplay" class="page-number-display">Page 1</span>
+                  <button class="pagination-btn" onclick="nextPage()" id="nextBtn">Next</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
   <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
   <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
@@ -85,6 +124,39 @@
   <script src="../assets/libs/simplebar/dist/simplebar.js"></script>
 
   <script>
+    const rows = Array.from(document.querySelectorAll('#tableBody tr'));
+    const itemsPerPage = 10;
+    let currentPage = 1;
+
+    function showPage(page) {
+      const start = (page - 1) * itemsPerPage;
+      const end = page * itemsPerPage;
+
+      rows.forEach((row, index) => {
+        row.style.display = index >= start && index < end ? 'table-row' : 'none';
+      });
+
+      document.getElementById('prevBtn').disabled = page === 1;
+      document.getElementById('nextBtn').disabled = end >= rows.length;
+      document.getElementById('pageNumberDisplay').textContent = `Page ${page}`;
+    }
+
+    function nextPage() {
+      if (currentPage * itemsPerPage < rows.length) {
+        currentPage++;
+        showPage(currentPage);
+      }
+    }
+
+    function prevPage() {
+      if (currentPage > 1) {
+        currentPage--;
+        showPage(currentPage);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => showPage(currentPage));
+
     function downloadPDF() {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF('landscape');

@@ -7,18 +7,39 @@
   <title>Users | Kariton</title>
   <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.png" />
   <link rel="stylesheet" href="../assets/css/styles.min.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>  <link rel="icon" href="img/home-logo.png" type="image/x-icon"/>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link rel="icon" href="img/home-logo.png" type="image/x-icon" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.22/jspdf.plugin.autotable.min.js"></script>
+  <style>
+    /* Pagination button styling */
+    .pagination-btn {
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 5px;
+      margin: 0 10px;
+      color: white;
+      background-color: #6c757d; /* Bootstrap's secondary color */
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .pagination-btn:hover {
+      background-color: #5a6268;
+    }
+
+    .pagination-btn:disabled {
+      background-color: #adb5bd;
+      cursor: not-allowed;
+    }
+  </style>
 </head>
 
 <body>
-  <!--  Body Wrapper -->
-  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
-    data-sidebar-position="fixed" data-header-position="fixed">
-    <!-- Sidebar Start -->
+  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6"
+    data-sidebartype="full" data-sidebar-position="fixed" data-header-position="fixed">
+
     <aside class="left-sidebar">
-      <!-- Sidebar scroll-->
       <div>
         <div class="brand-logo d-flex align-items-center justify-content-between">
           <a href="/" class="text-nowrap logo-img">
@@ -28,79 +49,63 @@
             <i class="ti ti-x fs-8"></i>
           </div>
         </div>
-        <!-- Sidebar navigation-->
-        <div>   <%- include('./partials/sidebar'); -%></div>
-        <!-- End Sidebar navigation -->
+        <div><%- include('./partials/sidebar'); -%></div>
       </div>
-      <!-- End Sidebar scroll-->
     </aside>
-    <!--  Sidebar End -->
-    <!--  Main wrapper -->
-    <div class="body-wrapper">
-      <!--  Header Start -->
-      <div>   <%- include('./partials/head'); -%></div>
-      <!--  Header End -->
+
+    <div class="body-wrapper" data-total-users="<%= user.length %>">
+      <div><%- include('./partials/head'); -%></div>
+
       <div class="container-fluid">
         <div class="col-lg d-flex align-items-stretch">
           <div class="card w-100">
             <div class="card-body p-4">
               <h5 class="card-title fw-semibold mb-4">List of Residents Registered</h5>
-              <!-- PDF Download Button -->
-              <button class="btn btn-primary mb-4" onclick="downloadPDF()">Download PDF</button>
+
+              <!-- Search Field -->
+              <input type="text" id="searchInput" class="form-control mb-3"
+                placeholder="Search Residents..." onkeyup="searchTable()" />
+
+              <button class="btn btn-primary mb-4" onclick="downloadPDF()">Generate PDF Report</button>
+
               <div class="table-responsive">
                 <table id="residentsTable" class="table text-nowrap mb-0 align-middle">
                   <thead class="text-dark fs-4">
                     <tr>
-                      <th class="border-bottom-0">
-                        <h6 class="fw-semibold mb-0">Resident Id</h6>
-                      </th>
-                      <th class="border-bottom-0">
-                        <h6 class="fw-semibold mb-0">Email</h6>
-                      </th>
-                      <th class="border-bottom-0">
-                        <h6 class="fw-semibold mb-0">Name</h6>
-                      </th>
-                      <th class="border-bottom-0">
-                        <h6 class="fw-semibold mb-0">Phone No.</h6>
-                      </th>
-                      <th class="border-bottom-0">
-                        <h6 class="fw-semibold mb-0">Created At</h6>
-                      </th>
+                      <th>Resident Id</th>
+                      <th>Email</th>
+                      <th>Name</th>
+                      <th>Phone No.</th>
+                      <th>Created At</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <% for(let i in user) { %>
+                    <% for (let i in user) { %>
                     <tr>
-                      <td class="border-bottom-0">
-                          <h6 class="fw-semibold mb-1"><%= user[i].userID %></h6>                                                 
-                      </td>
-                      <td class="border-bottom-0">
-                        <p class="mb-0 fw-normal"><%= user[i].email %></p>
-                      </td>
-                      <td class="border-bottom-0">
-                        <div class="d-flex align-items-center gap-2">
-                          <span class="rounded-3 fw-semibold"><%= user[i].fullname %></span>
-                        </div>
-                      </td>
-                      <td class="border-bottom-0">
-                        <h6 class="fw-semibold mb-0 fs-3"><%= user[i].phone %></h6>
-                      </td>
-                      <td class="border-bottom-0">
-                        <h6 class="fw-normal mb-0 fs-3"><%= user[i].dateOfReg %></h6>
-                      </td>
-                    </tr> 
-                    <% } %>                     
+                      <td><%= user[i].userID %></td>
+                      <td><%= user[i].email %></td>
+                      <td><%= user[i].fullname %></td>
+                      <td>(+63) <%= user[i].phone %></td>
+                      <td><%= user[i].dateOfReg %></td>
+                    </tr>
+                    <% } %>
                   </tbody>
                 </table>
+              </div>
+
+              <!-- Pagination Controls -->
+              <div class="pagination-controls d-flex justify-content-center align-items-center mt-3">
+                <button id="prevPage" class="pagination-btn" onclick="changePage(-1)">Previous</button>
+                <span id="pageInfo" class="fw-semibold mx-2">Page 1</span>
+                <button id="nextPage" class="pagination-btn" onclick="changePage(1)">Next</button>
               </div>
             </div>
           </div>
         </div>
       </div>
-      </div>
     </div>
   </div>
-  
+
   <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
   <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../assets/js/sidebarmenu.js"></script>
@@ -108,27 +113,59 @@
   <script src="../assets/libs/simplebar/dist/simplebar.js"></script>
 
   <script>
+    let currentPage = 1;
+    const recordsPerPage = 10;
+    const totalUsers = parseInt(document.querySelector('.body-wrapper').getAttribute('data-total-users'));
+    const totalPages = Math.ceil(totalUsers / recordsPerPage);
+
+    function showPage(page) {
+      const start = (page - 1) * recordsPerPage;
+      const end = start + recordsPerPage;
+      const tableRows = document.querySelectorAll("#residentsTable tbody tr");
+
+      tableRows.forEach((row, index) => {
+        row.style.display = (index >= start && index < end) ? "" : "none";
+      });
+
+      document.getElementById("pageInfo").textContent = `Page ${page} of ${totalPages}`;
+      document.getElementById("prevPage").disabled = page === 1;
+      document.getElementById("nextPage").disabled = page === totalPages;
+    }
+
+    function changePage(direction) {
+      currentPage += direction;
+      if (currentPage < 1) currentPage = 1;
+      if (currentPage > totalPages) currentPage = totalPages;
+      showPage(currentPage);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => showPage(currentPage));
+
     function downloadPDF() {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF('landscape');
-
       doc.text("List of Residents Registered", 14, 16);
       doc.autoTable({
         html: '#residentsTable',
         startY: 20,
         headStyles: { fillColor: [52, 152, 219] },
         theme: 'grid',
-        styles: {
-          fontSize: 10,
-          cellPadding: 2,
-        },
+        styles: { fontSize: 10, cellPadding: 2 },
         margin: { top: 20 },
       });
-
       doc.save('Registered_Residents_List.pdf');
     }
+
+    function searchTable() {
+      const input = document.getElementById("searchInput").value.toLowerCase();
+      const rows = document.querySelectorAll("#residentsTable tbody tr");
+
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(input) ? "" : "none";
+      });
+    }
   </script>
-  
 </body>
 
 </html>

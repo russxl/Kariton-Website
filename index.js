@@ -3,16 +3,18 @@ const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const _ = require('lodash');
 const session = require('express-session');
-const bcrypt = require('bcryptjs'); // Import bcrypt for password hashing
+const bcrypt = require('bcryptjs'); // Import bcrypt for passwo;rd hashing
+const mongoose = require('mongoose')
 
 // Set up session middleware
 
 
 
-const mongoose = require('mongoose')
-mongoose.connect('mongodb+srv://ads:YGWygUxHRZAxd1NT@cluster0.zchxmu8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0/JunkShopDB', {
-    useNewUrlParser: true
-}) ;
+require('dotenv').config(); // Add this line at the top
+
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true });
+
+
 
 
 const userSchema = {
@@ -210,19 +212,17 @@ app.set('view engine', 'ejs');
 app.use(express.static("public"));
 const nodemailer = require('nodemailer');
 app.use(session({
-  secret: 'your-secret-key',
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
-  cookie: {
-    secure: false // Set to true if you're using HTTPS
-  }
+  cookie: { secure: false }
 }));
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'karitonscraps.ph@gmail.com',
-    pass: 'fegx cchl nsyk zwaq'
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
   }
 });
 
@@ -528,16 +528,7 @@ app.post("/login", async (req, res) => {
       await admin.save(); // Save the updated admin
   
       // Create a log for the login event
-      const log = 'Admin Logged in.';
-      const newContent = new Logs({
-        logs: log,
-        userName: "Admin",
-        time: time,
-        date: date,
-        type: "Logins"
-      });
-  
-      await newContent.save(); // Save login log
+
   
       res.redirect('/dashboard'); // Redirect to the admin dashboard or home page
     } else {
@@ -909,7 +900,7 @@ app.get('/dashboard/manage',checkAdminSession, async (req, res) => {
 app.post('/junkshop/scraps', async (req, res) => {
   try {
     const { scrapType, price, type, scrapId } = req.body;
-
+  
     if (type === 'delete') {
       if (!scrapId) {
         return res.status(400).send('scrapId is required for deletion');
@@ -923,20 +914,23 @@ app.post('/junkshop/scraps', async (req, res) => {
       await AdminScrap.findByIdAndDelete(scrapId);
       return res.status(200).send('Scrap deleted successfully');
     } else {
-      if (!scrapType || !price) {
-        return res.status(400).send('scrapType and price are required for adding/updating scrap');
-      }
+    
+    
+    
       const admin = await AdminScrap.findOne({ scrapType: scrapType });
+     
+      
       if (admin) {
         // Update existing scrap
-        const scrap = await AdminScrap.findById(scrapId);
-        if (!scrap) {
-          return res.status(404).send('Scrap not found');
+        if (!scrapType || !price) {
+    
+        
+          return res.status(400).send('scrapType and price are required for adding/updating scrap');
         }
-
+        
         admin.scrapType = scrapType;
         admin.pointsEquivalent = price;
-        const updatedScrap = await scrap.save();
+        const updatedScrap = await admin.save();
         return res.status(200).json({ scrapId: updatedScrap._id, message: 'Scrap updated successfully' });
       } else {
         // Create new scrap
@@ -1160,6 +1154,13 @@ app.use((req, res, next) => {
   });
 });
 
-app.listen(3001, async function() {
-  console.log("Server started on port 3001");
+const PORT = process.env.PORT;
+
+app.listen(PORT, async () => {
+  try {
+    console.log(`Server started on port ${PORT}`);
+    // Any async initializations can be added here
+  } catch (error) {
+    console.error("Error starting server:", error);
+  }
 });
