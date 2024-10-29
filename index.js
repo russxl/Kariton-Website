@@ -10,11 +10,18 @@ const mongoose = require('mongoose')
 
 
 
+<<<<<<< HEAD
 require('dotenv').config(); // Add this line at the top
 
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true });
 
 
+=======
+const mongoose = require('mongoose')
+mongoose.connect('mongodb+srv://russ:Mpe38rRSRP36zWW@cluster0.oswowdu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0/JunkShopDB', {
+  useNewUrlParser: true
+})  
+>>>>>>> 1e0a9a9303bbf4d80812c45d1200a44ac29f7ce4
 
 
 const userSchema = {
@@ -1154,6 +1161,7 @@ app.use((req, res, next) => {
   });
 });
 
+<<<<<<< HEAD
 const PORT = process.env.PORT;
 
 app.listen(PORT, async () => {
@@ -1163,4 +1171,8 @@ app.listen(PORT, async () => {
   } catch (error) {
     console.error("Error starting server:", error);
   }
+=======
+app.listen(3001, async function() {
+  console.log("Server started on port 3001");
+>>>>>>> 1e0a9a9303bbf4d80812c45d1200a44ac29f7ce4
 });
