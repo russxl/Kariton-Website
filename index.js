@@ -1161,7 +1161,6 @@ app.use((req, res, next) => {
   });
 });
 
-<<<<<<< HEAD
 const PORT = process.env.PORT;
 
 app.listen(PORT, async () => {
@@ -1171,8 +1170,4 @@ app.listen(PORT, async () => {
   } catch (error) {
     console.error("Error starting server:", error);
   }
-=======
-app.listen(3001, async function() {
-  console.log("Server started on port 3001");
->>>>>>> 1e0a9a9303bbf4d80812c45d1200a44ac29f7ce4
 });
