@@ -635,7 +635,8 @@ app.post('/dashboard/pending',checkAdminSession ,async (req, res) => {
       const options = { timeZone: 'Asia/Manila', hour12: true, year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
       const currentDate = new Intl.DateTimeFormat('en-PH', options).format(new Date());
       const [date, time] = currentDate.split(', ');
-
+    console.log(approved);
+    
       // Update the applicant status in the database
       const updatedApplicant = await JunkShop.findByIdAndUpdate(applicantId, { isApproved: approved }, { new: true });
       
@@ -1091,7 +1092,8 @@ app.post('/dashboard/pickup',checkAdminSession, async (req, res) => {
 app.post('/dashboard/barangayapproval', checkAdminSession, async (req, res) => {
   try {
     const { applicantId, approved } = req.body;
-
+    console.log(applicantId);
+    
     // Get current date and time in PHT
     const options = { timeZone: 'Asia/Manila', hour12: true, year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
     const currentDate = new Intl.DateTimeFormat('en-PH', options).format(new Date());

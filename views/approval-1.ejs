@@ -219,28 +219,29 @@
         });
       
         function sendApproval(applicantId, approved) {
-          fetch('/dashboard/pending', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              applicantId: applicantId,
-              approved: approved
-            })
-          })
-          .then(response => {
-            if (response.ok) {
-              // Reload the page after successful approval/rejection
-              window.location.reload('/dashboard/pending'); // This ensures the page reloads
-            } else {
-              console.error('Error:', response);
-            }
-          })
-          .catch(error => {
-            console.error('Error:', error);
-          });
+    fetch('/dashboard/barangayapproval', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            applicantId: applicantId,
+            approved: approved
+        })
+    })
+    .then(response => {
+        if (response.ok) {
+            window.location.reload();
+        } else {
+            return response.json().then(err => {
+                console.error('Error:', err);
+            });
         }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
       </script>
       
 </body>
