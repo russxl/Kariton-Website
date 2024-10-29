@@ -10,18 +10,11 @@ const mongoose = require('mongoose')
 
 
 
-<<<<<<< HEAD
 require('dotenv').config(); // Add this line at the top
 
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true });
 
 
-=======
-const mongoose = require('mongoose')
-mongoose.connect('mongodb+srv://russ:Mpe38rRSRP36zWW@cluster0.oswowdu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0/JunkShopDB', {
-  useNewUrlParser: true
-})  
->>>>>>> 1e0a9a9303bbf4d80812c45d1200a44ac29f7ce4
 
 
 const userSchema = {
