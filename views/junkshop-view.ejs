@@ -4,21 +4,27 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Junkshop View | Kariton</title>  <link rel="icon" href="img/home-logo.png" type="image/x-icon"/>
-
+  <title>Junkshop View | Kariton</title>
+  <link rel="icon" href="img/home-logo.png" type="image/x-icon" />
   <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.png" />
   <link rel="stylesheet" href="../assets/css/styles.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <meta name="description" content="View detailed information about a junkshop in Kariton.">
+  <style>
+    .gallery-image {
+      height: 200px; /* Set the height for the images */
+      object-fit: cover; /* Maintain aspect ratio and cover the box */
+    }
+  </style>
 </head>
 
 <body>
-  <!--  Body Wrapper -->
+  <!-- Body Wrapper -->
   <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
     data-sidebar-position="fixed" data-header-position="fixed">
     
     <!-- Sidebar Start -->
     <aside class="left-sidebar">
-      <!-- Sidebar scroll-->
       <div>
         <div class="brand-logo d-flex align-items-center justify-content-between">
           <a href="/" class="text-nowrap logo-img">
@@ -28,23 +34,18 @@
             <span class="ti ti-x fs-8"></span>
           </div>
         </div>
-        <!-- Sidebar navigation-->
         <nav>
           <%- include('./partials/sidebar'); -%>
         </nav>
-        <!-- End Sidebar navigation -->
       </div>
-      <!-- End Sidebar scroll-->
     </aside>
-    <!--  Sidebar End -->
-    
-    <!--  Main wrapper -->
+    <!-- Sidebar End -->
+
+    <!-- Main Wrapper -->
     <div class="body-wrapper">
-      <!--  Header Start -->
       <header>
         <%- include('./partials/head'); -%>
       </header>
-      <!--  Header End -->
       <div class="container-fluid">
         <div class="card">
           <div class="card-body">
@@ -61,64 +62,113 @@
               </p>
             </div>
             <h5 class="card-title fw-semibold mb-4">Junkshop Information</h5>
-            <p><strong>Junkshop Name:</strong> <%= junkshop.jShopName %></p>
-            <p><strong>Owner Name:</strong> <%= junkshop.ownerName %></p>
-            <p><strong>Address:</strong> <%= junkshop.address %></p>
-            <p><strong>Contact Number:</strong> <%= junkshop.phone %></p>
-            <p><strong>Email:</strong> <%= junkshop.email %></p>
-            <p><strong>Junkshop Images:</strong></p>
-            <div class="image-gallery">
-              <% if (junkshop.jShopImg) { %>
-                <img src="data:image/png;base64,<%= junkshop.jShopImg %>" alt="Junkshop Image 1" width="150" style="cursor: pointer;" onclick="openModal('<%= junkshop.jShopImg %>')" />
-              <% } else { %>
-                <p>No image available for Image 1.</p>
-              <% } %>
-              <p><strong>Valid ID:</strong></p>
-              <% if (junkshop.validID) { %>
-                <img src="data:image/png;base64,<%= junkshop.validID %>" alt="Junkshop Image 2" width="150" style="cursor: pointer;" onclick="openModal('<%= junkshop.validID %>')" />
-              <% } else { %>
-                <p>No image available for Image 2.</p>
-              <% } %>
-              <p><strong>Permit:</strong></p>
-              <% if (junkshop.permit) { %>
-                <img src="data:image/png;base64,<%= junkshop.permit %>" alt="Junkshop Image 3" width="150" style="cursor: pointer;" onclick="openModal('<%= junkshop.permit %>')" />
-              <% } else { %>
-                <p>No image available for Image 3.</p>
-              <% } %>
+
+            <!-- Image Gallery Section -->
+            <div class="mb-4">
+              <p><strong>Junkshop Images:</strong></p>
+              <div class="row">
+                <% if (junkshop.jShopImg) { %>
+                  <div class="col-md-4 mb-3">
+                    <div class="card text-center">
+                      <img src="data:image/png;base64,<%= junkshop.jShopImg %>" alt="Junkshop Image 1" class="img-fluid gallery-image" style="cursor: pointer;" onclick="openModal('<%= junkshop.jShopImg %>')" />
+                      <div class="card-body">
+                        <h6 class="card-title">Junkshop Image</h6>
+                      </div>
+                    </div>
+                  </div>
+                <% } else { %>
+                  <div class="col-md-4 mb-3">
+                    <p>No image available for Image 1.</p>
+                  </div>
+                <% } %>
+                <% if (junkshop.validID) { %>
+                  <div class="col-md-4 mb-3">
+                    <div class="card text-center">
+                      <img src="data:image/png;base64,<%= junkshop.validID %>" alt="Valid ID" class="img-fluid gallery-image" style="cursor: pointer;" onclick="openModal('<%= junkshop.validID %>')" />
+                      <div class="card-body">
+                        <h6 class="card-title">Valid ID</h6>
+                      </div>
+                    </div>
+                  </div>
+                <% } else { %>
+                  <div class="col-md-4 mb-3">
+                    <p>No image available for Valid ID.</p>
+                  </div>
+                <% } %>
+                <% if (junkshop.permit) { %>
+                  <div class="col-md-4 mb-3">
+                    <div class="card text-center">
+                      <img src="data:image/png;base64,<%= junkshop.permit %>" alt="Permit" class="img-fluid gallery-image" style="cursor: pointer;" onclick="openModal('<%= junkshop.permit %>')" />
+                      <div class="card-body">
+                        <h6 class="card-title">Permit</h6>
+                      </div>
+                    </div>
+                  </div>
+                <% } else { %>
+                  <div class="col-md-4 mb-3">
+                    <p>No image available for Permit.</p>
+                  </div>
+                <% } %>
+              </div>
+            </div>
+
+            <!-- Junkshop Details Table -->
+            <table class="table table-bordered">
+              <tbody>
+                <tr>
+                  <th scope="row">Junkshop Name</th>
+                  <td><%= junkshop.jShopName %></td>
+                </tr>
+                <tr>
+                  <th scope="row">Owner Name</th>
+                  <td><%= junkshop.ownerName %></td>
+                </tr>
+                <tr>
+                  <th scope="row">Address</th>
+                  <td><%= junkshop.address %></td>
+                </tr>
+                <tr>
+                  <th scope="row">Contact Number</th>
+                  <td><%= junkshop.phone %></td>
+                </tr>
+                <tr>
+                  <th scope="row">Email</th>
+                  <td><%= junkshop.email %></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Structure -->
+      <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="imageModalLabel">Junkshop Image</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <img id="modalImage" src="" alt="Junkshop Image" class="img-fluid" />
             </div>
           </div>
         </div>
       </div>
-      
-          
-            
-        <!-- Junkshop Image Display -->
 
+      <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
+      <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+      <script src="../assets/js/sidebarmenu.js"></script>
+      <script src="../assets/js/app.min.js"></script>
+      <script src="../assets/libs/simplebar/dist/simplebar.js"></script>
 
-<!-- Modal Structure -->
-<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="imageModalLabel">Junkshop Image</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <img id="modalImage" src="" alt="Junkshop Image" class="img-fluid" />
-      </div>
+      <script>
+        function openModal(imageBase64) {
+          document.getElementById('modalImage').src = 'data:image/png;base64,' + imageBase64;
+          $('#imageModal').modal('show');
+        }
+      </script>
     </div>
   </div>
-</div>
-
-<script src="../assets/libs/jquery/dist/jquery.min.js"></script>
-<script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<script src="../assets/js/sidebarmenu.js"></script>
-<script src="../assets/js/app.min.js"></script>
-<script src="../assets/libs/simplebar/dist/simplebar.js"></script>
-
-<script>
-function openModal(imageBase64) {
-  document.getElementById('modalImage').src = 'data:image/png;base64,' + imageBase64;
-  $('#imageModal').modal('show'); // Use jQuery to show the modal
-}
-</script>
+</body>
+</html>

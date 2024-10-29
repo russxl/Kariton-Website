@@ -4,8 +4,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Home | Kariton</title>  <link rel="icon" href="img/home-logo.png" type="image/x-icon"/>
-
+  <title>Home | Kariton</title>
+  <link rel="icon" href="img/home-logo.png" type="image/x-icon"/>
   <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.png" />
   <link rel="stylesheet" href="../assets/css/styles.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
@@ -42,7 +42,7 @@
               <div class="card-body">
                 <div class="d-sm-flex d-block align-items-center justify-content-between mb-9">
                   <div class="mb-3 mb-sm-0">
-                    <h5 class="card-title fw-semibold">Most Sold Scraps</h5>
+                    <h5 class="card-title fw-semibold">Barangay Scrap Collected</h5>
                   </div>
                   <div>
                     <select class="form-select" id="barangaySelect">
@@ -69,7 +69,6 @@
                           <span class="me-1 rounded-circle bg-light-success round-20 d-flex align-items-center justify-content-center">
                             <i class="ti ti-arrow-up-left text-success"></i>
                           </span>
-                      
                         </div>
                       </div>
                       <div class="col-4">
@@ -137,7 +136,7 @@
             <div class="card w-100">
               <div class="card-body">
                 <div class="d-sm-flex d-block align-items-center justify-content-between mb-4">
-                  <h5 class="card-title fw-semibold">Monthly Transactions</h5>
+                  <h5 class="card-title fw-semibold">Transactions</h5>
                 </div>
                 <div id="monthlyTransactionsChart"></div>
               </div>
@@ -157,6 +156,7 @@
     var transactionDates = monthlyTransactionsData.map(data => data.date); // Dates
     var transactionCounts = monthlyTransactionsData.map(data => data.count); // Counts
     console.log(transactionDates);
+  
     // Function to extract scrap types and weights for the selected barangay
     function getBarangayData(barangayIndex) {
       const selectedBarangay = barangay[barangayIndex];
@@ -198,6 +198,13 @@
       }],
       xaxis: {
         categories: initialData.scrapTypes // Default to the first barangay's scrap types
+      },
+      yaxis: {
+        labels: {
+          formatter: function (value) {
+            return value + ' kg'; // Append "kg" to each y-axis label
+          }
+        }
       }
     };
   
@@ -216,7 +223,7 @@
       updateChartOrShowMessage(barangayData);
     });
   
-    // Chart for Monthly Transactions (unchanged)
+    // Monthly Transactions Chart
     var monthlyOptions = {
       chart: {
         type: 'line',
@@ -224,21 +231,24 @@
       },
       series: [{
         name: 'Transactions',
-        data: transactionCounts // Example data for monthly transactions
+        data: transactionCounts
       }],
       xaxis: {
-        categories: transactionDates
+        categories: transactionDates,
+        title: {
+          text: 'Date'
+        }
+      },
+      yaxis: {
+        title: {
+          text: 'Number of Transactions'
+        }
       }
     };
   
     var monthlyChart = new ApexCharts(document.querySelector("#monthlyTransactionsChart"), monthlyOptions);
     monthlyChart.render();
   </script>
-    <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
-    <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../assets/js/sidebarmenu.js"></script>
-    <script src="../assets/js/app.min.js"></script>
-    <script src="../assets/libs/simplebar/dist/simplebar.js"></script>
 </body>
 
 </html>

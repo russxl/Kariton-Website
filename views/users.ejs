@@ -60,13 +60,18 @@
         <div class="col-lg d-flex align-items-stretch">
           <div class="card w-100">
             <div class="card-body p-4">
-              <h5 class="card-title fw-semibold mb-4">List of Residents Registered</h5>
+                  <!-- Title and Download Button Row -->
+              <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="card-title fw-semibold">List of Users Registered</h5>
+                <!-- Download Button -->
+         
+                <button class="btn btn-primary mb-4" onclick="downloadPDF()">Generate PDF Report</button>
+              </div>
 
               <!-- Search Field -->
               <input type="text" id="searchInput" class="form-control mb-3"
                 placeholder="Search Residents..." onkeyup="searchTable()" />
 
-              <button class="btn btn-primary mb-4" onclick="downloadPDF()">Generate PDF Report</button>
 
               <div class="table-responsive">
                 <table id="residentsTable" class="table text-nowrap mb-0 align-middle">

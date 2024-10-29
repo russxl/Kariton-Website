@@ -70,8 +70,13 @@
         <div class="col-lg d-flex align-items-stretch">
           <div class="card w-100">
             <div class="card-body p-4">
-              <h5 class="card-title fw-semibold mb-4">List of Approved Barangay</h5>
+               <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="card-title fw-semibold mb-0">List of Approved Barangay</h5>
+                <button class="btn btn-primary" onclick="generatePDF()">Generate PDF Report</button>
 
+           
+               
+              </div>
               <!-- Search Input -->
               <div class="mb-3">
                 <input type="text" id="searchInput" class="form-control" placeholder="Search Barangay...">
@@ -117,13 +122,17 @@
     </div>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
   <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
   <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../assets/js/sidebarmenu.js"></script>
   <script src="../assets/js/app.min.js"></script>
   <script src="../assets/libs/simplebar/dist/simplebar.js"></script>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
+  
   <script>
+    // Pagination logic
     const rows = Array.from(document.querySelectorAll('#tableBody tr'));
     const itemsPerPage = 10;
     let currentPage = 1;
@@ -156,6 +165,7 @@
       }
     }
 
+    // Search functionality
     document.getElementById('searchInput').addEventListener('keyup', function () {
       const filter = this.value.toLowerCase();
 
@@ -168,9 +178,36 @@
       showPage(currentPage);
     });
 
+    // Initial page load
     document.addEventListener('DOMContentLoaded', () => showPage(currentPage));
+
+    // PDF generation function
+    function generatePDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      doc.setFontSize(18);
+      doc.text("List of Approved Barangay", 14, 20);
+
+      const columns = ["Barangay Name", "Barangay", "Location", "Approval Date", "Created At"];
+      const rows = [];
+
+      document.querySelectorAll("#barangayTable tbody tr").forEach(row => {
+        const rowData = Array.from(row.querySelectorAll("td")).map(cell => cell.innerText);
+        rows.push(rowData);
+      });
+
+      doc.autoTable({
+        head: [columns],
+        body: rows,
+        startY: 30,
+        theme: 'grid',
+        headStyles: { fillColor: [22, 160, 133] },
+      });
+
+      doc.save("Barangay_Report.pdf");
+    }
   </script>
-   
 </body>
 
 </html>

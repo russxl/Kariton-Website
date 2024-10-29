@@ -1160,6 +1160,7 @@ const PORT = process.env.PORT;
 
 app.listen(PORT, async () => {
   try {
+  
     console.log(`Server started on port ${PORT}`);
     // Any async initializations can be added here
   } catch (error) {

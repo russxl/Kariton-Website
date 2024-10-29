@@ -6,17 +6,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Junkshop | Kariton</title>
   <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.png" />
-  <link rel="stylesheet" href="../assets/css/styles.min.css" />  <link rel="icon" href="img/home-logo.png" type="image/x-icon"/>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.22/jspdf.plugin.autotable.min.js"></script>
+  <link rel="icon" href="img/home-logo.png" type="image/x-icon" />
+  <link rel="stylesheet" href="../assets/css/styles.min.css" />
 </head>
 
+<style>
+  .pagination-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .pagination-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    margin: 0 5px;
+    color: white;
+    background-color: #6c757d;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .pagination-btn:hover {
+    background-color: #5a6268;
+  }
+
+  .pagination-btn:disabled {
+    background-color: #adb5bd;
+    cursor: not-allowed;
+  }
+
+  .page-number-display {
+    font-weight: bold;
+  }
+</style>
+
 <body>
-  <!-- Body Wrapper -->
-  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
-    data-sidebar-position="fixed" data-header-position="fixed">
-    <!-- Sidebar Start -->
+  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6"
+    data-sidebartype="full" data-sidebar-position="fixed" data-header-position="fixed">
+
     <aside class="left-sidebar">
       <div>
         <div class="brand-logo d-flex align-items-center justify-content-between">
@@ -27,10 +59,9 @@
             <i class="ti ti-x fs-8"></i>
           </div>
         </div>
-        <div><%- include('./partials/partial-junkshop'); -%></div>
+        <div><%- include('./partials/sidebar'); -%></div>
       </div>
     </aside>
-    <!-- Sidebar End -->
 
     <div class="body-wrapper">
       <div><%- include('./partials/head'); -%></div>
@@ -39,65 +70,49 @@
         <div class="col-lg d-flex align-items-stretch">
           <div class="card w-100">
             <div class="card-body p-4">
-              <h5 class="card-title fw-semibold mb-4">List of Approved Barangay</h5>
+              <div class="d-flex justify-content-between align-items-center mb-4">
+                <button class="btn btn-primary" onclick="generatePDF()">Generate PDF Report</button>
 
-              <!-- PDF Download Button -->
-              <button class="btn btn-primary mb-4" onclick="downloadPDF()">Download PDF</button>
-              
-              <!-- Print Button -->
-              <button class="btn btn-secondary mb-4" onclick="printTable()">Print</button>
+                <h5 class="card-title fw-semibold mb-0">List of Approved Barangay</h5>
+               
+              </div>
+              <!-- Search Input -->
+              <div class="mb-3">
+                <input type="text" id="searchInput" class="form-control" placeholder="Search Barangay...">
+              </div>
 
               <div class="table-responsive">
-                <table id="barangayTable" class="table text-nowrap mb-0 align-middle">
+                <table class="table text-nowrap mb-0 align-middle" id="barangayTable">
                   <thead class="text-dark fs-4">
                     <tr>
-                      <th class="border-bottom-0">
-                        <h6 class="fw-semibold mb-0">Barangay Name</h6>
-                      </th>
-                      <th class="border-bottom-0">
-                        <h6 class="fw-semibold mb-0">Owner</h6>
-                      </th>
-                      <th class="border-bottom-0">
-                        <h6 class="fw-semibold mb-0">Location</h6>
-                      </th>
-                      <th class="border-bottom-0">
-                        <h6 class="fw-semibold mb-0">Approval Date</h6>
-                      </th>
-                      <th class="border-bottom-0">
-                        <h6 class="fw-semibold mb-0">Created At</h6>
-                      </th>
+                      <th class="border-bottom-0">Barangay Name</th>
+                      <th class="border-bottom-0">Barangay</th>
+                      <th class="border-bottom-0">Location</th>
+                      <th class="border-bottom-0">Approval Date</th>
+                      <th class="border-bottom-0">Created At</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    <% for(let i in junk) { %>
-                      <% if(junk[i].isApproved==true) { %>
-                    <tr>
-                      <td class="border-bottom-0">
-                        <h6 class="fw-semibold mb-1"><%= junk[i].bName %></h6>
-                      </td>
-                      <td class="border-bottom-0">
-                        <p class="mb-0 fw-normal"><%= junk[i].capName %></p>
-                      </td>
-                      <td class="border-bottom-0">
-                        <div class="d-flex align-items-center gap-2">
-                           <span class="fw-semibold"><%= junk[i].bLocation %></span>
-                        </div>
-                      </td>
-                      <td class="border-bottom-0">
-                        <div class="d-flex align-items-center gap-2">
-                          <span class="fw-normal"><%= junk[i].approvalDate %></span>
-                        </div>
-                      </td>
-                      <td class="border-bottom-0">
-                        <div class="d-flex align-items-center gap-2">
-                          <span class="fw-normal"><%= junk[i].dateOfReg %></span>
-                        </div>
-                      </td>
-                    </tr> 
-                    <% } %>        
-                    <% } %>         
+                  <tbody id="tableBody">
+                    <% for (let i in junk) { %>
+                      <% if (junk[i].isApproved) { %>
+                        <tr>
+                          <td class="border-bottom-0"><%= junk[i].bName %></td>
+                          <td class="border-bottom-0"><%= junk[i].capName %></td>
+                          <td class="border-bottom-0"><%= junk[i].bLocation %></td>
+                          <td class="border-bottom-0"><%= junk[i].approvalDate %></td>
+                          <td class="border-bottom-0"><%= junk[i].dateOfReg %></td>
+                        </tr>
+                      <% } %>
+                    <% } %>
                   </tbody>
                 </table>
+              </div>
+
+              <!-- Pagination Controls -->
+              <div class="pagination-wrapper">
+                <button class="pagination-btn" onclick="prevPage()" id="prevBtn" disabled>Previous</button>
+                <span id="pageNumberDisplay" class="page-number-display">Page 1</span>
+                <button class="pagination-btn" onclick="nextPage()" id="nextBtn">Next</button>
               </div>
             </div>
           </div>
@@ -106,7 +121,7 @@
     </div>
   </div>
 
-  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
   <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
   <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../assets/js/sidebarmenu.js"></script>
@@ -114,31 +129,82 @@
   <script src="../assets/libs/simplebar/dist/simplebar.js"></script>
 
   <script>
-    function downloadPDF() {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF('landscape');
+    // Pagination logic
+    const rows = Array.from(document.querySelectorAll('#tableBody tr'));
+    const itemsPerPage = 10;
+    let currentPage = 1;
 
-      doc.text("List of Approved Barangay", 14, 16);
-      doc.autoTable({
-        html: '#barangayTable',
-        startY: 20,
-        headStyles: { fillColor: [52, 152, 219] },
-        theme: 'grid',
-        styles: {
-          fontSize: 10,
-          cellPadding: 2,
-        },
-        margin: { top: 20 },
+    function showPage(page) {
+      const start = (page - 1) * itemsPerPage;
+      const end = page * itemsPerPage;
+
+      rows.forEach((row, index) => {
+        row.style.display = index >= start && index < end ? 'table-row' : 'none';
       });
 
-      doc.save('Approved_Barangay_List.pdf');
+      document.getElementById('prevBtn').disabled = page === 1;
+      document.getElementById('nextBtn').disabled = end >= rows.length;
+
+      document.getElementById('pageNumberDisplay').textContent = `Page ${page}`;
     }
 
-    function printTable() {
-      // This will print the entire page including the table
-      window.print();
+    function nextPage() {
+      if (currentPage * itemsPerPage < rows.length) {
+        currentPage++;
+        showPage(currentPage);
+      }
+    }
+
+    function prevPage() {
+      if (currentPage > 1) {
+        currentPage--;
+        showPage(currentPage);
+      }
+    }
+
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('keyup', function () {
+      const filter = this.value.toLowerCase();
+
+      rows.forEach(row => {
+        const textContent = Array.from(row.cells).map(cell => cell.innerText.toLowerCase()).join(' ');
+        row.style.display = textContent.includes(filter) ? '' : 'none';
+      });
+
+      currentPage = 1;
+      showPage(currentPage);
+    });
+
+    // Initial page load
+    document.addEventListener('DOMContentLoaded', () => showPage(currentPage));
+
+    // PDF generation function
+    function generatePDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      doc.setFontSize(18);
+      doc.text("List of Approved Barangay", 14, 20);
+
+      const columns = ["Barangay Name", "Barangay", "Location", "Approval Date", "Created At"];
+      const rows = [];
+
+      document.querySelectorAll("#barangayTable tbody tr").forEach(row => {
+        const rowData = Array.from(row.querySelectorAll("td")).map(cell => cell.innerText);
+        rows.push(rowData);
+      });
+
+      doc.autoTable({
+        head: [columns],
+        body: rows,
+        startY: 30,
+        theme: 'grid',
+        headStyles: { fillColor: [22, 160, 133] },
+      });
+
+      doc.save("Barangay_Report.pdf");
     }
   </script>
-  
 </body>
+
 </html>

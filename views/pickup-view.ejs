@@ -5,8 +5,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Junkshop View | Kariton</title>
-  <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.png" />  <link rel="icon" href="img/home-logo.png" type="image/x-icon"/>
-
+  <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.png" />
+  <link rel="icon" href="img/home-logo.png" type="image/x-icon" />
   <link rel="stylesheet" href="../assets/css/styles.min.css" />
   <meta name="description" content="View detailed information about a junkshop in Kariton.">
 </head>
@@ -20,7 +20,8 @@
     <aside class="left-sidebar">
       <div>
         <div class="brand-logo d-flex align-items-center justify-content-between">
-          <a href="/" class="text-nowrap logo-img">            <img src="../img/image-removebg-preview (1) (2).png" width="180" style="opacity: 0.7;" alt="Kariton Logo" />
+          <a href="/" class="text-nowrap logo-img">
+            <img src="../img/image-removebg-preview (1) (2).png" width="180" style="opacity: 0.7;" alt="Kariton Logo" />
           </a>
           <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
             <span class="ti ti-x fs-8"></span>
@@ -32,12 +33,12 @@
       </div>
     </aside>
 
-    <!-- Main wrapper -->
+    <!-- Main Wrapper -->
     <div class="body-wrapper">
       <header>
         <%- include('./partials/head'); -%>
       </header>
-      
+
       <!-- Content Start -->
       <div class="container-fluid">
         <div class="card">
@@ -47,34 +48,55 @@
               <p><strong>Status:</strong>
                 <% if (junkshop.status === "pending") { %>
                   <span><span class="ti ti-clock text-secondary"></span> Pending</span>
-                <% } %>
-                <% if (junkshop.status === "approved") { %>
+                <% } else if (junkshop.status === "approved") { %>
                   <span><span class="ti ti-check text-success"></span> Approved</span>
-                <% } %>
-                <% if (junkshop.status === "declined") { %>
+                <% } else if (junkshop.status === "declined") { %>
                   <span><span class="ti ti-close text-danger"></span> Rejected</span>
-                <% } %>
-                <% if (junkshop.status === "Done") { %>
-                  <span><span class="ti ti-close text-danger"></span> Done</span>
+                <% } else if (junkshop.status === "Done") { %>
+                  <span><span class="ti ti-check text-primary"></span> Done</span>
                 <% } %>
               </p>
             </div>
-            <h5 class="card-title fw-semibold mb-4">Junkshop Information</h5>
-            <p><strong>Junkshop Name:</strong> <%= junkshop.jShop %></p>
-            <p><strong>Owner:</strong> <%= junkshop.name %></p>
-            <p><strong>Contact Number:</strong> <%= junkshop.phone %></p>
-            <p><strong>Address:</strong> <%= junkshop.location %></p>
-            <p><strong>Scrap Type:</strong> <%= junkshop.scrapType %></p>
-            <p><strong>Weight:</strong> <%= junkshop.weight %> kg</p>
-        
-            <div class=" justify-content-between mt-4">
+
+            <h5 class="card-title fw-semibold mb-4">Junkshop Pick up Information</h5>
+            <!-- Junkshop Information Table -->
+            <div class="table-responsive">
+              <table class="table table-bordered">
+                <tbody>
+                  <tr>
+                    <th>Junkshop Name</th>
+                    <td><%= junkshop.jShop %></td>
+                  </tr>
+                  <tr>
+                    <th>Owner</th>
+                    <td><%= junkshop.name %></td>
+                  </tr>
+                  <tr>
+                    <th>Contact Number</th>
+                    <td><%= junkshop.phone %></td>
+                  </tr>
+                  <tr>
+                    <th>Address</th>
+                    <td><%= junkshop.location %></td>
+                  </tr>
+                  <tr>
+                    <th>Scrap Type</th>
+                    <td><%= junkshop.scrapType %></td>
+                  </tr>
+                  <tr>
+                    <th>Weight</th>
+                    <td><%= junkshop.weight %> kg</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="justify-content-between mt-4">
               <% if (junkshop.status === "approved") { %>
                 <a href="#" class="btn btn-success me-2" id="doneBtn">Done</a>
               <% } %>
-              
-              <a href="https://www.google.com/maps/dir/Adp+Junkshop/<%= junkshop.location %>" target="_blank" class="btn btn-primary">
-                Navigate
-              </a>
+              <a href="https://www.google.com/maps/dir/Adp+Junkshop/<%= junkshop.location %>" target="_blank"
+                class="btn btn-primary">Navigate</a>
             </div>
           </div>
         </div>
@@ -109,27 +131,22 @@
   <script src="../assets/libs/simplebar/dist/simplebar.js"></script>
 
   <script>
-    // When the "Done" button is clicked, show the modal
-    document.getElementById('doneBtn').addEventListener('click', function(event) {
+    document.getElementById('doneBtn').addEventListener('click', function (event) {
       event.preventDefault();
       var modal = new bootstrap.Modal(document.getElementById('confirmationModal'), {});
       modal.show();
     });
 
-    // When "Proceed" is clicked in the modal, make a request to update the status
-    document.getElementById('confirmDoneBtn').addEventListener('click', function() {
-      // Example of sending a request to update junkshop status
+    document.getElementById('confirmDoneBtn').addEventListener('click', function () {
       $.ajax({
-        url: '/updateJunkshopStatus',  // Adjust this to your API endpoint
+        url: '/updateJunkshopStatus', // Adjust this to your API endpoint
         type: 'POST',
         data: { status: 'Done', id: '<%= junkshop._id %>' },
-        success: function(response) {
-          // Handle success (e.g., reload the page or update the UI)
+        success: function (response) {
           alert('Transaction marked as Done');
-          location.reload();  // Reload the page to reflect the updated status
+          location.reload(); // Reload the page to reflect the updated status
         },
-        error: function(xhr, status, error) {
-          // Handle error
+        error: function (xhr, status, error) {
           alert('Error updating status');
         }
       });
