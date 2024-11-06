@@ -109,10 +109,15 @@ const barangaySchema = {
 const logSchema = {
   logs: String,
   time: String,
-  userName:String,
   date: String,
   type: String,
-  name:String
+  name:String,
+  id:String,
+  barangayName:String,
+  scrapType:String,
+  points:String,
+  weight:String,
+  userID:String
 };
 
 const adminCred = {
@@ -135,6 +140,7 @@ const bookingSchema = {
   scrapType:String,
   img: String,
   description: String,
+  barangayID:String,
   status: String,
   name:String,
   
@@ -172,6 +178,7 @@ const collectedScrap = {
   barangayID:String,
   scrapType:String,
   weight:String,
+  eligibleWeight:String
 }
 const adminScraps = {
   scrapType:String,
@@ -360,72 +367,114 @@ app.post('/forgot-password', async (req, res) => {
 
 
 app.get("/dashboard", checkAdminSession, async (req, res) => {
-
-  console.log(req.session.isLogged);
-  
   try {
-    // Fetch all barangays that are approved
-    const barangays = await Barangay.find({ isApproved: true });
-    const residents = await User.find();
-    const junkshops =  await JunkShop.find({ isApproved: true });
+    console.log( req.params._id);
 
-    // Calculate totals
-    const totalBarangays = barangays.length;
-    const totalResidents = residents.length;
-    const totalJunkshops = junkshops.length;
-
-    // Array to hold the collected data for each barangay
-    let collectedData = [];
-
-    // Loop through each barangay and find the collected entries for each one
-    for (let barangay of barangays) {
-      const collected = await Collected.find({ barangayID: barangay._id });
-
-      // Push the barangay and its collected data to the array
-      collectedData.push({
-        barangay: barangay,
-        collected: collected,
-      });
-    }
-
-    // Fetch logs
-    const log = await Logs.find();
-
-    // Group logs by the string "date" and count transactions per day
-    const logsPerDay = await Logs.aggregate([
-      {
-        $group: {
-          _id: "$date", // Group by the 'date' string field directly
-          count: { $sum: 1 } // Count how many logs exist per date
-        }
-      },
-      { $sort: { "_id": 1 } } // Sort by the date string (from oldest to newest)
-    ]);
-
-    // Create an array with the length of transactions per day
-    const transactionsPerDay = logsPerDay.map(log => ({
-      date: log._id,
-      count: log.count
-    }));
-
-    // Calculate the total number of transactions
-    const totalTransactions = transactionsPerDay.reduce((acc, log) => acc + log.count, 0);
-    const total = totalBarangays + totalResidents + totalJunkshops;
-    console.log(total);
     
-    // Render the index.ejs and pass the collected data, totals, transactions per day, and total number of transactions
-    res.render('index.ejs', { 
-      collectedData, 
-      transactionsPerDay, 
-      totalTransactions, 
-      log, 
-     total
-    });
 
-  } catch (error) {
-    console.error('Error fetching dashboard data:', error);
-    res.status(500).send('Internal Server Error');
+  // Fetch all barangays that are approved
+  const barangays = await Barangay.find({ isApproved: true });
+  const residents = await User.find();
+  const junkshops =  await JunkShop.find({ isApproved: true });
+  const collectionLogs = await Logs.find({ type:"Successful Pick-Up" });
+
+// Function to create the collectDataArray based on collection logs
+function createCollectDataArray(logs) {
+const collectDataMap = new Map();
+
+logs.forEach(log => {
+const { barangayName, scrapType, date, weight } = log;
+
+// Initialize barangay in the map if it doesn't exist
+if (!collectDataMap.has(barangayName)) {
+  collectDataMap.set(barangayName, {});
+}
+
+// Initialize scrapType for the barangay if it doesn't exist
+if (!collectDataMap.get(barangayName)[scrapType]) {
+  collectDataMap.get(barangayName)[scrapType] = {};
+}
+
+// Add weight to the specific date for that scrap type
+if (!collectDataMap.get(barangayName)[scrapType][date]) {
+  collectDataMap.get(barangayName)[scrapType][date] = 0;
+}
+collectDataMap.get(barangayName)[scrapType][date] += Number(weight);
+});
+
+// Convert the map to the desired array structure
+const collectDataArray = Array.from(collectDataMap, ([barangayName, scrapData]) => ({
+barangayName,
+scrapData,
+}));
+
+return collectDataArray;
+}
+
+// Use the function to create the structured array
+const collectDataArray = createCollectDataArray(collectionLogs);
+
+
+
+  // Calculate totals
+  const totalBarangays = barangays.length;
+  const totalResidents = residents.length;
+  const totalJunkshops = junkshops.length;
+
+  // Array to hold the collected data for each barangay
+  let collectedData = [];
+
+  // Loop through each barangay and find the collected entries for each one
+  for (let barangay of junkshops) {
+    const collected = await Collected.find({ junkID: barangay._id });
+    console.log(collected);
+    
+    // Push the barangay and its collected data to the array
+    collectedData.push({
+      barangay: barangay,
+      collected: collected,
+    });
   }
+
+  // Fetch logs
+  const log = await Logs.find();
+
+  // Group logs by the string "date" and count transactions per day
+  const logsPerDay = await Logs.aggregate([
+    {
+      $group: {
+        _id: "$date", // Group by the 'date' string field directly
+        count: { $sum: 1 } // Count how many logs exist per date
+      }
+    },
+    { $sort: { "_id": 1 } } // Sort by the date string (from oldest to newest)
+  ]);
+
+  // Create an array with the length of transactions per day
+  const transactionsPerDay = logsPerDay.map(log => ({
+    date: log._id,
+    count: log.count
+  }));
+
+  // Calculate the total number of transactions
+  const totalTransactions = transactionsPerDay.reduce((acc, log) => acc + log.count, 0);
+  const total = totalBarangays + totalResidents + totalJunkshops;
+  console.log(total);
+  
+  // Render the index.ejs and pass the collected data, totals, transactions per day, and total number of transactions
+  res.render('index.ejs', { 
+    collectedData, 
+    transactionsPerDay, 
+    totalTransactions, 
+    log,
+    collectDataArray,
+   total
+  });
+
+} catch (error) {
+  console.error('Error fetching dashboard data:', error);
+  res.status(500).send('Internal Server Error');
+}
 });
 
 
@@ -479,19 +528,26 @@ app.get("/login", async (req, res) => {
     // Check if session exists and if the user is logged in
     if (req.session && req.session.adminId) {
       // If session exists, redirect to dashboard
-      return res.redirect('/dashboard');
+      const admin = await Admin.findOne({ _id: req.session.adminId });
+      if (admin){
+        return res.redirect('/dashboard');
+      } else{
+        return res.redirect('/junkshop/'+req.session.adminId);
+      }
+
     }
-
+    console.log(   await JunkShop.find());
+    
     // If no session, check if admin exists in the database
-    const admin = await Admin.findOne({ uName: "admin" });
 
+    const admin = await Admin.findOne({ uName: "admin" });
     if (!admin) {
       // If no admin exists, render setup page
       return res.render('set-admin.ejs');
     }
 
     // If admin exists but not logged in, render login page
-    res.render('authentication-login.ejs', { admin });
+    res.render('authentication-login.ejs');
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal Server Error');
@@ -507,34 +563,65 @@ app.post("/login", async (req, res) => {
   console.log(username);
 
   try {
+
+
     // Find the admin by username
     const admin = await Admin.findOne({ uName: username });
-    const isMatch = await bcrypt.compare(password, admin.password);
-    if (!admin||!isMatch) {
-      return res.status(400).send("Please check your username or password is incorrect.");
+    const junkshop = await JunkShop.findOne({ email: username})
+    if (admin){
+      const isMatch = await bcrypt.compare(password, admin.password);
+      if (!admin||!isMatch) {
+        
+        return res.status(400).send("Please check your username or password is incorrect.");
+      }
+      const options = { timeZone: 'Asia/Manila', hour12: true, year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
+      const currentDate = new Intl.DateTimeFormat('en-PH', options).format(new Date());
+      const [date, time] = currentDate.split(', ');
+      // If the admin is found, compare the entered password with the stored hashed password
+     
+      if (isMatch) {
+        // Set session for the logged-in admin
+        req.session.adminId = admin._id; // Store admin ID in session
+        req.session.isLogged = true;     // Set login status
+    
+        // Update isLogged status in the database
+        admin.isLogged = true;
+        await admin.save(); // Save the updated admin
+    
+        // Create a log for the login event
+  
+    
+        res.redirect('/dashboard'); // Redirect to the admin dashboard or home page
+      } else {
+        // If the password is incorrect, redirect back to login
+        res.redirect('/login');
+      }
+    } else if (junkshop){
+  
+      
+      const isMatch = await bcrypt.compare(password, junkshop.password);
+      console.log(isMatch);
+      console.log(junkshop);
+      if (!isMatch) {
+        return res.status(400).send("Please check your username or password is incorrect.");
+      }
+      const options = { timeZone: 'Asia/Manila', hour12: true, year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
+      const currentDate = new Intl.DateTimeFormat('en-PH', options).format(new Date());
+      const [date, time] = currentDate.split(', ');
+      // If the admin is found, compare the entered password with the stored hashed password
+     
+      if (isMatch) {
+        // Set session for the logged-in admin
+        req.session.adminId = junkshop._id; // Store admin ID in session
+        req.session.isLogged = true;     // Set login status
+    
+        res.redirect('/dashboard'); // Redirect to the admin dashboard or home page
+      } else {
+        // If the password is incorrect, redirect back to login
+        res.redirect('/login');
+      }
     }
-    const options = { timeZone: 'Asia/Manila', hour12: true, year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
-    const currentDate = new Intl.DateTimeFormat('en-PH', options).format(new Date());
-    const [date, time] = currentDate.split(', ');
-    // If the admin is found, compare the entered password with the stored hashed password
    
-    if (isMatch) {
-      // Set session for the logged-in admin
-      req.session.adminId = admin._id; // Store admin ID in session
-      req.session.isLogged = true;     // Set login status
-  
-      // Update isLogged status in the database
-      admin.isLogged = true;
-      await admin.save(); // Save the updated admin
-  
-      // Create a log for the login event
-
-  
-      res.redirect('/dashboard'); // Redirect to the admin dashboard or home page
-    } else {
-      // If the password is incorrect, redirect back to login
-      res.redirect('/login');
-    }
   } catch (err) {
     console.error(err);
     res.status(500).send('Internal Server Error');
@@ -771,6 +858,18 @@ app.get("/dashboard/logs",checkAdminSession, async (req, res) => {
       res.status(500).render('error');
     }
   });
+  app.get("/:_id/logs",checkAdminSession, async (req, res) => {
+    try {
+      const junkshop =  await JunkShop.findOne({_id: req.params._id})
+      const transactions = await Logs.find({id:req.params._id});
+      res.render('logss.ejs', {
+        transactions: transactions, junkshop
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).render('error');
+    }
+  });
 
 app.get('/:_id/junkshop-view',checkAdminSession, async (req, res) => {
     const _id = req.params._id;
@@ -781,6 +880,15 @@ app.get('/:_id/junkshop-view',checkAdminSession, async (req, res) => {
     const _id = req.params._id;
     const pickup = await Book.findOne({ _id });
     res.render('pickup-view.ejs', { junkshop:pickup });
+  });
+  app.get('/junkshop-pickup-view/:id/',checkAdminSession, async (req, res) => {
+    const id = req.params.id;
+    const pickup = await Book.findOne({ _id:id });
+  console.log(pickup);
+  
+    const junkshop = await JunkShop.findOne({_id:pickup.jID})
+    
+    res.render('pickup_barangay_view.ejs', { pickup:pickup , junkshop});
   });
 
   app.get('/:_id/barangay-view', checkAdminSession,async (req, res) => {
@@ -805,15 +913,35 @@ app.get('/dashboard/sessionlogs',checkAdminSession, async (req, res) => {
 
     try {
       const cont = await Barangay.find({isApproved:true});
-      const admin =  await Admin.findOne({uName:'admin'});
-      if(admin.isLogged === true){
+   
+   
       res.render('barangay-1.ejs', {
         junk:cont
       });
+    
+    } catch (err) {
+      // Handle any potential errors
+      console.error(err);
+      // You may want to send an error response to the client here
     }
-      else{
-          res.redirect('/404')
-      }
+
+
+  
+  });
+
+  app.get('/:_id/barangay',checkAdminSession, async (req, res) => {
+
+    try {
+      const cont = await Barangay.find({isApproved:true});
+      const junkshop = await JunkShop.findOne({_id:req.params._id});
+      
+      console.log(req.params._id);
+      
+   
+      res.render('barangay-list.ejs', {
+        junk:cont , junkshop:junkshop
+      });
+    
     } catch (err) {
       // Handle any potential errors
       console.error(err);
@@ -859,32 +987,117 @@ app.get('/dashboard/sessionlogs',checkAdminSession, async (req, res) => {
     res.render('collection.ejs'); // Corrected variable name to contacts
   
   });
-  app.get('/junkshop/', async (req, res) => {
-  
-    res.render('junkshop-dash.ejs'); // Corrected variable name to contacts
-  
-  });
-  app.get('/junkshop/barangay', async (req, res) => {
+  app.get('/junkshop/:_id', async (req, res) => {
     try {
-      const cont = await JunkShop.find();
-      const admin =  await Admin.findOne({uName:'admin'});
-      if(admin.isLogged === true){
-      res.render('barangay-list.ejs', {
-        junk:cont
-      });
-}
-      else{
-          res.redirect('/404')
-      }
-    } catch (err) {
-      // Handle any potential errors
-      console.error(err);
-      // You may want to send an error response to the client here
+        console.log( req.params._id);
+
+        
+
+      // Fetch all barangays that are approved
+      const barangays = await Barangay.find({ isApproved: true });
+      const residents = await User.find();
+      const junkshops =  await JunkShop.find({ isApproved: true });
+      const junkshop = await JunkShop.findOne({_id:req.params._id})
+      const collectionLogs = await Logs.find({ type:"Collect" });
+
+// Function to create the collectDataArray based on collection logs
+function createCollectDataArray(logs) {
+  const collectDataMap = new Map();
+
+  logs.forEach(log => {
+    const { barangayName, scrapType, date, weight } = log;
+
+    // Initialize barangay in the map if it doesn't exist
+    if (!collectDataMap.has(barangayName)) {
+      collectDataMap.set(barangayName, {});
     }
 
+    // Initialize scrapType for the barangay if it doesn't exist
+    if (!collectDataMap.get(barangayName)[scrapType]) {
+      collectDataMap.get(barangayName)[scrapType] = {};
+    }
 
-  
+    // Add weight to the specific date for that scrap type
+    if (!collectDataMap.get(barangayName)[scrapType][date]) {
+      collectDataMap.get(barangayName)[scrapType][date] = 0;
+    }
+    collectDataMap.get(barangayName)[scrapType][date] += Number(weight);
   });
+
+  // Convert the map to the desired array structure
+  const collectDataArray = Array.from(collectDataMap, ([barangayName, scrapData]) => ({
+    barangayName,
+    scrapData,
+  }));
+
+  return collectDataArray;
+}
+
+// Use the function to create the structured array
+const collectDataArray = createCollectDataArray(collectionLogs);
+console.log(collectDataArray);
+
+
+      // Calculate totals
+      const totalBarangays = barangays.length;
+      const totalResidents = residents.length;
+      const totalJunkshops = junkshops.length;
+  
+      // Array to hold the collected data for each barangay
+      let collectedData = [];
+  
+      // Loop through each barangay and find the collected entries for each one
+      for (let barangay of barangays) {
+        const collected = await Collected.find({ barangayID: barangay._id });
+  
+        // Push the barangay and its collected data to the array
+        collectedData.push({
+          barangay: barangay,
+          collected: collected,
+        });
+      }
+  
+      // Fetch logs
+      const log = await Logs.find();
+  
+      // Group logs by the string "date" and count transactions per day
+      const logsPerDay = await Logs.aggregate([
+        {
+          $group: {
+            _id: "$date", // Group by the 'date' string field directly
+            count: { $sum: 1 } // Count how many logs exist per date
+          }
+        },
+        { $sort: { "_id": 1 } } // Sort by the date string (from oldest to newest)
+      ]);
+  
+      // Create an array with the length of transactions per day
+      const transactionsPerDay = logsPerDay.map(log => ({
+        date: log._id,
+        count: log.count
+      }));
+  
+      // Calculate the total number of transactions
+      const totalTransactions = transactionsPerDay.reduce((acc, log) => acc + log.count, 0);
+      const total = totalBarangays + totalResidents + totalJunkshops;
+      console.log(total);
+      
+      // Render the index.ejs and pass the collected data, totals, transactions per day, and total number of transactions
+      res.render('junkshop-dash.ejs', { 
+        collectedData, 
+        transactionsPerDay, 
+        totalTransactions, 
+        log, junkshop,
+        collectDataArray,
+       total
+      });
+  
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+      res.status(500).send('Internal Server Error');
+    }
+  });
+ 
 app.get('/dashboard/manage',checkAdminSession, async (req, res) => {
   try {
     // Assuming you are using a database model called Scrap to fetch all scraps
@@ -952,11 +1165,7 @@ app.post('/junkshop/scraps', async (req, res) => {
 
 
 
-  app.get('/junkshop/account', async (req, res) => {
-  
-    res.render('junkshop-dash.ejs'); // Corrected variable name to contacts
-  
-  });
+
   app.get("/dashboard/barangayapproval",async(req,res)=>{
 
     try {
@@ -978,8 +1187,13 @@ app.post('/junkshop/scraps', async (req, res) => {
   
 })
 app.get('/dashboard/pickup',checkAdminSession,async (req,res)=>{
-  try {
-    const sched =  await Book.find();
+  try {const sched = await Book.find({
+    barangayID:null,
+    jID: { $ne: null },
+    uID:null
+  });
+
+
     res.render('pickup.ejs',{
       requests:sched
     });
@@ -990,39 +1204,103 @@ app.get('/dashboard/pickup',checkAdminSession,async (req,res)=>{
   }
  
 });
-app.post("/updateJunkshopStatus",checkAdminSession, async (req, res) => {
+app.get('/:_id/pickup',checkAdminSession,async (req,res)=>{
   try {
-    const { status, id } = req.body;  // Extract status and id from request body
+    const junkshop = await JunkShop.findOne({_id:req.params._id});
+    const sched = await Book.find({
+   
+    jID: req.params._id,
+
+  });
+    res.render('pickup_barangay.ejs',{
+      requests:sched,junkshop:junkshop
+    });
+
+  } catch (error) {
+    console.log(error);
+    
+  }
+ 
+});
+
+app.post("/updateBarangayStatus", checkAdminSession, async (req, res) => {
+  try {
+    const { id, barangayID,jID, name, jShop, phone, location, scrapType, weight, status } = req.body;
     const options = { timeZone: 'Asia/Manila', hour12: true, year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
     const currentDate = new Intl.DateTimeFormat('en-PH', options).format(new Date());
     const [date, time] = currentDate.split(', ');
+
     // Find the booking by id and update the status
     const updatedJunkshop = await Book.findByIdAndUpdate(
       id,                         // The ID to search for
-      { status: status },          // Set the status from request
-      { new: true }                // Return the updated document
+      { status: status },         // Set the status from request
+      { new: true }               // Return the updated document
     );
 
     if (!updatedJunkshop) {
       return res.status(404).send({ message: "Junkshop not found" });
     }
+   
+    
+    // Find collected scrap for Barangay and Junkshop
+    let collectedScrapBarangay = await Collected.findOne({ barangayID: barangayID, scrapType: scrapType });
+    let collectedScrapJunkshop = await Collected.findOne({ junkID: jID, scrapType: scrapType });
+    console.log(collectedScrapJunkshop);
+    
+    const weightValue = parseFloat(weight);
+
+    // Update or create collected scrap for Barangay
+    if (collectedScrapBarangay) {
+      collectedScrapBarangay.eligibleWeight = (parseFloat(collectedScrapBarangay.eligibleWeight) - weightValue).toString();
+      await collectedScrapBarangay.save();
+    } else {
+      collectedScrapBarangay = new Collected({
+        barangayID: barangayID,
+        scrapType: scrapType,
+        weight: weight,
+        eligibleWeight: (-weightValue).toString()
+      });
+      await collectedScrapBarangay.save();
+    }
+
+    // Update or create collected scrap for Junkshop
+    if (collectedScrapJunkshop) {
+      collectedScrapJunkshop.weight = (parseFloat(collectedScrapJunkshop.weight) + weightValue).toString();
+      collectedScrapJunkshop.eligibleWeight = (parseFloat(collectedScrapJunkshop.eligibleWeight) + weightValue).toString();
+      console.log(collectedScrapJunkshop.weight);
+      
+      await collectedScrapJunkshop.save();
+    } else {
+      collectedScrapJunkshop = new Collected({
+        junkID: jID,
+        scrapType: scrapType,
+        weight: weightValue.toString(),
+        eligibleWeight: weightValue.toString()
+      });
+      await collectedScrapJunkshop.save();
+    }
 
     // Create a log message for the Logs schema
     const logMessage = `Junkshop status updated to ${status} for junkshop with ID: ${id}`;
-
+    const junkshop = await JunkShop.findOne({_id:jID});
     // Add the new log entry
+    
     const newLog = new Logs({
       logs: logMessage,
-      time:time,
-      date:date,
+      time: time,
+      date: date,
       id: id,
-      userName:"Junkshop",
-      type: "Junkshop Status Update" // You can add a 'type' field if you want to categorize logs
+      weight: weight,
+      scrapType:scrapType,
+      barangayName:junkshop.jShopName,
+      userName: "Junkshop",
+      type: "Successful Pick-Up"
     });
 
     // Save the log entry
     await newLog.save();
-
+    console.log(await Logs.find({type:"Successful Pick-Up"}));
+    
     // Send success response
     res.status(200).send({
       status_code: 200,
@@ -1042,15 +1320,186 @@ app.post("/updateJunkshopStatus",checkAdminSession, async (req, res) => {
 });
 
 
+app.post("/updateJunkshopStatus", checkAdminSession, async (req, res) => {
+  try {
+    const { id, name, jShop, phone, location, scrapType, weight, status } = req.body;
+
+    // Get current date and time
+    const options = {
+      timeZone: 'Asia/Manila',
+      hour12: true,
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric'
+    };
+    const currentDate = new Intl.DateTimeFormat('en-PH', options).format(new Date());
+    const [date, time] = currentDate.split(', ');
+
+    // Find the junkshop by its name
+    const junk = await JunkShop.findOne({ jShopName: jShop });
+    if (!junk) {
+      return res.status(404).send({ message: "Junkshop not found" });
+    }
+
+    // Find collected scrap for the junkshop
+    let collectedScrapJunkshop = await Collected.findOne({ junkID: junk._id, scrapType: scrapType });
+    const weightValue = parseFloat(weight);
+
+    // Update the booking status
+    const updatedJunkshop = await Book.findByIdAndUpdate(
+      id,
+      { status: status },
+      { new: true }
+    );
+
+    if (!updatedJunkshop) {
+      return res.status(404).send({ message: "Booking not found" });
+    }
+
+    // Update or create collected scrap
+    if (collectedScrapJunkshop) {
+      collectedScrapJunkshop.eligibleWeight = (parseFloat(collectedScrapJunkshop.eligibleWeight) - weightValue).toString();
+      await collectedScrapJunkshop.save();
+    } else {
+      collectedScrapJunkshop = new Collected({
+        junkID: junk._id,
+        scrapType: scrapType,
+        weight: weightValue.toString(),
+        eligibleWeight: weightValue.toString()
+      });
+      await collectedScrapJunkshop.save();
+    }
+
+    // Log the update
+    const logMessage = `Junkshop status updated to ${status} for junkshop with ID: ${id}`;
+    const newLog = new Logs({
+      logs: logMessage,
+      time: time,
+      date: date,
+      id: id,
+      userName: "Junkshop",
+      type: "Junkshop Status Update"
+    });
+    await newLog.save();
+
+    res.status(200).send({
+      status_code: 200,
+      message: "Junkshop status updated successfully",
+      junkshop: updatedJunkshop
+    });
+
+  } catch (error) {
+    console.error("Error updating junkshop status:", error);
+    res.status(500).send({
+      status_code: 500,
+      message: "Internal server error"
+    });
+  }
+});
+
+app.post('/send-notif', async (req, res) => {
+  const options = {
+    timeZone: 'Asia/Manila',
+    hour12: true,
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric'
+  };
+  const currentDate = new Intl.DateTimeFormat('en-PH', options).format(new Date());
+  const [date, time] = currentDate.split(', ');
+
+  try {
+    const { scraps, usertype } = req.body; // Destructure scraps and usertype from the request body
+
+    if (usertype === "Junkshop") {
+      // Junkshop logic
+      
+
+      const userLogs = await Logs.find();
+      console.log(userLogs + "ooooo");
+
+      for (let scrap of scraps) {
+        // Find the junk shop by its name (assuming barangay name matches junk shop name)
+        const junkshop = await JunkShop.findOne({ jShopName: scrap.barangay.toString() + " " });
+
+        console.log(junkshop._id);
+
+        if (junkshop) {
+          // Create a new Logs entry for each scrap
+          const newContent = new Logs({
+            logs: `Your scrap ${scrap.scrapType} is eligible for pick up. Schedule Now!`,
+            time: time,
+            date: date,
+            id: junkshop._id,
+            type: "Schedule Collection",
+            userName: "Junkshop"
+          });
+
+          // Save the new log entry
+          await newContent.save();
+        } else {
+          console.error(`Junkshop with name ${scrap.barangay} not found.`);
+        }
+      }
+
+    } else if (usertype === "Barangay") {
+      // Barangay logic
+      
+      for (let scrap of scraps) {
+        // Find the barangay by name
+        const barangay = await Barangay.findOne({ bName: scrap.barangay.toString() });
+
+        if (barangay) {
+          // Create a new Logs entry for each scrap
+          const newContent = new Logs({
+            logs: `Your scrap ${scrap.scrapType} is eligible for pick up by the junkshop. You can now book a schedule!`,
+            time: time,
+            date: date,
+            id: barangay._id,
+            type: "Barangay Notification",
+            userName: "Barangay"
+          });
+
+          // Save the new log entry
+          await newContent.save();
+        } else {
+          console.error(`Barangay with name ${scrap.barangay} not found.`);
+        }
+      }
+    } else {
+      console.error("Invalid usertype provided.");
+      return res.status(400).send('Invalid usertype provided.');
+    }
+
+    // Send a response after processing the data
+    res.status(200).send('Data received successfully');
+
+  } catch (error) { 
+    console.error('Error:', error);
+    res.status(500).send('An error occurred while processing the request');
+  }
+});
+
+
+
+
 app.post('/dashboard/pickup',checkAdminSession, async (req, res) => {
   try {
       const { requestId, status,jID } = req.body;
 
+      console.log(req.body);
       
     //  console.log('Applicant ID:', applicantId);
     
      
       // Update the applicant status in the database
+
       const updatedApplicant = await Book.findByIdAndUpdate(requestId, { status: status }, { new: true });
       const options = { timeZone: 'Asia/Manila', hour12: true, year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
       const currentDate = new Intl.DateTimeFormat('en-PH', options).format(new Date());
@@ -1160,7 +1609,6 @@ const PORT = process.env.PORT;
 
 app.listen(PORT, async () => {
   try {
-  
     console.log(`Server started on port ${PORT}`);
     // Any async initializations can be added here
   } catch (error) {

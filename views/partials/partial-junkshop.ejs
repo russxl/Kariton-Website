@@ -7,7 +7,7 @@
         <span class="hide-menu"></span>
       </li>
       <li class="sidebar-item">
-        <a class="sidebar-link" href="/junkshop/" aria-expanded="false">
+        <a class="sidebar-link" href="/junkshop/<%=junkshop._id%>" aria-expanded="false">
           <span>
             <i class="ti ti-article"></i>
           </span>
@@ -16,29 +16,31 @@
       </li>
       </li>
       <li class="sidebar-item">
-        <a class="sidebar-link" href="/junkshop/barangay" aria-expanded="false">
+        <a class="sidebar-link" href="/<%=junkshop._id%>/barangay" aria-expanded="false">
           <span>
             <i class="ti ti-user"></i>
           </span>
           <span class="hide-menu">Barangay</span>
         </a>
-      </li> <li class="sidebar-item">
-        <a class="sidebar-link" href="/junkshop/scraps" aria-expanded="false">
+      </li>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/<%=junkshop._id%>/pickup" aria-expanded="false">
+          <span>
+            <i class="ti ti-dots"></i>
+          </span>
+          <span class="hide-menu">Pending Pick Up Request</span>
+        </a>
+        </li>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="/<%=junkshop._id%>/logs" aria-expanded="false">
           <span>
             <i class="ti ti-message"></i>
           </span>
-          <span class="hide-menu">Manage Scraps</span>
+          <span class="hide-menu">Transactions</span>
         </a>
       </li>
       
-        <li class="sidebar-item">
-          <a class="sidebar-link" href="/dashboard/account" aria-expanded="false">
-            <span>
-              <i class="ti ti-dots"></i>
-            </span>
-            <span class="hide-menu">Account</span>
-          </a>
-          </li>
+      
 
     </ul>
 

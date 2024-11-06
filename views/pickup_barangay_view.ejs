@@ -4,12 +4,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Junkshop View | Kariton</title>
-  <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.png" />
-  <link rel="icon" href="img/home-logo.png" type="image/x-icon" />
-  <link rel="stylesheet" href="../assets/css/styles.min.css" />
-  <meta name="description" content="View detailed information about a junkshop in Kariton.">
+  <title>Pickup View | Kariton</title>
+  <meta name="description" content="View detailed information about a pickup in Kariton.">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="/assets/images/logos/favicon.png" type="image/png" />
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="/assets/css/styles.min.css" />
 </head>
+
 
 <body>
   <!-- Body Wrapper -->
@@ -28,7 +32,54 @@
           </div>
         </div>
         <nav>
-          <%- include('./partials/sidebar'); -%>
+          <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
+            <ul id="sidebarnav">
+            
+        
+              <li class="nav-small-cap">
+                <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+                <span class="hide-menu"></span>
+              </li>
+              <li class="sidebar-item">
+                <a class="sidebar-link" href="/junkshop/<%=junkshop._id%>" aria-expanded="false">
+                  <span>
+                    <i class="ti ti-article"></i>
+                  </span>
+                  <span class="hide-menu">Dashboard</span>
+                </a>
+              </li>
+              </li>
+              <li class="sidebar-item">
+                <a class="sidebar-link" href="/<%=junkshop._id%>/barangay" aria-expanded="false">
+                  <span>
+                    <i class="ti ti-user"></i>
+                  </span>
+                  <span class="hide-menu">Barangay</span>
+                </a>
+              </li>
+              <li class="sidebar-item">
+                <a class="sidebar-link" href="/<%=junkshop._id%>/pickup" aria-expanded="false">
+                  <span>
+                    <i class="ti ti-dots"></i>
+                  </span>
+                  <span class="hide-menu">Pending Pick Up Request</span>
+                </a>
+                </li>
+              <li class="sidebar-item">
+                <a class="sidebar-link" href="/<%=junkshop._id%>/logs" aria-expanded="false">
+                  <span>
+                    <i class="ti ti-message"></i>
+                  </span>
+                  <span class="hide-menu">Transactions</span>
+                </a>
+              </li>
+              
+              
+        
+            </ul>
+        
+          </nav>
+        
         </nav>
       </div>
     </aside>
@@ -46,56 +97,56 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
               <button class="btn btn-secondary" onclick="history.back()">Back</button>
               <p><strong>Status:</strong>
-                <% if (junkshop.status === "pending") { %>
+                <% if (pickup.status === "pending") { %>
                   <span><span class="ti ti-clock text-secondary"></span> Pending</span>
-                <% } else if (junkshop.status === "approved") { %>
+                <% } else if (pickup.status === "approved") { %>
                   <span><span class="ti ti-check text-success"></span> Approved</span>
-                <% } else if (junkshop.status === "declined") { %>
+                <% } else if (pickup.status === "declined") { %>
                   <span><span class="ti ti-close text-danger"></span> Rejected</span>
-                <% } else if (junkshop.status === "Done") { %>
+                <% } else if (pickup.status === "Done") { %>
                   <span><span class="ti ti-check text-primary"></span> Done</span>
                 <% } %>
               </p>
             </div>
 
             <h5 class="card-title fw-semibold mb-4">Junkshop Pick up Information</h5>
-            <!-- Junkshop Information Table -->
+            <!-- pickup Information Table -->
             <div class="table-responsive">
               <table class="table table-bordered">
                 <tbody>
                   <tr>
-                    <th>Junkshop Name</th>
-                    <td><%= junkshop.jShop %></td>
+                    <th>pickup Name</th>
+                    <td><%= pickup.jShop %></td>
                   </tr>
                   <tr>
                     <th>Owner</th>
-                    <td><%= junkshop.name %></td>
+                    <td><%= pickup.name %></td>
                   </tr>
                   <tr>
                     <th>Contact Number</th>
-                    <td><%= junkshop.phone %></td>
+                    <td><%= pickup.phone %></td>
                   </tr>
                   <tr>
                     <th>Address</th>
-                    <td><%= junkshop.location %></td>
+                    <td><%= pickup.location %></td>
                   </tr>
                   <tr>
                     <th>Scrap Type</th>
-                    <td><%= junkshop.scrapType %></td>
+                    <td><%= pickup.scrapType %></td>
                   </tr>
                   <tr>
                     <th>Weight</th>
-                    <td><%= junkshop.weight %> kg</td>
+                    <td><%= pickup.weight %> kg</td>
                   </tr>
                 </tbody>
               </table>
             </div>
 
             <div class="justify-content-between mt-4">
-              <% if (junkshop.status === "approved") { %>
+              <% if (pickup.status === "approved") { %>
                 <a href="#" class="btn btn-success me-2" id="doneBtn">Done</a>
               <% } %>
-              <a href="https://www.google.com/maps/dir/Adp+Junkshop/<%= junkshop.location %>" target="_blank"
+              <a href="https://www.google.com/maps/dir/Adp+pickup/<%= pickup.location %>" target="_blank"
                 class="btn btn-primary">Navigate</a>
             </div>
           </div>
@@ -140,18 +191,18 @@
     document.getElementById('confirmDoneBtn').addEventListener('click', function () {
        
       $.ajax({
-        url: '/updateJunkshopStatus', // Adjust this to your API endpoint
+        url: '/updateBarangayStatus', // Adjust this to your API endpoint
         type: 'POST',
-        data: { id: '<%= junkshop._id %>',
-        barangayID: '<%= junkshop.barangayID %>',
-      name: '<%= junkshop.name %>',
-      jID:'<%= junkshop.jID %>',
-      jShop: '<%= junkshop.jShop %>',
-      phone: '<%= junkshop.phone %>',
-      location: '<%= junkshop.location %>',
-      scrapType: '<%= junkshop.scrapType %>',
-      weight: '<%= junkshop.weight %>',
-      status: 'Done' },
+        data: {  id: '<%= pickup._id %>',
+        barangayID: '<%= pickup.barangayID %>',
+      name: '<%= pickup.name %>',
+      jID:'<%= junkshop._id %>',
+      jShop: '<%= pickup.jShop %>',
+      phone: '<%= pickup.phone %>',
+      location: '<%= pickup.location %>',
+      scrapType: '<%= pickup.scrapType %>',
+      weight: '<%= pickup.weight %>',
+      status: 'Done'},
         success: function (response) {
           alert('Transaction marked as Done');
           location.reload(); // Reload the page to reflect the updated status

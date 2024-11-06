@@ -1,6 +1,5 @@
 <!doctype html>
 <html lang="en">
-
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,11 +9,10 @@
   <link rel="stylesheet" href="../assets/css/styles.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 </head>
-
 <body>
   <!-- Body Wrapper -->
-  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
-    data-sidebar-position="fixed" data-header-position="fixed">
+  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full" data-sidebar-position="fixed" data-header-position="fixed">
+    
     <!-- Sidebar Start -->
     <aside class="left-sidebar">
       <div>
@@ -30,24 +28,42 @@
       </div>
     </aside>
     <!-- Sidebar End -->
+
     <div class="body-wrapper">
+      
       <!-- Header Start -->
       <div><%- include('./partials/head'); -%></div>
       <!-- Header End -->
+
       <div class="container-fluid">
-        <!-- Row 1 -->
+        
+        <!-- Eligible Barangays and Scrap Types Section -->
         <div class="row">
-          <div class="col-lg-8 d-flex align-items-stretch">
+          <div class="col-lg-12 d-flex align-items-stretch">
+            <div class="card w-100">
+              <div class="card-body">
+                <h5 class="card-title fw-semibold">Check Eligible Junkshop for Pickup</h5>
+                <button id="checkEligibleBarangaysBtn" class="btn btn-primary">Check Eligible Scraps</button>
+                <div id="eligibleBarangaysList"></div>
+                <button id="notifyBtn" class="btn btn-secondary mt-3" onclick="sendNotification()">Send Notifications</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Barangay Scrap Collection Charts Row -->
+        <div class="row">
+          
+          <!-- Barangay Scrap Collected Chart -->
+          <div class="col-lg-6 d-flex align-items-stretch">
             <div class="card w-100">
               <div class="card-body">
                 <div class="d-sm-flex d-block align-items-center justify-content-between mb-9">
-                  <div class="mb-3 mb-sm-0">
-                    <h5 class="card-title fw-semibold">Barangay Scrap Collected</h5>
-                  </div>
+                  <h5 class="card-title fw-semibold">Junkshop Scrap Collected</h5>
                   <div>
                     <select class="form-select" id="barangaySelect">
                       <% collectedData.forEach((data, index) => { %>
-                        <option value="<%= index %>"><%= data.barangay['bName'] %></option>
+                        <option value="<%= index %>"><%= data.barangay['jShopName'] %></option>
                       <% }); %>
                     </select>
                   </div>
@@ -56,199 +72,363 @@
               </div>
             </div>
           </div>
-          <div class="col-lg-4">
-            <div class="row">
-              <div class="col-lg-12">
-                <!-- Yearly Breakup -->
-                <div class="card overflow-hidden">
-                  <div class="card-body p-4">
-                    <div class="row align-items-center">
-                      <div class="col-8">
-                        <h4 class="fw-semibold mb-3">Total Transactions: <%= totalTransactions %></h4>
-                        <div class="d-flex align-items-center mb-3">
-                          <span class="me-1 rounded-circle bg-light-success round-20 d-flex align-items-center justify-content-center">
-                            <i class="ti ti-arrow-up-left text-success"></i>
-                          </span>
-                        </div>
-                      </div>
-                      <div class="col-4">
-                        <div class="d-flex justify-content-center">
-                          <div id="breakup"></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-lg-12">
-                <!-- Monthly Earnings -->
-                <div class="card">
-                  <div class="card-body">
-                    <div class="row align-items-start">
-                      <div class="col-8">
-                        <h5 class="card-title mb-9 fw-semibold">Total Number of Users</h5>
-                        <h4 class="fw-semibold mb-3"><%=total %></h4>
-                      </div>
-                      <div class="col-4">
-                        <div class="d-flex justify-content-end">
-                          <div class="text-white bg-secondary rounded-circle p-6 d-flex align-items-center justify-content-center">
-                            <i class="ti ti-population fs-6"></i>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div id="earning"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-lg-4 d-flex align-items-stretch">
-            <div class="card w-100">
-              <div class="card-body p-4">
-                <div class="mb-4">
-                  <h5 class="card-title fw-semibold">Recent Transactions</h5>
-                </div>
-                <ul class="timeline-widget mb-0 position-relative mb-n5">
-                  <!-- Timeline items for recent transactions -->
-                  <% log.slice(-5).reverse().forEach((data, index) => { %> <!-- Apply reverse() here -->
-                    <li class="timeline-item d-flex position-relative overflow-hidden">
-                      <div class="timeline-time text-dark flex-shrink-0 text-end">
-                        <%= data.time || '09:30' %> <!-- Replace '09:30' with dynamic time -->
-                      </div>
-                      <div class="timeline-badge-wrap d-flex flex-column align-items-center">
-                        <span class="timeline-badge border-2 border border-primary flex-shrink-0 my-8"></span>
-                        <span class="timeline-badge-border d-block flex-shrink-0"></span>
-                      </div>
-                      <div class="timeline-desc fs-3 text-dark mt-n1">
-                        <%= data.logs %>
-                      </div>
-                    </li>
-                  <% }); %>
-                </ul>
-                
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-8">
+
+          <!-- Eligible for Scrap Collection Chart -->
+          <div class="col-lg-6 d-flex align-items-stretch">
             <div class="card w-100">
               <div class="card-body">
                 <div class="d-sm-flex d-block align-items-center justify-content-between mb-4">
-                  <h5 class="card-title fw-semibold">Transactions</h5>
+                  <h5 class="card-title fw-semibold">Eligible for Scrap Collection</h5>
+                  <div>
+                    <select class="form-select" id="eligibleBarangaySelect">
+                      <% collectedData.forEach((data, index) => { %>
+                        <option value="<%= index %>"><%= data.barangay['jShopName'] %></option>
+                      <% }); %>
+                    </select>
+                  </div>
                 </div>
-                <div id="monthlyTransactionsChart"></div>
+                <div id="eligibleScrapChart"></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Daily Scrap Collection by Barangay and Insights Row -->
+        <div class="row mt-4">
+          
+          <!-- Daily Scrap Collection by Barangay Line Chart -->
+          <div class="col-lg-12 d-flex align-items-stretch">
+            <div class="card w-100">
+              <div class="card-body">
+                <div class="d-sm-flex d-block align-items-center justify-content-between mb-4">
+                  <h5 class="card-title fw-semibold">Collection by Junkshop</h5>
+                  <div>
+                    <select class="form-select mb-2" id="barangayLineSelect">
+                      <% collectDataArray.forEach((data, index) => { %>
+                        <option value="<%= index %>"><%= data.barangayName %></option>
+                      <% }); %>
+                    </select>
+                    <select class="form-select" id="scrapTypeLineSelect">
+                      <!-- Placeholder, dynamically filled based on barangay selection -->
+                    </select>
+                    <button id="generateInsightReportBtn" class="btn btn-info mt-2">Generate Insight Report</button>
+                  </div>
+                </div>
+                <div id="lineChart"></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Insights Section -->
+        <div class="row mt-4">
+          <div class="col-lg-12 d-flex align-items-stretch">
+            <div class="card w-100">
+              <div class="card-body">
+                <h5 class="card-title fw-semibold">Insights</h5>
+                <div id="insightsContent"></div>
               </div>
             </div>
           </div>
         </div>
+
       </div>
+
     </div>
   </div>
+
   <div id="collectedData" data-collected="<%= JSON.stringify(collectedData) %>"></div>
   <div id="collectedLogs" data-collected="<%= JSON.stringify(transactionsPerDay) %>"></div>
+  <div id="scrapsData" data-collected="<%= JSON.stringify(collectDataArray) %>"></div>
   <script>
-    // Get the collected data from the DOM element
+    const dummyDailyScrapData = JSON.parse(document.getElementById('scrapsData').dataset.collected);
+
     const barangay = JSON.parse(document.getElementById('collectedData').dataset.collected);
     const monthlyTransactionsData = JSON.parse(document.getElementById('collectedLogs').dataset.collected);
-  
-    var transactionDates = monthlyTransactionsData.map(data => data.date); // Dates
-    var transactionCounts = monthlyTransactionsData.map(data => data.count); // Counts
-    console.log(transactionDates);
-  
-    // Function to extract scrap types and weights for the selected barangay
+    var transactionDates = monthlyTransactionsData.map(data => data.date);
+    var transactionCounts = monthlyTransactionsData.map(data => data.count);
+  </script>
+
+  <!-- Functions for Getting Barangay Data and Updating Charts -->
+  <script>
     function getBarangayData(barangayIndex) {
       const selectedBarangay = barangay[barangayIndex];
-      const scrapTypes = [...new Set(selectedBarangay.collected.map(c => c.scrapType))].filter(Boolean); // Unique scrap types and remove null/undefined
-      const weights = selectedBarangay.collected.map(c => c.weight).filter(Boolean); // Corresponding weights and remove null/undefined
-  
+      const scrapTypes = [...new Set(selectedBarangay.collected.map(c => c.scrapType))].filter(Boolean);
+      const weights = selectedBarangay.collected.map(c => c.weight).filter(Boolean);
       return { scrapTypes, weights };
     }
-  
-    // Function to check if there is valid data and show 'No current data found' if not
+
     function updateChartOrShowMessage(barangayData) {
       if (barangayData.scrapTypes.length === 0 || barangayData.weights.length === 0) {
         document.querySelector("#chart").innerHTML = "<p>No current data found</p>";
       } else {
         chart.updateOptions({
-          xaxis: {
-            categories: barangayData.scrapTypes // Update the scrap types (x-axis categories)
-          },
-          series: [{
-            name: 'Scrap',
-            data: barangayData.weights // Update the weights (y-axis data)
-          }]
+          xaxis: { categories: barangayData.scrapTypes },
+          series: [{ name: 'Scrap', data: barangayData.weights }]
         });
       }
     }
-  
-    // Get initial data for the first barangay (default)
+  </script>
+
+  <!-- Initial Chart Setup and Event Listeners -->
+  <script>
     let initialData = getBarangayData(0);
-  
-    // Initial Chart Options
     var options = {
-      chart: {
-        type: 'bar',
-        height: 350
-      },
-      series: [{
-        name: 'Scrap',
-        data: initialData.weights // Default to the first barangay's weights
-      }],
-      xaxis: {
-        categories: initialData.scrapTypes // Default to the first barangay's scrap types
-      },
-      yaxis: {
-        labels: {
-          formatter: function (value) {
-            return value + ' kg'; // Append "kg" to each y-axis label
-          }
-        }
-      }
+      chart: { type: 'bar', height: 350 },
+      series: [{ name: 'Scrap', data: initialData.weights }],
+      xaxis: { categories: initialData.scrapTypes },
+      yaxis: { labels: { formatter: function (value) { return value + ' kg'; } } }
     };
-  
+
     var chart = new ApexCharts(document.querySelector("#chart"), options);
     chart.render();
-  
-    // Check initial data and update or show message
     updateChartOrShowMessage(initialData);
-  
-    // Update chart based on barangay selection
+
     document.getElementById("barangaySelect").addEventListener("change", function () {
       var selectedBarangayIndex = this.value;
       var barangayData = getBarangayData(selectedBarangayIndex);
-  
-      // Update the chart or show 'No current data found'
       updateChartOrShowMessage(barangayData);
     });
-  
-    // Monthly Transactions Chart
+  </script>
+
+  <!-- Monthly Transaction Chart Setup -->
+  <script>
     var monthlyOptions = {
-      chart: {
-        type: 'line',
-        height: 350
-      },
-      series: [{
-        name: 'Transactions',
-        data: transactionCounts
-      }],
+      chart: { type: 'line', height: 350 },
+      series: [{ name: 'Transactions', data: transactionCounts }],
       xaxis: {
         categories: transactionDates,
-        title: {
-          text: 'Date'
-        }
+        title: { text: 'Date' }
       },
       yaxis: {
-        title: {
-          text: 'Number of Transactions'
-        }
+        title: { text: 'Number of Transactions' }
       }
     };
-  
+
     var monthlyChart = new ApexCharts(document.querySelector("#monthlyTransactionsChart"), monthlyOptions);
     monthlyChart.render();
   </script>
-</body>
 
+  <!-- Eligible Scrap Data and Chart Update Functions -->
+  <script>
+    function getEligibleScrapDataForBarangay(barangayIndex) {
+      const selectedBarangay = barangay[barangayIndex];
+      const eligibleScrapTypes = [...new Set(selectedBarangay.collected.map(c => c.scrapType))].filter(Boolean);
+      const eligibleWeights = selectedBarangay.collected.map(c => c.eligibleWeight).filter(Boolean);
+      return { eligibleScrapTypes, eligibleWeights };
+    }
+
+    function updateEligibleScrapChart(eligibleData) {
+      if (eligibleData.eligibleScrapTypes.length === 0 || eligibleData.eligibleWeights.length === 0) {
+        document.querySelector("#eligibleScrapChart").innerHTML = "<p>No eligible data found</p>";
+      } else {
+        eligibleScrapChart.updateOptions({
+          xaxis: { categories: eligibleData.eligibleScrapTypes },
+          series: [{ name: 'Eligible Scrap', data: eligibleData.eligibleWeights }]
+        });
+      }
+    }
+
+    let initialEligibleData = getEligibleScrapDataForBarangay(0);
+    var eligibleOptions = {
+      chart: { type: 'bar', height: 350 },
+      series: [{ name: 'Eligible Scrap', data: initialEligibleData.eligibleWeights }],
+      xaxis: { categories: initialEligibleData.eligibleScrapTypes },
+      yaxis: { labels: { formatter: function (value) { return value + ' kg'; } } }
+    };
+
+    var eligibleScrapChart = new ApexCharts(document.querySelector("#eligibleScrapChart"), eligibleOptions);
+    eligibleScrapChart.render();
+    updateEligibleScrapChart(initialEligibleData);
+
+    document.getElementById("eligibleBarangaySelect").addEventListener("change", function () {
+      var selectedBarangayIndex = this.value;
+      var eligibleData = getEligibleScrapDataForBarangay(selectedBarangayIndex);
+      updateEligibleScrapChart(eligibleData);
+    });
+  </script>
+
+  <!-- Check Eligible Barangays and Notifications -->
+  <script>
+    document.getElementById("checkEligibleBarangaysBtn").addEventListener("click", function () {
+      const threshold = 5000;
+      const eligibleBarangaysList = document.getElementById("eligibleBarangaysList");
+      eligibleBarangaysList.innerHTML = "";
+
+      barangay.forEach((b) => {
+        const eligibleScraps = b.collected.filter(c => c.eligibleWeight >= threshold);
+        if (eligibleScraps.length > 0) {
+          eligibleScraps.forEach((scrap) => {
+            const listItem = document.createElement("p");
+            listItem.textContent = `${b.barangay.bName} - ${scrap.scrapType}: ${scrap.eligibleWeight} kg`;
+            eligibleBarangaysList.appendChild(listItem);
+          });
+        }
+      });
+
+      if (eligibleBarangaysList.innerHTML === "") {
+        eligibleBarangaysList.innerHTML = "<p>No barangays have scrap types eligible for pickup.</p>";
+      }
+    });
+
+    function sendNotification() {
+      const eligibleScraps = document.querySelectorAll("#eligibleBarangaysList p");
+      if (eligibleScraps.length > 0) {
+        const scrapData = [];
+        eligibleScraps.forEach(scrap => {
+          const scrapText = scrap.textContent;
+          const [barangayPart, rest] = scrapText.split(" - ");
+          const [scrapType, weightPart] = rest.split(": ");
+          const weight = parseInt(weightPart.replace(" kg", ""), 10);
+
+          scrapData.push({
+            barangay: barangayPart.trim(),
+            scrapType: scrapType.trim(),
+            weight: weight
+          });
+        });
+
+        fetch("/send-notif", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ scraps: scrapData, usertype: "Barangay" })
+        })
+          .then(response => response.ok ? alert("Notifications sent!") : alert("Failed to send notifications."))
+          .catch(error => alert("An error occurred: " + error));
+      } else {
+        alert("No eligible scraps to notify.");
+      }
+    }
+  </script>
+
+  <!-- Functions for Scrap Type Selection and Line Chart Update -->
+  <script>
+    function getScrapTypesForBarangay(barangayIndex) {
+      return Object.keys(dummyDailyScrapData[barangayIndex].scrapData);
+    }
+
+    function getScrapDataForBarangayAndType(barangayIndex, scrapType) {
+      return dummyDailyScrapData[barangayIndex].scrapData[scrapType];
+    }
+
+    function updateScrapTypeSelect(barangayIndex) {
+      const scrapTypeSelect = document.getElementById("scrapTypeLineSelect");
+      scrapTypeSelect.innerHTML = "";
+      const scrapTypes = getScrapTypesForBarangay(barangayIndex);
+      scrapTypes.forEach(type => {
+        const option = document.createElement("option");
+        option.value = type;
+        option.textContent = type;
+        scrapTypeSelect.appendChild(option);
+      });
+    }
+
+    function updateLineChart(barangayIndex, scrapType) {
+      const scrapData = getScrapDataForBarangayAndType(barangayIndex, scrapType);
+      const dates = Object.keys(scrapData);
+      const weights = Object.values(scrapData);
+
+      lineChart.updateOptions({
+        xaxis: { categories: dates },
+        series: [{ name: scrapType, data: weights }]
+      });
+    }
+  </script>
+
+  <!-- Line Chart Initialization and Insight Generation -->
+  <script>
+    updateScrapTypeSelect(0);
+    let initialScrapType = getScrapTypesForBarangay(0)[0];
+    const initialScrapData = getScrapDataForBarangayAndType(0, initialScrapType);
+    const initialDates = Object.keys(initialScrapData);
+    const initialWeights = Object.values(initialScrapData);
+
+    var lineOptions = {
+      chart: { type: 'line', height: 350 },
+      series: [{ name: initialScrapType, data: initialWeights }],
+      xaxis: { categories: initialDates, title: { text: 'Date' } },
+      yaxis: { title: { text: 'Collected Weight (kg)' } }
+    };
+
+    var lineChart = new ApexCharts(document.querySelector("#lineChart"), lineOptions);
+    lineChart.render();
+
+    document.getElementById("barangayLineSelect").addEventListener("change", function () {
+      const barangayIndex = this.value;
+      updateScrapTypeSelect(barangayIndex);
+      const selectedScrapType = document.getElementById("scrapTypeLineSelect").value;
+      updateLineChart(barangayIndex, selectedScrapType);
+    });
+
+    document.getElementById("scrapTypeLineSelect").addEventListener("change", function () {
+      const barangayIndex = document.getElementById("barangayLineSelect").value;
+      const selectedScrapType = this.value;
+      updateLineChart(barangayIndex, selectedScrapType);
+    });
+
+    document.getElementById("generateInsightReportBtn").addEventListener("click", function () {
+      const barangayIndex = document.getElementById("barangayLineSelect").value;
+      const selectedScrapType = document.getElementById("scrapTypeLineSelect").value;
+      const weights = Object.values(getScrapDataForBarangayAndType(barangayIndex, selectedScrapType));
+      const barangayName = dummyDailyScrapData[barangayIndex].barangayName;
+      updateInsights(barangayName, selectedScrapType, weights);
+    });
+
+    function updateInsights(barangayName, scrapType, weights) {
+      if (weights.length === 0) {
+        document.getElementById("insightsContent").innerHTML = "<p>No data available for insights.</p>";
+        return;
+      }
+
+      const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
+      const averageWeight = (weights.length > 0) ? (totalWeight / weights.length).toFixed(2) : 0;
+      const highestWeight = Math.max(...weights);
+      const lowestWeight = Math.min(...weights);
+
+      const threshold = 5000;
+      const remainingWeight = threshold - totalWeight;
+      const daysToThreshold = (averageWeight > 0) ? Math.ceil(remainingWeight / averageWeight) : 'N/A';
+
+  const insightsContent  = `
+  <table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+ 
+    <tbody>
+      <tr>
+        <td style="border: 1px solid black; padding: 8px;"><strong>Junkshop</strong></td>
+        <td style="border: 1px solid black; padding: 8px;">${barangayName}</td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid black; padding: 8px;"><strong>Scrap Type</strong></td>
+        <td style="border: 1px solid black; padding: 8px;">${scrapType}</td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid black; padding: 8px;"><strong>Total Collected</strong></td>
+        <td style="border: 1px solid black; padding: 8px;">${totalWeight} kg</td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid black; padding: 8px;"><strong>Average Daily Collection</strong></td>
+        <td style="border: 1px solid black; padding: 8px;">${averageWeight} kg</td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid black; padding: 8px;"><strong>Highest Daily Collection</strong></td>
+        <td style="border: 1px solid black; padding: 8px;">${highestWeight} kg</td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid black; padding: 8px;"><strong>Lowest Daily Collection</strong></td>
+        <td style="border: 1px solid black; padding: 8px;">${lowestWeight} kg</td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid black; padding: 8px;"><strong>Estimated Days to Reach 5,000 kg Threshold</strong></td>
+        <td style="border: 1px solid black; padding: 8px;">${daysToThreshold} days</td>
+      </tr>
+    </tbody>
+  </table>
+`;
+
+      document.getElementById("insightsContent").innerHTML = insightsContent;
+    }
+  </script>
+</body>
 </html>
