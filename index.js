@@ -5,7 +5,7 @@ const _ = require('lodash');
 const session = require('express-session');
 const bcrypt = require('bcryptjs'); // Import bcrypt for passwo;rd hashing
 const mongoose = require('mongoose')
-
+const helmet = require('helmet');
 // Set up session middleware
 
 
@@ -198,20 +198,10 @@ const Reward = mongoose.model("Reward",rewardSchema);
 const AdminScrap = mongoose.model("AdminScrap",adminScraps);
 const Scrap = mongoose.model("Scrap",scrapMaterialPoints);
 
-let log = ''
-const admin = [{
-    email:'karitonscraps.ph@gmail.com',
-}]
-const junk = [{
-    jShopName: 'Jastine Jshop',
-    ownerName: "Jasdgdsago",
-    isApproved:null
-
-}]
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
-
+app.use(helmet());
 // Parse JSON bodies (as sent by API clients)
 app.use(bodyParser.json());
 
@@ -249,6 +239,31 @@ const sendOTPEmail = (email, otp) => {
     }
   });
 };
+
+
+
+// Set X-Frame-Options header
+app.use(helmet.frameguard({ action: 'sameorigin' }));
+
+// Set X-Content-Type-Options header
+app.use(helmet.noSniff());
+
+// Set Referrer-Policy header
+app.use(
+  helmet.referrerPolicy({
+    policy: 'no-referrer', // or 'strict-origin-when-cross-origin' or any suitable policy
+  })
+);
+
+app.use((req, res, next) => {
+  res.setHeader(
+    'Permissions-Policy',
+    'geolocation=(self), microphone=(), camera=(), payment=(self)' // Customize as needed
+  );
+  next();
+});
+
+
 const checkAdminSession = (req, res, next) => {
   console.log(req.session.isLogged);
   
@@ -1284,6 +1299,7 @@ app.post("/updateBarangayStatus", checkAdminSession, async (req, res) => {
     const logMessage = `Junkshop status updated to ${status} for junkshop with ID: ${id}`;
     const junkshop = await JunkShop.findOne({_id:jID});
     // Add the new log entry
+
     
     const newLog = new Logs({
       logs: logMessage,
