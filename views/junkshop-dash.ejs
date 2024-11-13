@@ -405,7 +405,7 @@
       const highestWeight = Math.max(...weights);
       const lowestWeight = Math.min(...weights);
 
-      const threshold = 5000;
+      const threshold = 500;
       const remainingWeight = threshold - totalWeight;
       const daysToThreshold = (averageWeight > 0) ? Math.ceil(remainingWeight / averageWeight) : 'N/A';
 

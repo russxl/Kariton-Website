@@ -14,6 +14,63 @@
     z-index: 99;
 }
 
+   /* Video Background */
+   #video-background {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+}
+
+#video-background video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    z-index: -1;
+}
+
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.video-overlay h1 {
+    font-size: 2.5rem;
+}
+
+@media (max-width: 768px) {
+    .video-overlay h1 {
+        font-size: 2rem;
+    }
+
+    .video-overlay p {
+        font-size: 1.25rem;
+    }
+}
+.navbar-logo {
+    width: 250px;
+    opacity: 0.7;
+}
+
+
+.fixed-size-img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
 .fw-bold {
     font-weight: 700 !important;
 }

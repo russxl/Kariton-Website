@@ -4,8 +4,9 @@ const ejs = require("ejs");
 const _ = require('lodash');
 const session = require('express-session');
 const bcrypt = require('bcryptjs'); // Import bcrypt for passwo;rd hashing
+const crypto = require('crypto');
 const mongoose = require('mongoose')
-const helmet = require('helmet');
+// const helmet = require('helmet');
 // Set up session middleware
 
 
@@ -201,7 +202,7 @@ const Scrap = mongoose.model("Scrap",scrapMaterialPoints);
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(helmet());
+//app.use(helmet());
 // Parse JSON bodies (as sent by API clients)
 app.use(bodyParser.json());
 
@@ -239,11 +240,49 @@ const sendOTPEmail = (email, otp) => {
     }
   });
 };
+/*app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: [
+        "'self'",
+        "https://code.jquery.com", // for jQuery
+        "https://cdn.jsdelivr.net", // for Bootstrap, jsPDF, and other libraries
+        "https://cdnjs.cloudflare.com", // for jsPDF and other libraries
+        "https://unpkg.com" // for jsPDF autoTable plugin
+      ],
+      styleSrc: [
+        "'self'",
+        "https://fonts.googleapis.com", // for Google Fonts
+        "https://cdnjs.cloudflare.com", // for additional styles if needed
+        "https://cdn.jsdelivr.net" // for any styles from jsDelivr
+      ],
+      imgSrc: [
+        "'self'", 
+        "data:", // for inline data URIs
+        "https://your-domain.com/assets/images/logos" // adjust if using external images
+      ],
+      fontSrc: [
+        "'self'", 
+        "https://fonts.gstatic.com" // for Google Fonts
+      ],
+      connectSrc: ["'self'"], // add any external API domains here if needed
+      objectSrc: ["'none'"], // blocks plugins like Flash
+      frameAncestors: ["'self'"], // restricts embedding in iframes to the same origin
+      upgradeInsecureRequests: [] // automatically upgrade HTTP requests to HTTPS if possible
+    },
+  })
+);
 
 
+
+app.use((req, res, next) => {
+  res.locals.nonce = crypto.randomBytes(16).toString('base64');
+  next();
+});
 
 // Set X-Frame-Options header
-app.use(helmet.frameguard({ action: 'sameorigin' }));
+//app.use(helmet.frameguard({ action: 'sameorigin' }));
 
 // Set X-Content-Type-Options header
 app.use(helmet.noSniff());
@@ -262,7 +301,7 @@ app.use((req, res, next) => {
   );
   next();
 });
-
+*/
 
 const checkAdminSession = (req, res, next) => {
   console.log(req.session.isLogged);
@@ -531,9 +570,7 @@ app.get("/about",(req,res)=>{
 })
 
 
-app.get("/feature",(req,res)=>{
-    res.render('feature.ejs')
-})
+
 app.get("/service",(req,res)=>{
     res.render('service.ejs')
 })
