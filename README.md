@@ -1,5 +1,41 @@
-# Kariton: A Mobile and Web-Based Solution for Recycling in a Circular Economy
+# Kariton Recycling Rewards Web App (https://karitonwebsite.onrender.com/)
 
-Recent research shows that a reward-based scheme can effectively promote waste segregation and recycling. It has been demonstrated that monetary incentives such as pay-as-you-throw programs raise sorted-to-total waste ratios by 17% [3]. This research focuses on developing a system that connects the community, barangays, small junk shops, and big junk shop. The aim is to provide incentives to the community for segregating their trash and recyclables. In this system, barangays will have an important role by collecting recyclable scrap materials from households within their area. In return for their efforts in segregating and providing recyclables, the community members will receive incentives. Which could be monetary or in the form of goods. Once the barangays collect recyclable scraps they will sell these materials to small junk shops. This transaction generates additional revenue for the barangays. Which can be reinvested in community projects also for further waste management initiatives. After acquiring the recyclable materials the small junk shops will then communicate with the big junk shop to sell scraps in bulk. These big junk shop, in turn, coordinate with recycling centers to ensure that the materials are being processed and repurposed effectively. By establishing a line of communication between junk shops and the barangay. The system ensures that recyclables are sold at a fair price that will benefit all parties involved. This integrated approach aims to create a sustainable and efficient waste management system that benefits the community by promoting environmental sustainability through effective recycling practices.
+A web-based platform that incentivizes community members to segregate and recycle waste, connecting households, barangays, junk shops, and recycling centers. The system provides rewards for recycling efforts and streamlines the collection and sale of recyclable materials.
 
-VISIT THE WEBSITE: https://web-kunwari.onrender.com/
+## Features
+- User registration and login
+- Barangay and junk shop management
+- Scheduling pickups and collections
+- Points and rewards system for recyclables
+- Admin dashboard and logs
+- Responsive EJS-based frontend
+
+## Tech Stack
+- **Backend:** Node.js, Express.js
+- **Frontend:** EJS templates, HTML, CSS, JavaScript
+- **Database:** MongoDB (via Mongoose)
+- **Other:** dotenv, bcryptjs, express-session, nodemailer, lodash, body-parser
+
+## Getting Started
+1. **Clone the repository:**
+   ```bash
+   git clone <your-repo-url>
+   cd <project-directory>
+   ```
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+3. **Set up environment variables:**
+   - Create a `.env` file in the root directory.
+   - Add your MongoDB URI and any other required environment variables:
+     ```env
+     MONGODB_URI=your_mongodb_connection_string
+     ```
+4. **Run the app:**
+   ```bash
+   node index.js
+   ```
+5. **Visit the app:**
+   - Open your browser and go to `http://localhost:3000` (or your configured port).
+
